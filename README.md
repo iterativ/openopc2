@@ -237,7 +237,7 @@ Copyright (c) 2017 by José A. Maita (jose.a.maita@gmail.com)
 
 If you need technical assistance to implement this in a larger project, go 
 to the main site [here](https://joseamaita.com/en/) or 
-[here] (https://joseamaita.com/en/contact-me/) for more detailed information.
+[here](https://joseamaita.com/en/contact-me/) for more detailed information.
 
 
 ## License
