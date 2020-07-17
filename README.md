@@ -10,7 +10,7 @@ service that enable non-Windows clients to also access OPC-DA calls.
 
 The files within this 
 [repository](https://github.com/joseamaita/openopc120) allow us to work 
-with recent versions of Python (v3.4+) and Pyro4 (v4.55+).
+with recent versions of Python (v3.7+) and Pyro4 (v4.80+).
 
 If you are interested in the original version from Barry Barnreiter, you 
 can go [here](http://openopc.sourceforge.net/). However, if you want to 
