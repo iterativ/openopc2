@@ -34,8 +34,8 @@ Pyro4.config.SERVERTYPE='thread'
 #Pyro4.config.SERIALIZER='marshal'
 
 opc_class = OpenOPC.OPC_CLASS
-opc_gate_host = "localhost"
-opc_gate_port = 7766
+opc_gate_host = os.environ['OPC_GATE_HOST']
+opc_gate_port = int(os.environ['OPC_GATE_PORT'])
 
 def getvar(env_var):
     """Read system environment variable from registry"""
@@ -49,9 +49,9 @@ def getvar(env_var):
 # Get env vars directly from the Registry since a reboot is normally required
 # for the Local System account to inherit these.
 
-if getvar('OPC_CLASS'):  opc_class = getvar('OPC_CLASS')
-if getvar('OPC_GATE_HOST'):  opc_gate_host = getvar('OPC_GATE_HOST')
-if getvar('OPC_GATE_PORT'):  opc_gate_port = int(getvar('OPC_GATE_PORT'))
+#if getvar('OPC_CLASS'):  opc_class = getvar('OPC_CLASS')
+#if getvar('OPC_GATE_HOST'):  opc_gate_host = getvar('OPC_GATE_HOST')
+#if getvar('OPC_GATE_PORT'):  opc_gate_port = int(getvar('OPC_GATE_PORT'))
 
 @Pyro4.expose    # needed for version 4.55+
 class opc(object):
