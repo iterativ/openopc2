@@ -39,14 +39,14 @@ for performance, free memory, tasks list, among others).
 
 Follow these steps to prepare your work environment:
 
-* Make sure to download and install a recent Python version (v3.4+) in 
+* Make sure to download and install a recent Python version (v3.7+) in 
 both your remote (i.e. Debian Jessie) and local (i.e. Windows 7) nodes. 
 To do this, go [here](https://www.python.org/downloads/).
 * Make sure to download and install Python for Windows Extensions 
-(pywin32) for a recent Python version (i.e. pywin32-220.win32-py3.4.exe) 
+(pywin32) for a recent Python version (i.e. pywin32-228.win32-py3.7.exe) 
 in your Windows box. To do this, 
-go [here](https://sourceforge.net/projects/pywin32/files/pywin32/).
-* Make sure to download and install a recent Pyro4 version (v4.55+) in 
+go [here](https://github.com/mhammond/pywin32/releases).
+* Make sure to download and install a recent Pyro4 version (v4.80+) in 
 both your remote (i.e. Debian Jessie) and local (i.e. Windows 7) nodes 
 by typing:
 
@@ -55,7 +55,7 @@ pip install Pyro4
 
 or
 
-pip install Pyro4==4.55
+pip install Pyro4==4.80
 ```
 
 * Make sure these environment variables in your Windows box are set as 
@@ -122,22 +122,22 @@ Begin to work with this project by doing this:
 
 * Clone or download the repository as a `.zip` file.
 * Extract the compressed file to a folder in your Windows box 
-(i.e. `C:\OpenOPC34`).
+(i.e. `C:\OpenOPC37`).
 * Open a command prompt window (run it as administrator) and go to your 
-work directory (i.e. `C:\OpenOPC34`).
+work directory (i.e. `C:\OpenOPC37`).
 * Change to the `lib` folder.
 * Register the OPC automation wrapper ( `gbda_aut.dll` ) by typing this 
 in the command line:
 
 ```
-C:\OpenOPC34\lib>regsvr32 gbda_aut.dll
+C:\OpenOPC37\lib>regsvr32 gbda_aut.dll
 ```
 
 * If, for any reason, you want to uninstall this file and remove it from 
 your system registry later, type this in the command line:
 
 ```
-C:\OpenOPC34\lib>regsvr32 gbda_aut.dll -u
+C:\OpenOPC37\lib>regsvr32 gbda_aut.dll -u
 ```
 
 ### Install the OpenOPC Gateway Service
@@ -147,13 +147,13 @@ the Python interpreter and the "install" argument (remember to do it as
 administrator):
 
 * In the command prompt window, go to your work directory 
-(i.e. `C:\OpenOPC34`).
+(i.e. `C:\OpenOPC37`).
 * Change to the `src` folder.
 * Install the OpenOPC Gateway Service by typing this in the command 
 line:
 
 ```
-C:\OpenOPC34\src>python OpenOPCService.py install
+C:\OpenOPC37\src>python OpenOPCService.py install
 ```
 
 * Wait while the following message is shown on the screen:
@@ -177,7 +177,14 @@ Administrative Tools).
 * By running the `net start SERVICE` command like this:
 
 ```
-C:\OpenOPC34\bin>net start zzzOpenOPCService
+C:\OpenOPC37\bin>net start zzzOpenOPCService
+```
+
+* If you have problems starting the service, you can also try to start 
+this in "debug" mode:
+
+```
+C:\OpenOPC37\src>python OpenOPCService.py debug
 ```
 
 ### Stop the OpenOPC Gateway Service
@@ -190,7 +197,7 @@ Administrative Tools).
 * By running the `net stop SERVICE` command like this:
 
 ```
-C:\OpenOPC34\bin>net stop zzzOpenOPCService
+C:\OpenOPC37\bin>net stop zzzOpenOPCService
 ```
 
 ### Configure the way the OpenOPC Gateway Service starts
