@@ -995,6 +995,8 @@ class client():
                     values[i] = ACCESS_RIGHTS[values[i]]
                 except:
                     pass
+
+                # TODO: Refactor the following lines
                 if id is not None:
                     if single_property:
                         if single_tag:
