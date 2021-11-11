@@ -957,19 +957,19 @@ class client():
 
             for tag in tags:
 
-                if id == None:
+                if id is None:
                     descriptions = []
                     property_id = []
-                    count, property_id, descriptions, datatypes = self._opc.QueryAvailableProperties(tag)
+                    count, property_id, descriptions, datatypes = list(self._opc.QueryAvailableProperties(tag))
 
-                    # Remove bogus negative property id (not sure why this sometimes happens)
-                    tag_properties = map(None, property_id, descriptions)
+                    # TODO: Remove bogus negative property id (not sure why this sometimes happens)
+                    tag_properties = list(zip(property_id, descriptions))
                     property_id = [p for p, d in tag_properties if p > 0]
                     descriptions = [d for p, d in tag_properties if p > 0]
 
                 property_id.insert(0, 0)
-                values = []
-                errors = []
+
+
                 values, errors = self._opc.GetItemProperties(tag, len(property_id) - 1, property_id)
 
                 property_id.pop(0)
@@ -995,23 +995,25 @@ class client():
                     values[i] = ACCESS_RIGHTS[values[i]]
                 except:
                     pass
-
-                if id != None:
+                if id is not None:
                     if single_property:
                         if single_tag:
                             tag_properties = values
                         else:
                             tag_properties = [values]
                     else:
-                        tag_properties = map(None, property_id, values)
+                        tag_properties = list(zip(property_id, values))
                 else:
-                    tag_properties = map(None, property_id, descriptions, values)
+                    tag_properties = list(zip(property_id, descriptions, values))
                     tag_properties.insert(0, (0, 'Item ID (virtual property)', tag))
 
-                if include_name:    tag_properties.insert(0, (0, tag))
-                if not single_tag:  tag_properties = [tuple([tag] + list(p)) for p in tag_properties]
+                if include_name:
+                    tag_properties.insert(0, (0, tag))
+                if not single_tag:
+                    tag_properties = [tuple([tag] + list(p)) for p in tag_properties]
 
-                for p in tag_properties: yield p
+                for p in tag_properties:
+                    yield p
 
         except pythoncom.com_error as err:
             error_msg = 'properties: %s' % self._get_error_str(err)
