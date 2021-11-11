@@ -71,6 +71,7 @@ class TestReadTags(TestCase):
         self.assertEqual(len(values_group), len(values))
         self.assertEqual(values_group, values)
 
+
 class TestProperties(TestCase):
     def setUp(self) -> None:
         self.opc_client = client()
@@ -78,6 +79,12 @@ class TestProperties(TestCase):
         self.tags = self.opc_client.list(recursive=False, include_type=False, flat=True)
         self.no_system_tags = [tag for tag in self.tags if "@" not in tag]
 
-    def test_read_properties(self):
+    def test_read_property(self):
         properties = self.opc_client.properties(self.no_system_tags[1])
-        print(f"{properties}")
+        for prop in properties:
+            print(f"{prop}")
+
+    def test_read_properties(self):
+        properties = self.opc_client.properties(self.no_system_tags)
+        for prop in properties:
+            print(f"{prop}")

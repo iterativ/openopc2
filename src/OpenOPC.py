@@ -336,14 +336,16 @@ class client():
                 elif include_error:
                     error_msgs[tag] = self._opc.GetErrorString(errors[i])
 
-                if self.trace and errors[i] != 0: self.trace('%s failed validation' % tag)
+                if self.trace and errors[i] != 0:
+                    self.trace('%s failed validation' % tag)
 
             client_handles.insert(0, 0)
             valid_tags.insert(0, 0)
             server_handles = []
             errors = []
 
-            if self.trace: self.trace('AddItems(%s)' % tags2trace(valid_tags))
+            if self.trace:
+                self.trace('AddItems(%s)' % tags2trace(valid_tags))
 
             try:
                 server_handles, errors = opc_items.AddItems(len(client_handles) - 1, valid_tags, client_handles)
@@ -938,7 +940,7 @@ class client():
             except:
                 include_name = False
 
-            if id != None:
+            if id is not None:
                 descriptions = []
 
                 if isinstance(id, list) or isinstance(id, tuple):
@@ -1062,15 +1064,17 @@ class client():
                     browser.MoveToRoot()
                     browser.Filter = ''
                     browser.ShowLeafs(True)
-
                     pattern = re.compile('^%s$' % wild2regex(path), re.IGNORECASE)
                     matches = filter(pattern.search, browser)
-                    if include_type:  matches = [(x, node_type) for x in matches]
 
-                    for node in matches: yield node
+                    if include_type:
+                        matches = [(x, node_type) for x in matches]
+
+                    for node in matches:
+                        yield node
                     continue
 
-                queue = []
+                queue = list()
                 queue.append(path)
 
                 while len(queue) > 0:
