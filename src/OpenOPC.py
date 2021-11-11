@@ -166,7 +166,7 @@ class client():
 
         pythoncom.CoInitialize()
 
-        if opc_class == None:
+        if opc_class is None:
             if 'OPC_CLASS' in os.environ:
                 opc_class = os.environ['OPC_CLASS']
             else:
@@ -206,7 +206,7 @@ class client():
         self.cpu = None
 
     def set_trace(self, trace):
-        if self._open_serv == None:
+        if self._open_serv is None:
             self.trace = trace
 
     def connect(self, opc_server=None, opc_host='localhost'):
@@ -240,7 +240,7 @@ class client():
             else:
                 # Set client name since some OPC servers use it for security
                 try:
-                    if self.client_name == None:
+                    if self.client_name is None:
                         if 'OPC_CLIENT' in os.environ:
                             self._opc.ClientName = os.environ['OPC_CLIENT']
                         else:
@@ -457,7 +457,8 @@ class client():
                     opc_group.IsSubscribed = 1
                     opc_group.IsActive = 1
                     if not sync:
-                        if self.trace: self.trace('WithEvents(%s)' % opc_group.Name)
+                        if self.trace:
+                            self.trace('WithEvents(%s)' % opc_group.Name)
                         global current_client
                         current_client = self
                         self._group_hooks[opc_group.Name] = win32com.client.WithEvents(opc_group, GroupEvents)
@@ -488,7 +489,8 @@ class client():
                     self._group_tags[sub_group] = tags
                     self._group_valid_tags[sub_group] = valid_tags
 
-                    if source == 'hybrid': data_source = SOURCE_DEVICE
+                    if source == 'hybrid':
+                        data_source = SOURCE_DEVICE
 
                 # Existing group
                 else:
@@ -515,7 +517,8 @@ class client():
                         if source != 'hybrid':
                             data_source = SOURCE_CACHE if source == 'cache' else SOURCE_DEVICE
 
-                        if self.trace: self.trace('SyncRead(%s)' % data_source)
+                        if self.trace:
+                            self.trace('SyncRead(%s)' % data_source)
 
                         try:
                             values, errors, qualities, timestamps = opc_group.SyncRead(data_source,
@@ -591,22 +594,24 @@ class client():
 
                     if single:
                         if include_error:
-                            yield (value, quality, timestamp, error_msgs[tag])
+                            yield value, quality, timestamp, error_msgs[tag]
                         else:
-                            yield (value, quality, timestamp)
+                            yield value, quality, timestamp
                     else:
                         if include_error:
-                            yield (tag, value, quality, timestamp, error_msgs[tag])
+                            yield tag, value, quality, timestamp, error_msgs[tag]
                         else:
-                            yield (tag, value, quality, timestamp)
+                            yield tag, value, quality, timestamp
 
-                if group == None:
+                if group is None:
                     try:
                         if not sync and opc_group.Name in self._group_hooks:
-                            if self.trace: self.trace('CloseEvents(%s)' % opc_group.Name)
+                            if self.trace:
+                                self.trace('CloseEvents(%s)' % opc_group.Name)
                             self._group_hooks[opc_group.Name].close()
 
-                        if self.trace: self.trace('RemoveGroup(%s)' % opc_group.Name)
+                        if self.trace:
+                            self.trace('RemoveGroup(%s)' % opc_group.Name)
                         opc_groups.Remove(opc_group.Name)
 
                     except pythoncom.com_error as err:
@@ -666,7 +671,7 @@ class client():
                 value = SystemHealth.saw_wave()
 
             elif t == '@CpuUsage':
-                if self.cpu == None:
+                if self.cpu is None:
                     self.cpu = SystemHealth.CPU()
                     time.sleep(0.1)
                 value = self.cpu.get_usage()
@@ -718,7 +723,7 @@ class client():
                 raise TypeError(
                     "write(): 'tag_value_pairs' parameter must be a (tag, value) tuple or a list of (tag,value) tuples")
 
-            if tag_value_pairs == None:
+            if tag_value_pairs is None:
                 tag_value_pairs = ['']
                 single = False
             elif type(tag_value_pairs[0]) in (str, bytes):
@@ -1215,25 +1220,25 @@ class client():
             scode = exc[5]
 
             try:
-                opc_err_str = unicode(self._opc.GetErrorString(scode)).strip('\r\n')
+                opc_err_str = self._opc.GetErrorString(scode).strip('\r\n')
             except:
                 opc_err_str = None
 
             try:
-                com_err_str = unicode(pythoncom.GetScodeString(scode)).strip('\r\n')
+                com_err_str = pythoncom.GetScodeString(scode).strip('\r\n')
             except:
                 com_err_str = None
 
             # OPC error codes and COM error codes are overlapping concepts,
             # so we combine them together into a single error message.
 
-            if opc_err_str == None and com_err_str == None:
+            if opc_err_str is None and com_err_str is None:
                 error_str = str(scode)
-            elif opc_err_str == com_err_str:
+            elif opc_err_str is com_err_str:
                 error_str = opc_err_str
-            elif opc_err_str == None:
+            elif opc_err_str is None:
                 error_str = com_err_str
-            elif com_err_str == None:
+            elif com_err_str is None:
                 error_str = opc_err_str
             else:
                 error_str = '%s (%s)' % (opc_err_str, com_err_str)
