@@ -30,7 +30,7 @@ if os.name == 'nt':
         import win32event
         import pythoncom
         import pywintypes
-        import src.SystemHealth as SystemHealth
+        import OpenOpc.SystemHealth as SystemHealth
 
         # Win32 variant types
         pywintypes.datetime = pywintypes.TimeType

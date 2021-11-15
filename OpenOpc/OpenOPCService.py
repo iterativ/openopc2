@@ -45,7 +45,8 @@ def getvar(env_var):
                               'SYSTEM\\CurrentControlSet\\Control\Session Manager\Environment', 0, _winreg.KEY_READ)
         value, valuetype = _winreg.QueryValueEx(key, env_var)
         return value
-    except:
+    except Exception as e:
+        print(e)
         return None
 
 
