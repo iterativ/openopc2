@@ -30,7 +30,7 @@ if os.name == 'nt':
         import win32event
         import pythoncom
         import pywintypes
-        import SystemHealth
+        import src.SystemHealth as SystemHealth
 
         # Win32 variant types
         pywintypes.datetime = pywintypes.TimeType
@@ -44,7 +44,8 @@ if os.name == 'nt':
         win32com.client.gencache.Rebuild(verbose=0)
 
     # So we can work on Windows in "open" protocol mode without the need for the win32com modules
-    except ImportError:
+    except ImportError as e:
+        print(e)
         win32com_found = False
     else:
         win32com_found = True
@@ -438,14 +439,16 @@ class client():
 
                     # Existing named group
                     try:
-                        if self.trace: self.trace('GetOPCGroup(%s)' % sub_group)
+                        if self.trace:
+                            self.trace('GetOPCGroup(%s)' % sub_group)
                         opc_group = opc_groups.GetOPCGroup(sub_group)
                         new_group = False
 
                     # New named group
                     except:
                         try:
-                            if self.trace: self.trace('AddGroup(%s)' % sub_group)
+                            if self.trace:
+                                self.trace('AddGroup(%s)' % sub_group)
                             opc_group = opc_groups.Add(sub_group)
                         except pythoncom.com_error as err:
                             error_msg = 'AddGroup: %s' % self._get_error_str(err)
