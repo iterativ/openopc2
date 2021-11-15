@@ -9,14 +9,14 @@
 ###########################################################################
 
 import os
+import re
+import socket
+import string
 import sys
 import time
-import types
-import string
-import socket
-import re
-import Pyro4.core
 from multiprocessing import Queue
+
+import Pyro4.core
 
 __version__ = '2.0'
 
@@ -116,10 +116,12 @@ def exceptional(func, alt_return=None, alt_exceptions=(Exception,), final=None, 
             except alt_exceptions:
                 return alt_return
             except:
-                if catch: return catch(sys.exc_info(), lambda: func(*args, **kwargs))
+                if catch:
+                    return catch(sys.exc_info(), lambda: func(*args, **kwargs))
                 raise
         finally:
-            if final: final()
+            if final:
+                final()
 
     return _exceptional
 
@@ -140,11 +142,15 @@ def open_client(host='localhost', port=7766):
     return server_obj.create_client()
 
 
+@Pyro4.expose
 class TimeoutError(Exception):
     def __init__(self, txt):
         Exception.__init__(self, txt)
 
+    __dict__ = None
 
+
+@Pyro4.expose
 class OPCError(Exception):
     def __init__(self, txt):
         Exception.__init__(self, txt)
@@ -974,7 +980,6 @@ class client():
                     descriptions = [d for p, d in tag_properties if p > 0]
 
                 property_id.insert(0, 0)
-
 
                 values, errors = self._opc.GetItemProperties(tag, len(property_id) - 1, property_id)
 

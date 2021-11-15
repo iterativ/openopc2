@@ -1,15 +1,14 @@
 from unittest import TestCase
 
-from OpenOpc.OpenOPCService import opc, OpcService
-from OpenOpc.tests.opc_server_config import OPC_SERVER
+from OpenOpc.OpenOPC import open_client
+from opc_server_config import OPC_HOST, OPC_SERVER
 
 
 class TestOpenOPCService(TestCase):
-    def setUp(self) -> None:
-        self.opc_client = opc()
 
     def test_get_clients(self):
-        self.opc_client.create_client()
-
-        self.opc_client.get_clients()
-
+        client = open_client(OPC_HOST)
+        client.connect(OPC_SERVER, OPC_HOST)
+        tags = client.list(flat=True)
+        for l in tags:
+            print(l)
