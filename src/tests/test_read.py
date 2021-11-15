@@ -27,6 +27,14 @@ class TestReadTags(TestCase):
         values = self.opc_client.read(self.no_system_tags, sync=True)
         print(f"{values}")
 
+    def test_read_tag_include_error(self):
+        values = self.opc_client.read(self.no_system_tags[0], include_error=True)
+        print(f"{values}")
+
+    def test_read_tag_sync(self):
+        values = self.opc_client.read(self.no_system_tags[0], sync=True)
+        print(f"{values}")
+
     def test_read_tags_list_include_error(self):
         values = self.opc_client.read(self.no_system_tags, include_error=True)
         print(f"{values}")

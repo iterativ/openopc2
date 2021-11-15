@@ -18,7 +18,7 @@ import re
 import Pyro4.core
 from multiprocessing import Queue
 
-__version__ = '1.2.0'
+__version__ = '2.0'
 
 current_client = None
 
@@ -595,7 +595,7 @@ class client():
                         value = None
                         quality = 'Error'
                         timestamp = None
-                        if tag in include_error and not error_msgs:
+                        if tag and include_error and not error_msgs:
                             error_msgs[tag] = ''
 
                     if single:
@@ -1212,7 +1212,7 @@ class client():
         """Check if we are still talking to the OPC server"""
         try:
             # Convert OPC server time to milliseconds
-            opc_serv_time = int(float(self._opc.CurrentTime) * 1000000.0)
+            opc_serv_time = int(float(self._opc.CurrentTime.timestamp()) * 1000)
             if opc_serv_time == self._prev_serv_time:
                 return False
             else:

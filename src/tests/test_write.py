@@ -60,5 +60,5 @@ class TestWriteTags(TestCase):
                 # write = self.opc_client.write((tag, old_value))
 
     def test_write_tags_list(self):
-        values = self.opc_client.write(zip(self.no_system_tags[0:1], [1, 10]))
+        values = self.opc_client.write(list(zip([self.no_system_tags[4], self.no_system_tags[5]],  [1, 10])))
         print(f"{values}")

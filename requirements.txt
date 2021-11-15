@@ -1,2 +1,5 @@
+coverage==6.1.2
 Pyro4==4.81
 pywin32==302
+serpent==1.40
+WMI==1.5.1

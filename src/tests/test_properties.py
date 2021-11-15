@@ -26,7 +26,7 @@ class TestProperties(TestCase):
             print(f"{prop}")
 
     def test_read_properties(self):
-        properties = self.opc_client.properties(self.no_system_tags)
+        properties = self.opc_client.properties(self.no_system_tags[1:24])
         for prop in properties:
             print(f"{prop}")
 

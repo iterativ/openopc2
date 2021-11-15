@@ -30,5 +30,4 @@ class TestServerInfo(TestCase):
 
     def test_ping(self):
         ping = self.opc_client.ping()
-
-        self.assertRaises(IndexError, self.opc_client.info)
+        self.assertTrue(ping)
