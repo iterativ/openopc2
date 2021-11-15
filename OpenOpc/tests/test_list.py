@@ -1,13 +1,13 @@
 from unittest import TestCase
 
-from src.OpenOPC import client
-from src.tests.opc_server_config import OPC_SERVER
+from OpenOpc.OpenOPC import client
+from OpenOpc.tests.opc_server_config import OPC_SERVER, OPC_HOST
 
 
 class TestListTags(TestCase):
     def setUp(self) -> None:
         self.opc_client = client()
-        self.opc_client.connect(OPC_SERVER)
+        self.opc_client.connect(OPC_SERVER, opc_host=OPC_HOST)
 
     def test_list_flat_return_tags(self):
         tags = self.opc_client.list(recursive=False, include_type=False, flat=True)

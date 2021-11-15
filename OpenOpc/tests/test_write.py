@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from src.OpenOPC import client
-from src.tests.opc_server_config import OPC_SERVER
+from OpenOpc.OpenOPC import client
+from OpenOpc.tests.opc_server_config import OPC_SERVER
 import numbers
 
 

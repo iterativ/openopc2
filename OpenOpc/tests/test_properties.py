@@ -2,8 +2,8 @@ from unittest import TestCase
 
 import pywintypes
 
-from src.OpenOPC import client
-from src.tests.opc_server_config import OPC_SERVER
+from OpenOpc.OpenOPC import client
+from OpenOpc.tests.opc_server_config import OPC_SERVER
 
 pywintypes.datetime = pywintypes.TimeType
 
