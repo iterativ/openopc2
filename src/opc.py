@@ -63,14 +63,14 @@ repeat_pause = None
 property_ids = None
 include_err_msg = False
 
-if environ.has_key('OPC_MODE'):         opc_mode = environ['OPC_MODE']
-if environ.has_key('OPC_CLASS'):        opc_class = environ['OPC_CLASS']
-if environ.has_key('OPC_CLIENT'):       client_name = environ['OPC_CLIENT']
-if environ.has_key('OPC_HOST'):         opc_host = environ['OPC_HOST']
-if environ.has_key('OPC_SERVER'):       opc_server = environ['OPC_SERVER']
-if environ.has_key('OPC_GATE_HOST'):    open_host = environ['OPC_GATE_HOST']
-if environ.has_key('OPC_GATE_PORT'):    open_port = environ['OPC_GATE_PORT']
-if environ.has_key('OPC_TIMEOUT'):      timeout = int(environ['OPC_TIMEOUT'])
+if 'OPC_MODE' in environ:         opc_mode = environ['OPC_MODE']
+if 'OPC_CLASS' in environ:        opc_class = environ['OPC_CLASS']
+if 'OPC_CLIENT' in environ:       client_name = environ['OPC_CLIENT']
+if 'OPC_HOST' in environ:         opc_host = environ['OPC_HOST']
+if 'OPC_SERVER' in environ:       opc_server = environ['OPC_SERVER']
+if 'OPC_GATE_HOST' in environ:    open_host = environ['OPC_GATE_HOST']
+if 'OPC_GATE_PORT' in environ:    open_port = environ['OPC_GATE_PORT']
+if 'OPC_TIMEOUT' in environ:      timeout = int(environ['OPC_TIMEOUT'])
 
 
 # FUNCTION: Print comand line usage summary
@@ -145,7 +145,7 @@ def irotate(data, num_columns, value_idx=1):
     new_row = []
 
     for i, row in enumerate(data):
-        if type(row) not in (types.ListType, types.TupleType):
+        if type(row) not in (list, tuple):
             value_idx = 0
             row = [row]
 
@@ -173,7 +173,7 @@ def output(data, style='table', value_idx=1):
     # Cast value to a stirng (trap Unicode errors)
     def to_str(value):
         try:
-            if type(value) == types.FloatType:
+            if type(value) == float:
                 return '%.4f' % value
             else:
                 return str(value)
@@ -186,12 +186,13 @@ def output(data, style='table', value_idx=1):
         pad_length = []
 
     # List passed (multiple rows passed all at once)
-    elif type(data) in (types.ListType, types.TupleType):
+    elif type(data) in (list, tuple):
         generator = False
 
-        if len(data) == 0: return
+        if len(data) == 0:
+            return
 
-        if type(data[0]) not in (types.ListType, types.TupleType):
+        if type(data[0]) not in (list, tuple):
             data = [[e] for e in data]
 
         if style == 'table' or style == '':
@@ -221,7 +222,7 @@ def output(data, style='table', value_idx=1):
 
                 # Convert single value into a single element list, thus making it
                 # represent a 1-column wide table.
-                if type(row) not in (types.ListType, types.TupleType):
+                if type(row) not in (list, tuple):
                     row = [row]
 
                 num_columns = len(row)
@@ -269,7 +270,7 @@ def time2str(t):
     return d.strftime('%x %H:%M:%S')
 
 
-######## MAIN ######## 
+######## MAIN ########
 
 # Parse command line arguments
 
@@ -324,39 +325,33 @@ for o, a in opts:
 # Check validity of command line options
 
 if num_columns > 0 and style in ('values', 'pairs'):
-    print
-    "'%s' style format may not be used with rotate" % style
+    print("'%s' style format may not be used with rotate" % style)
     exit()
 
 if opc_mode not in ('open', 'dcom'):
-    print
-    "'%s' is not a valid protocol mode (options: dcom, open)" % opc_mode
+    print("'%s' is not a valid protocol mode (options: dcom, open)" % opc_mode)
     exit()
 
 if opc_mode == 'dcom' and not OpenOPC.win32com_found:
-    print
-    "win32com modules required when using DCOM protocol mode (http://pywin32.sourceforge.net/)"
+    print("win32com modules required when using DCOM protocol mode (http://pywin32.sourceforge.net/)")
     exit()
 
 if opc_mode == 'open' and not pyro_found:
-    print
-    "Pyro module required when using Open protocol mode (http://pyro.sourceforge.net)"
+    print("Pyro module required when using Open protocol mode (http://pyro.sourceforge.net)")
     exit()
 
 if style not in ('table', 'values', 'pairs', 'csv', 'html'):
-    print
-    "'%s' is not a valid style format (options: table, values, pairs, csv, html)" % style
+    print("'%s' is not a valid style format (options: table, values, pairs, csv, html)" % style)
     exit()
 
 if read_function not in ('sync', 'async'):
-    print
-    "'%s' is not a valid read function (options: sync, async)" % read_function
+    print("'%s' is not a valid read function (options: sync, async)" % read_function)
     exit()
 else:
     sync = (read_function == 'sync')
 
 if data_source not in ('cache', 'device', 'hybrid'):
-    print( "'%s' is not a valid data source mode (options: cache, device, hybrid)" % data_source)
+    print("'%s' is not a valid data source mode (options: cache, device, hybrid)" % data_source)
     exit()
 
 if len(argv[1:]) == 0 or argv[1] == '/?' or argv[1] == '--help':
@@ -364,15 +359,7 @@ if len(argv[1:]) == 0 or argv[1] == '/?' or argv[1] == '--help':
     exit()
 
 if opc_server == '' and action not in ('servers', 'sessions'):
-    OPC
-    server
-    name
-    missing: use - s
-    option or set
-    OPC_SERVER
-    environment
-    variable
-    '
+    print('OPC server name missing: use -s option or set OPC_SERVER environment variable')
     exit()
 
 if data_source in ('cache', 'hybrid') and read_function == 'async' and update_rate == None and repeat_pause != None:
@@ -394,19 +381,14 @@ if pipe:
 
     tags = [line[0] for line in tags_nested if len(line) > 0]
     if len(tags) == 0:
-        Input
-        stream
-        must
-        contain
-        ITEMs(one
-        per
-        line)'
+        print('Input stream must contain ITEMs (one per line)')
         exit()
 
     if action == 'write':
         try:
             tag_value_pairs = [(item[0], item[1]) for item in tags_nested]
-        except IndexError("Write input must be in ITEM, VALUE(CSV) format"):
+        except IndexError:
+            print('Write input must be in ITEM,VALUE (CSV) format')
             exit()
 
 # Tag list passed via command line arguments
@@ -418,32 +400,18 @@ else:
     if action == 'write':
         if len(tags) % 2 == 0:
             tag_value_pairs = [(tags[i], tags[i + 1]) for i in range(0, len(tags), 2)]
-        elif len([t for t in tags if t.find('=') != -1]) == len(tags):
-            tag_value_pairs = [t.split('=') for t in tags]
         else:
-            Write
-            arguments
-            must
-            be
-            supplied in ITEM = VALUE or ITEM
-            VALUE
-            format
-            '
+            print('Write arguments must be supplied in ITEM=VALUE or ITEM VALUE format')
             exit()
 
 if len(append) > 0:
     tags = [t + a for t in tags for a in append.split(',')]
 
-if property_ids != None:
+if property_ids is not None:
     try:
         property_ids = [int(p) for p in property_ids.split(',')]
     except ValueError:
-        Property
-        ids
-        must
-        be
-        numeric
-        '
+        print('Property ids must be numeric')
         exit()
 
 if action in ('read', 'write') and not pipe and len(tags) == 0:
@@ -470,32 +438,14 @@ signal.signal(signal.SIGTERM, sh)
 # ACTION: List active sessions in OpenOPC service
 
 if action == 'sessions':
-    % -38
-    s % -18
-    s % -18
-    s
-    ' % ('
-    Remote
-    Client
-    ', '
-    Start
-    Time
-    ', '
-    Last
-    Transaction
-    ')
-try:
-    for guid, host, init_time, tx_time in OpenOPC.get_sessions(open_host, open_port):
-        % -38
-        s % -18
-        s % -18
-        s
-        '  % (host, time2str(init_time), time2str(tx_time))
-except:
-    error_msg = sys.exc_info()[1]
-    print
-    "Cannot connect to OpenOPC service at %s:%s - %s" % (open_host, open_port, error_msg)
-exit()
+    print('  %-38s %-18s %-18s' % ('Remote Client', 'Start Time', 'Last Transaction'))
+    try:
+        for guid, host, init_time, tx_time in OpenOPC.get_sessions(open_host, open_port):
+            print('  %-38s %-18s %-18s' % (host, time2str(init_time), time2str(tx_time)))
+    except:
+        error_msg = sys.exc_info()[1]
+        print("Cannot connect to OpenOPC service at %s:%s - %s" % (open_host, open_port, error_msg))
+    exit()
 
 # Connect to OpenOPC service (Open mode)
 
@@ -504,8 +454,7 @@ if opc_mode == 'open':
         opc = OpenOPC.open_client(open_host, open_port)
     except:
         error_msg = sys.exc_info()[1]
-        print
-        "Cannot connect to OpenOPC Gateway Service at %s:%s - %s" % (open_host, open_port, error_msg)
+        print("Cannot connect to OpenOPC Gateway Service at %s:%s - %s" % (open_host, open_port, error_msg))
         exit()
 
 # Dispatch to COM class (DCOM mode)
@@ -513,9 +462,8 @@ if opc_mode == 'open':
 else:
     try:
         opc = OpenOPC.client(opc_class, client_name)
-    except OpenOPC.OPCError, error_msg:
-        print
-        "Failed to initialize an OPC Automation Class from the search list '%s' - %s" % (opc_class, error_msg)
+    except OpenOPC.OPCError as error_msg:
+        print("Failed to initialize an OPC Automation Class from the search list '%s' - %s" % (opc_class, error_msg))
         exit()
 
 # Connect to OPC server
@@ -523,10 +471,9 @@ else:
 if action not in ['servers'] and not health_only:
     try:
         opc.connect(opc_server, opc_host)
-    except OpenOPC.OPCError, error_msg:
+    except OpenOPC.OPCError as error_msg:
         if opc_mode == 'open': error_msg = error_msg[0]
-        print
-        "Connect to OPC server '%s' on '%s' failed - %s" % (opc_server, opc_host, error_msg)
+        print("Connect to OPC server '%s' on '%s' failed - %s" % (opc_server, opc_host, error_msg))
         exit()
 
 # Perform requested action...
@@ -543,10 +490,10 @@ if action == 'read':
         opc_read = opc.read
 
     if verbose:
-        def trace(msg): print
+        def trace(msg):
+            print(msg)
 
 
-        msg
         opc.set_trace(trace)
 
     success_count = 0
@@ -579,16 +526,18 @@ if action == 'read':
                                             include_error=include_err_msg),
                                    num_columns), style)
 
-        except OpenOPC.TimeoutError, error_msg:
-            if opc_mode == 'open': error_msg = error_msg[0]
-            print
-            error_msg
+        except OpenOPC.TimeoutError as error_msg:
+            if opc_mode == 'open':
+                error_msg = error_msg[0]
+            print(error_msg)
+
             success = False
 
-        except OpenOPC.OPCError, error_msg:
-            if opc_mode == 'open': error_msg = error_msg[0]
-            print
-            error_msg
+        except OpenOPC.OPCError as error_msg:
+            if opc_mode == 'open':
+                error_msg = error_msg[0]
+            print(error_msg)
+
             success = False
 
             if opc.ping():
@@ -596,17 +545,15 @@ if action == 'read':
             else:
                 com_connected = False
 
-        except (Pyro.errors.ConnectionClosedError, Pyro.errors.ProtocolError), error_msg:
-            Gateway
-            Service: % s
-            ' % error_msg
+        except (Pyro.errors.ConnectionClosedError, Pyro.errors.ProtocolError) as error_msg:
+            print('Gateway Service: %s' % error_msg)
             success = False
             pyro_connected = False
 
-        except TypeError, error_msg:
-            if opc_mode == 'open': error_msg = error_msg[0]
-            print
-            error_msg
+        except TypeError as error_msg:
+            if opc_mode == 'open':
+                error_msg = error_msg[0]
+            print(error_msg)
             break
 
         except IOError:
@@ -620,7 +567,7 @@ if action == 'read':
             success_count += len([s for s in status if s[2] != 'Error'])
             total_count += len(status)
 
-        if repeat_pause != None:
+        if repeat_pause is not None:
             try:
                 time.sleep(repeat_pause)
             except IOError:
@@ -629,18 +576,15 @@ if action == 'read':
             break
 
     if style == 'table' and num_columns == 0:
-        \nRead % d
-        of % d
-        items( % .2
-        f
-        seconds)' % (success_count, total_count, time.time() - start_time)
+        print()
+        '\nRead %d of %d items (%.2f seconds)' % (success_count, total_count, time.time() - start_time)
 
     try:
         opc.remove('test')
-    except OpenOPC.OPCError, error_msg:
+    except OpenOPC.OPCError as error_msg:
         if opc_mode == 'open': error_msg = error_msg[0]
-        print
-        error_msg
+        print(error_msg)
+
 
 # ACTION: Write Items
 
@@ -658,18 +602,15 @@ elif action == 'write':
                                          include_error=include_err_msg),
                                num_columns), style)
 
-    except OpenOPC.OPCError, error_msg:
-        if opc_mode == 'open': error_msg = error_msg[0]
-        print
-        error_msg
+    except OpenOPC.OPCError as error_msg:
+        if opc_mode == 'open':
+            error_msg = error_msg[0]
+        print(error_msg)
 
     if style == 'table' and num_columns == 0:
         success = len([s for s in status if s[1] != 'Error'])
-        \nWrote % d
-        of % d
-        items( % .2
-        f
-        seconds)' % (success, len(tag_value_pairs), time.time() - start_time)
+        print('\nWrote %d of %d items (%.2f seconds)' % (success, len(tag_value_pairs), time.time() - start_time)
+              )
 
 # ACTION: List Items (Tree Browser)
 
@@ -682,20 +623,22 @@ elif action == 'list':
 
     try:
         output(rotate(opc_list(tags, recursive=recursive), num_columns), style)
-    except OpenOPC.OPCError, error_msg:
-        if opc_mode == 'open': error_msg = error_msg[0]
-        print
-        error_msg
+    except OpenOPC.OPCError as error_msg:
+        if opc_mode == 'open':
+            error_msg = error_msg[0]
+        print(error_msg)
+
 
 # ACTION: List Items (Flat Browser)
 
 elif action == 'flat':
     try:
         output(opc.list(tags, flat=True), style)
-    except OpenOPC.OPCError, error_msg:
-        if opc_mode == 'open': error_msg = error_msg[0]
-        print
-        error_msg
+    except OpenOPC.OPCError as error_msg:
+        if opc_mode == 'open':
+            error_msg = error_msg[0]
+        print(error_msg)
+
 
 # ACTION: Item Properties
 
@@ -706,43 +649,44 @@ elif action == 'properties':
         opc_properties = opc.iproperties
         rotate = irotate
 
-    if property_ids != None:
+    if property_ids is not None:
         value_idx = 2
     else:
         value_idx = 3
 
     try:
         output(rotate(opc_properties(tags, property_ids), num_columns, value_idx), style, value_idx)
-    except OpenOPC.OPCError, error_msg:
-        if opc_mode == 'open': error_msg = error_msg[0]
-        print
-        error_msg
+    except OpenOPC.OPCError as error_msg:
+        if opc_mode == 'open':
+            error_msg = error_msg[0]
+        print(error_msg)
+
 
 # ACTION: Server Info
 
 elif action == 'info':
     try:
         output(rotate(opc.info(), num_columns), style)
-    except OpenOPC.OPCError, error_msg:
+    except OpenOPC.OPCError as error_msg:
         if opc_mode == 'open': error_msg = error_msg[0]
-        print
-        error_msg
+        print(error_msg)
+
 
 # ACTION: List Servers
 
 elif action == 'servers':
     try:
         output(rotate(opc.servers(opc_host), num_columns), style)
-    except OpenOPC.OPCError, error_msg:
-        if opc_mode == 'open': error_msg = error_msg[0]
-        print
-        "Error getting server list from '%s' - %s" % (opc_host, error_msg)
+    except OpenOPC.OPCError as error_msg:
+        if opc_mode == 'open':
+            error_msg = error_msg[0]
+        print("Error getting server list from '%s' - %s" % (opc_host, error_msg))
 
 # Disconnect from OPC Server
 
 try:
     opc.close()
-except OpenOPC.OPCError, error_msg:
-    if opc_mode == 'open': error_msg = error_msg[0]
-    print
-    error_msg
+except OpenOPC.OPCError as error_msg:
+    if opc_mode == 'open':
+        error_msg = error_msg[0]
+    print(error_msg)
