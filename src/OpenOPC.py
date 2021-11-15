@@ -546,7 +546,8 @@ class client():
                         if source != 'hybrid':
                             data_source = SOURCE_CACHE if source == 'cache' else SOURCE_DEVICE
 
-                        if self.trace: self.trace('AsyncRefresh(%s)' % data_source)
+                        if self.trace:
+                            self.trace('AsyncRefresh(%s)' % data_source)
 
                         try:
                             opc_group.AsyncRefresh(data_source, self._tx_id)
@@ -696,7 +697,7 @@ class client():
                     image_name = m.group(1)
                     value = SystemHealth.task_exists(image_name)
 
-            if value == None:
+            if value is None:
                 quality = 'Error'
             else:
                 quality = 'Good'
