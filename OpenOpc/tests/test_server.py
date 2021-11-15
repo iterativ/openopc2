@@ -2,15 +2,13 @@ from unittest import TestCase
 
 import pywintypes
 
-from OpenOpc.OpenOPC import client
-from OpenOpc.tests.opc_server_config import OPC_SERVER
+from OpenOpc.tests.opc_server_config import connect_opc_client
 
 pywintypes.datetime = pywintypes.TimeType
 
 class TestServerInfo(TestCase):
     def setUp(self) -> None:
-        self.opc_client = client()
-        self.opc_client.connect(OPC_SERVER)
+        self.opc_client = connect_opc_client()
 
     def test_get_server(self):
         available_servers = self.opc_client.servers()

@@ -2,16 +2,14 @@ from unittest import TestCase
 
 import pywintypes
 
-from OpenOpc.OpenOPC import client
-from OpenOpc.tests.opc_server_config import OPC_SERVER
+from OpenOpc.tests.opc_server_config import connect_opc_client
 
 pywintypes.datetime = pywintypes.TimeType
 
 
 class TestProperties(TestCase):
     def setUp(self) -> None:
-        self.opc_client = client()
-        self.opc_client.connect(OPC_SERVER)
+        self.opc_client = connect_opc_client()
         self.tags = self.opc_client.list(recursive=False, include_type=False, flat=True)
         self.no_system_tags = [tag for tag in self.tags if "@" not in tag]
 
