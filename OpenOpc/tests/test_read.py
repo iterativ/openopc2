@@ -1,7 +1,9 @@
 from unittest import TestCase
 
 from OpenOpc.tests.opc_server_config import connect_opc_client
+
 READ_TIMEOUT = 500
+
 
 class TestReadTags(TestCase):
     def setUp(self) -> None:
@@ -13,29 +15,28 @@ class TestReadTags(TestCase):
         """
         Not really a test but if it runs through it most datatypes work
         """
-        for tag in self.tags:
-            value = self.opc_client.read(tag, timeout=READ_TIMEOUT)
-            print(f"{tag} {value}")
+        values = [self.opc_client.read(tag, timeout=READ_TIMEOUT) for tag in self.tags]
+        print_values(values)
 
     def test_read_tags_list(self):
         values = self.opc_client.read(self.no_system_tags)
-        print(f"{values}")
+        print_values(values)
 
     def test_read_tags_list_sync(self):
-        values = self.opc_client.read(self.no_system_tags, sync=True, timeout=READ_TIMEOUT)
-        print(f"{values}")
+        values = self.opc_client.read(self.no_system_tags[0:10], sync=True, timeout=READ_TIMEOUT)
+        print_values(values)
 
     def test_read_tag_include_error(self):
-        values = self.opc_client.read(self.no_system_tags[0], include_error=True, timeout=READ_TIMEOUT)
-        print(f"{values}")
+        values = self.opc_client.read(self.no_system_tags[0:10], include_error=True, timeout=READ_TIMEOUT)
+        print_values(values)
 
     def test_read_tag_sync(self):
-        values = self.opc_client.read(self.no_system_tags[0], sync=True, timeout=READ_TIMEOUT)
-        print(f"{values}")
+        values = self.opc_client.read(self.no_system_tags[0:10], sync=True, timeout=READ_TIMEOUT)
+        print_values(values)
 
     def test_read_tags_list_include_error(self):
-        values = self.opc_client.read(self.no_system_tags, include_error=True, timeout=READ_TIMEOUT)
-        print(f"{values}")
+        values = self.opc_client.read(self.no_system_tags[0:10], include_error=True, timeout=READ_TIMEOUT)
+        print_values(values)
 
     def test_non_existent_tag(self):
         tag_name = "idont_exist"
@@ -51,7 +52,7 @@ class TestReadTags(TestCase):
 
         # values = self.opc_client.read(tag_names, include_error=True)
         # values = self.opc_client.read(tag_names, sync=True)
-        print(f"{values}")
+        print_values(values)
 
     def test_group_read(self):
         square_wave_tags = [tag for tag in self.tags if "square" in tag]
@@ -66,14 +67,18 @@ class TestReadTags(TestCase):
             '@CpuUsage'
         ]
         system_values = self.opc_client.read(system_tags)
-        for value in system_values:
-            print(value)
+        print_values(system_values)
 
     def test_sytem_tag_task_info(self):
         task_name = "python"
         task_info_tags = [f"@TaskMem({task_name})", f"@TaskCpu({task_name})", f"@TaskExists({task_name})"]
 
         system_values = self.opc_client.read(task_info_tags)
-        for value in system_values:
-            print(value)
+        print_values(system_values)
+
         self.assertTrue(system_values[0][1] > 1000)
+
+
+def print_values(values):
+    for value in values:
+        print(value)

@@ -1,0 +1,2 @@
+coverage==6.1.2
+pyinstaller==4.7

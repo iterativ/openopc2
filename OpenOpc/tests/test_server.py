@@ -2,9 +2,10 @@ from unittest import TestCase
 
 import pywintypes
 
-from OpenOpc.tests.opc_server_config import connect_opc_client
+from OpenOpc.tests.opc_server_config import connect_opc_client, USE_GATEWAY
 
 pywintypes.datetime = pywintypes.TimeType
+
 
 class TestServerInfo(TestCase):
     def setUp(self) -> None:
@@ -17,10 +18,17 @@ class TestServerInfo(TestCase):
 
     def test_get_info(self):
         info = self.opc_client.info()
-        self.assertEqual(info[0], ('Protocol', 'DCOM'))
-        self.assertEqual(info[1],  ('Class', 'OPC.Automation'))
-        self.assertEqual(info[2],  ('Client Name', 'OpenOPC'))
-        self.assertEqual(info[3][0], 'OPC Host')
+        if USE_GATEWAY:
+            self.assertEqual(info[0], ('Protocol', 'OpenOPC'))
+            self.assertEqual(info[1][0], 'Gateway Host')
+            self.assertEqual(info[2][0], 'Gateway Version')
+            self.assertEqual(info[3], ('Class', 'Matrikon.OPC.Automation'))
+
+        else:
+            self.assertEqual(info[0], ('Protocol', 'DCOM'))
+            self.assertEqual(info[1], ('Class', 'OPC.Automation'))
+            self.assertEqual(info[2], ('Client Name', 'OpenOPC'))
+            self.assertEqual(info[3][0], 'OPC Host')
 
     def test_close_connection(self):
         self.opc_client.close()

@@ -424,14 +424,15 @@ class client():
             results = []
 
             for gid in range(num_groups):
-                if gid > 0 and pause > 0: time.sleep(pause / 1000.0)
+                if gid > 0 and pause > 0:
+                    time.sleep(pause / 1000.0)
 
                 error_msgs = {}
                 opc_groups = self._opc.OPCGroups
                 opc_groups.DefaultGroupUpdateRate = update
 
                 # Anonymous group
-                if group == None:
+                if group is None:
                     try:
                         if self.trace: self.trace('AddGroup()')
                         opc_group = opc_groups.Add()
@@ -784,6 +785,7 @@ class client():
                 try:
                     errors = opc_items.Validate(len(names) - 1, names)
                 except:
+                    print(errors)
                     pass
 
                 n = 1
@@ -875,18 +877,9 @@ class client():
 
     def write(self, tag_value_pairs, size=None, pause=0, include_error=False):
         """Write list of (tag, value) pair(s) to the server"""
-
-        if type(tag_value_pairs) in (list, tuple) and type(tag_value_pairs[0]) in (list, tuple):
-            single = False
-        else:
-            single = True
-
-        status = self.iwrite(tag_value_pairs, size, pause, include_error)
-
-        if single:
-            return list(status)[0]
-        else:
-            return list(status)
+        single = type(tag_value_pairs) in (list, tuple) and type(tag_value_pairs[0]) in (list, tuple)
+        status = list(self.iwrite(tag_value_pairs, size, pause, include_error))
+        return status[0] if single else status
 
     def groups(self):
         """Return a list of active tag groups"""
@@ -1035,17 +1028,9 @@ class client():
     def properties(self, tags, id=None):
         """Return list of property tuples (id, name, value) for the specified tag(s) """
 
-        if type(tags) not in (list, tuple) and type(id) not in (type(None), list, tuple):
-            single = True
-        else:
-            single = False
-
-        props = self.iproperties(tags, id)
-
-        if single:
-            return list(props)[0]
-        else:
-            return list(props)
+        single = type(tags) not in (list, tuple) and type(id) not in (type(None), list, tuple)
+        props = list(self.iproperties(tags, id))
+        return props[0] if single else props
 
     def ilist(self, paths='*', recursive=False, flat=False, include_type=False):
         """Iterable version of list()"""

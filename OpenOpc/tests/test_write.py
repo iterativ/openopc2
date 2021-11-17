@@ -12,7 +12,7 @@ class TestWriteTags(TestCase):
 
     def test_write_all_tags_single_writes(self):
         """
-        Not really a test but if it runs through it most datatypes work
+        Not really a test but if it runs through  most datatypes work
         """
         for tag in self.tags:
             old_value = self.opc_client.read(tag)[0]
@@ -35,7 +35,7 @@ class TestWriteTags(TestCase):
 
     def test_write_all_tags_single_writes_include_error(self):
         """
-        Not really a test but if it runs through it most datatypes work
+        Not really a test but if it runs through  most datatypes work
         """
         for tag in self.tags:
             old_value = self.opc_client.read(tag)[0]
@@ -58,5 +58,5 @@ class TestWriteTags(TestCase):
                 # write = self.opc_client.write((tag, old_value))
 
     def test_write_tags_list(self):
-        values = self.opc_client.write(list(zip([self.no_system_tags[4], self.no_system_tags[5]],  [1, 10])))
+        values = self.opc_client.write(list(zip([self.no_system_tags[4], self.no_system_tags[5]], [1, 10])))
         print(f"{values}")

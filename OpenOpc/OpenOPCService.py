@@ -20,6 +20,7 @@ import win32event
 import win32service
 import win32serviceutil
 import winerror
+import winreg
 
 import OpenOPC
 
@@ -41,9 +42,9 @@ opc_gate_port = int(os.environ['OPC_GATE_PORT'])
 def getvar(env_var):
     """Read system environment variable from registry"""
     try:
-        key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,
-                              'SYSTEM\\CurrentControlSet\\Control\Session Manager\Environment', 0, _winreg.KEY_READ)
-        value, valuetype = _winreg.QueryValueEx(key, env_var)
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
+                              'SYSTEM\\CurrentControlSet\\Control\Session Manager\Environment', 0, winreg.KEY_READ)
+        value, valuetype = winreg.QueryValueEx(key, env_var)
         return value
     except Exception as e:
         print(e)
