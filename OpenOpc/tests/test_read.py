@@ -38,21 +38,38 @@ class TestReadTags(TestCase):
         values = self.opc_client.read(self.no_system_tags[0:10], include_error=True, timeout=READ_TIMEOUT)
         print_values(values)
 
-    def test_non_existent_tag(self):
-        tag_name = "idont_exist"
-        values = self.opc_client.read(tag_name)
+    def test_non_existent_tag_error(self):
+        value = self.opc_client.read("idont_exist", include_error=True)
+        self.assertEqual(value, (None, 'Error', None, "The item ID does not conform to the server's syntax. "))
 
-        # values = self.opc_client.read(tag_name, include_error=True)
-        # values = self.opc_client.read(tag_name, sync=True)
-        print(f"{values}")
+    def test_non_existent_tag(self):
+        value = self.opc_client.read("idont_exist")
+        self.assertEqual(value, (None, 'Error', None))
+
+    def test_non_existent_tag_sync(self):
+        value = self.opc_client.read("idont_exist", sync=True)
+        self.assertEqual(value, (None, 'Error', None))
 
     def test_non_existent_tags(self):
-        tag_names = ["idont_exist", "test"]
-        values = self.opc_client.read(tag_names, timeout=READ_TIMEOUT)
+        values = self.opc_client.read(["idont_exist", "test", 'Bucket Brigade.Int1'], timeout=READ_TIMEOUT)
+        self.assertEqual(values[0], ("idont_exist", None, 'Error', None))
+        self.assertEqual(values[1], ("test", None, 'Error', None))
+        self.assertEqual(values[2][0], "Bucket Brigade.Int1")
+        self.assertEqual(values[2][2],  'Good')
 
-        # values = self.opc_client.read(tag_names, include_error=True)
-        # values = self.opc_client.read(tag_names, sync=True)
-        print_values(values)
+    def test_non_existent_tags_error(self):
+        values = self.opc_client.read(["idont_exist", "test", 'Bucket Brigade.Int1'], timeout=READ_TIMEOUT, include_error=True)
+        self.assertEqual(values[0], ("idont_exist", None, 'Error', None,  "The item ID does not conform to the server's syntax. "))
+        self.assertEqual(values[1], ("test", None, 'Error', None,  "The item ID does not conform to the server's syntax. "))
+        self.assertEqual(values[2][0], "Bucket Brigade.Int1")
+        self.assertEqual(values[2][2], 'Good')
+
+    def test_non_existent_tags_sync(self):
+        values = self.opc_client.read(["idont_exist", "test", 'Bucket Brigade.Int1'], timeout=READ_TIMEOUT, sync=True)
+        self.assertEqual(values[0], ("idont_exist", None, 'Error', None))
+        self.assertEqual(values[1], ("test", None, 'Error', None))
+        self.assertEqual(values[2][0], "Bucket Brigade.Int1")
+        self.assertEqual(values[2][2], 'Good')
 
     def test_group_read(self):
         square_wave_tags = [tag for tag in self.tags if "square" in tag]
