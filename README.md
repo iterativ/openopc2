@@ -1,4 +1,4 @@
-# OpenOPC for Python 1.2.0
+# OpenOPC for Python
 
 
 ## Project Description

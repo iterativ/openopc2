@@ -2,3 +2,4 @@ Pyro4==4.81
 pywin32==302
 serpent==1.40
 WMI==1.5.1
+colorama==0.4.4

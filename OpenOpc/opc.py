@@ -18,7 +18,7 @@ import os
 import types
 import datetime
 import re, time, csv
-import OpenOPC
+from OpenOpc.OpenOPC import OPC_CLASS, client, OPC_SERVER, OPC_CLIENT, win32com_found, OPCError, open_client, TimeoutError, get_sessions
 
 try:
     import Pyro
@@ -38,10 +38,10 @@ if os.name == 'nt':
 else:
     opc_mode = 'open'
 
-opc_class = OpenOPC.OPC_CLASS
-client_name = OpenOPC.OPC_CLIENT
+opc_class = OPC_CLASS
+client_name = OPC_CLIENT
 opc_host = 'localhost'
-opc_server = OpenOPC.OPC_SERVER
+opc_server = OPC_SERVER
 open_host = 'localhost'
 open_port = 7766
 
@@ -332,7 +332,7 @@ if opc_mode not in ('open', 'dcom'):
     print("'%s' is not a valid protocol mode (options: dcom, open)" % opc_mode)
     exit()
 
-if opc_mode == 'dcom' and not OpenOPC.win32com_found:
+if opc_mode == 'dcom' and not win32com_found:
     print("win32com modules required when using DCOM protocol mode (http://pywin32.sourceforge.net/)")
     exit()
 
@@ -440,7 +440,7 @@ signal.signal(signal.SIGTERM, sh)
 if action == 'sessions':
     print('  %-38s %-18s %-18s' % ('Remote Client', 'Start Time', 'Last Transaction'))
     try:
-        for guid, host, init_time, tx_time in OpenOPC.get_sessions(open_host, open_port):
+        for guid, host, init_time, tx_time in get_sessions(open_host, open_port):
             print('  %-38s %-18s %-18s' % (host, time2str(init_time), time2str(tx_time)))
     except:
         error_msg = sys.exc_info()[1]
@@ -451,7 +451,7 @@ if action == 'sessions':
 
 if opc_mode == 'open':
     try:
-        opc = OpenOPC.open_client(open_host, open_port)
+        opc = open_client(open_host, open_port)
     except:
         error_msg = sys.exc_info()[1]
         print("Cannot connect to OpenOPC Gateway Service at %s:%s - %s" % (open_host, open_port, error_msg))
@@ -461,8 +461,8 @@ if opc_mode == 'open':
 
 else:
     try:
-        opc = OpenOPC.client(opc_class, client_name)
-    except OpenOPC.OPCError as error_msg:
+        opc = client(opc_class, client_name)
+    except OPCError as error_msg:
         print("Failed to initialize an OPC Automation Class from the search list '%s' - %s" % (opc_class, error_msg))
         exit()
 
@@ -471,7 +471,7 @@ else:
 if action not in ['servers'] and not health_only:
     try:
         opc.connect(opc_server, opc_host)
-    except OpenOPC.OPCError as error_msg:
+    except OPCError as error_msg:
         if opc_mode == 'open': error_msg = error_msg[0]
         print("Connect to OPC server '%s' on '%s' failed - %s" % (opc_server, opc_host, error_msg))
         exit()
@@ -505,7 +505,7 @@ if action == 'read':
 
         try:
             if not pyro_connected:
-                opc = OpenOPC.open_client(open_host, open_port)
+                opc = open_client(open_host, open_port)
                 opc.connect(opc_server, opc_host)
                 opc_read = opc.read
                 pyro_connected = True
@@ -526,14 +526,14 @@ if action == 'read':
                                             include_error=include_err_msg),
                                    num_columns), style)
 
-        except OpenOPC.TimeoutError as error_msg:
+        except TimeoutError as error_msg:
             if opc_mode == 'open':
                 error_msg = error_msg[0]
             print(error_msg)
 
             success = False
 
-        except OpenOPC.OPCError as error_msg:
+        except OPCError as error_msg:
             if opc_mode == 'open':
                 error_msg = error_msg[0]
             print(error_msg)
@@ -581,7 +581,7 @@ if action == 'read':
 
     try:
         opc.remove('test')
-    except OpenOPC.OPCError as error_msg:
+    except OPCError as error_msg:
         if opc_mode == 'open': error_msg = error_msg[0]
         print(error_msg)
 
@@ -602,7 +602,7 @@ elif action == 'write':
                                          include_error=include_err_msg),
                                num_columns), style)
 
-    except OpenOPC.OPCError as error_msg:
+    except OPCError as error_msg:
         if opc_mode == 'open':
             error_msg = error_msg[0]
         print(error_msg)
@@ -623,7 +623,7 @@ elif action == 'list':
 
     try:
         output(rotate(opc_list(tags, recursive=recursive), num_columns), style)
-    except OpenOPC.OPCError as error_msg:
+    except OPCError as error_msg:
         if opc_mode == 'open':
             error_msg = error_msg[0]
         print(error_msg)
@@ -634,7 +634,7 @@ elif action == 'list':
 elif action == 'flat':
     try:
         output(opc.list(tags, flat=True), style)
-    except OpenOPC.OPCError as error_msg:
+    except OPCError as error_msg:
         if opc_mode == 'open':
             error_msg = error_msg[0]
         print(error_msg)
@@ -656,7 +656,7 @@ elif action == 'properties':
 
     try:
         output(rotate(opc_properties(tags, property_ids), num_columns, value_idx), style, value_idx)
-    except OpenOPC.OPCError as error_msg:
+    except OPCError as error_msg:
         if opc_mode == 'open':
             error_msg = error_msg[0]
         print(error_msg)
@@ -667,7 +667,7 @@ elif action == 'properties':
 elif action == 'info':
     try:
         output(rotate(opc.info(), num_columns), style)
-    except OpenOPC.OPCError as error_msg:
+    except OPCError as error_msg:
         if opc_mode == 'open': error_msg = error_msg[0]
         print(error_msg)
 
@@ -677,7 +677,7 @@ elif action == 'info':
 elif action == 'servers':
     try:
         output(rotate(opc.servers(opc_host), num_columns), style)
-    except OpenOPC.OPCError as error_msg:
+    except OPCError as error_msg:
         if opc_mode == 'open':
             error_msg = error_msg[0]
         print("Error getting server list from '%s' - %s" % (opc_host, error_msg))
@@ -686,7 +686,7 @@ elif action == 'servers':
 
 try:
     opc.close()
-except OpenOPC.OPCError as error_msg:
+except OPCError as error_msg:
     if opc_mode == 'open':
         error_msg = error_msg[0]
     print(error_msg)
