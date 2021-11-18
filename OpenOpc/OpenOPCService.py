@@ -22,19 +22,13 @@ import win32serviceutil
 import winerror
 import winreg
 
-import OpenOPC
+from OpenOpc.OpenOPC import OPC_CLASS, client
+import Pyro4.core
 
-try:
-    import Pyro4.core
-    # import Pyro4.protocol
-except ImportError:
-    print('Pyro4 module required (https://pypi.python.org/pypi/Pyro4)')
-    exit()
 
 Pyro4.config.SERVERTYPE = 'thread'
 # Pyro4.config.SERIALIZER='marshal'
 
-opc_class = OpenOPC.OPC_CLASS
 opc_gate_host = os.environ['OPC_GATE_HOST']
 opc_gate_port = int(os.environ['OPC_GATE_PORT'])
 
@@ -81,7 +75,7 @@ class opc(object):
     def create_client(self):
         """Create a new OpenOPC instance in the Pyro server"""
 
-        opc_obj = OpenOPC.client(opc_class)
+        opc_obj = client(OPC_CLASS)
         uri = self._pyroDaemon.register(opc_obj)
 
         uuid = uri.asString()
@@ -151,9 +145,11 @@ if __name__ == '__main__':
             if details.winerror == winerror.ERROR_FAILED_SERVICE_CONTROLLER_CONNECT:
                 win32serviceutil.usage()
                 print(' --foreground: Run OpenOPCService in foreground.')
+            print(details)
 
     else:
         if sys.argv[1] == '--foreground':
+            print('Starting OpenOPC Service in the foreground')
             daemon = Pyro4.core.Daemon(host=opc_gate_host, port=opc_gate_port)
             daemon.register(opc(), 'opc')
 
