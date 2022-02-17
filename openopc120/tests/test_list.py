@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from OpenOpc.tests.opc_server_config import connect_opc_client
+from opc_server_config import connect_opc_client
 
 
 class TestListTags(TestCase):

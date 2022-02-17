@@ -9,13 +9,11 @@ import win32process
 
 __version__ = '1.0.1'
 
-# NT4 does not have WMI by default
 try:
     import wmi
-except:
-    wmi_found = False
-else:
     wmi_found = True
+except ImportError:
+    wmi_found = False
 
 
 class CPU:
@@ -87,7 +85,7 @@ def mem_used():
         hc = win32pdh.AddCounter(hq, path)
         try:
             win32pdh.CollectQueryData(hq)
-            type, val = win32pdh.GetFormattedCounterValue(hc, format)
+            type_name, val = win32pdh.GetFormattedCounterValue(hc, format)
             return int(val / 1024)
         except pywintypes.error:
             return 0

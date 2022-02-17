@@ -22,7 +22,7 @@ import win32serviceutil
 import winerror
 import winreg
 
-from OpenOpc.OpenOPC import OPC_CLASS, client
+from openopc120.OpenOPC import OPC_CLASS, client
 import Pyro4.core
 
 

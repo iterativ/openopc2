@@ -1,6 +1,6 @@
 from unittest import TestCase, skipIf
 
-from OpenOpc.OpenOPC import open_client
+from openopc120.OpenOPC import open_client
 from opc_server_config import OPC_HOST, OPC_SERVER, USE_GATEWAY
 
 

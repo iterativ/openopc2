@@ -1,3 +1,4 @@
-pyinstaller --onefile --hidden-import=json --hidden-import=win32timezone ./OpenOpc/OpenOpcService.py
-#pyinstaller --onefile ./OpenOpc/opc.py
+pyinstaller --onefile --hidden-import=json --hidden-import=win32timezone ./openopc120/OpenOpcService.py
+pyinstaller --onefile --hidden-import=json --hidden-import=win32timezone ./openopc120/opc.py
+
 

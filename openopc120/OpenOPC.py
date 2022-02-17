@@ -30,7 +30,7 @@ if os.name == 'nt':
         import win32event
         import pythoncom
         import pywintypes
-        import OpenOpc.SystemHealth as SystemHealth
+        import SystemHealth as SystemHealth
 
         # Win32 variant types
         pywintypes.datetime = pywintypes.TimeType
@@ -183,6 +183,12 @@ class client():
 
         for i, c in enumerate(opc_class_list):
             try:
+                '''
+                Openopc service has a memory lead,or causes socket exhaustion, the number of handles gets bigger and bigger.
+                Therefore check... i think the objects do not get closed correctly
+                
+                https: // stackoverflow.com / questions / 22623123 / interaction - between - open - and -dispatched - excel - processes - win32com
+                '''
                 self._opc = win32com.client.gencache.EnsureDispatch(c, 0)
                 self.opc_class = c
                 break
@@ -434,7 +440,8 @@ class client():
                 # Anonymous group
                 if group is None:
                     try:
-                        if self.trace: self.trace('AddGroup()')
+                        if self.trace:
+                            self.trace('AddGroup()')
                         opc_group = opc_groups.Add()
                     except pythoncom.com_error as err:
                         error_msg = 'AddGroup: %s' % self._get_error_str(err)
