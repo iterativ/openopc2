@@ -18,6 +18,22 @@ from multiprocessing import Queue
 
 import Pyro4.core
 
+
+# OPC Constants
+from OpcCom import OpcCom
+from exceptions import TimeoutError, OPCError
+
+SOURCE_CACHE = 1
+SOURCE_DEVICE = 2
+OPC_STATUS = (0, 'Running', 'Failed', 'NoConfig', 'Suspended', 'Test')
+BROWSER_TYPE = (0, 'Hierarchical', 'Flat')
+ACCESS_RIGHTS = (0, 'Read', 'Write', 'Read/Write')
+OPC_QUALITY = ('Bad', 'Uncertain', 'Unknown', 'Good')
+OPC_CLASS = 'Matrikon.OPC.Automation;Graybox.OPC.DAWrapper;HSCOPC.Automation;RSI.OPCAutomation;OPC.Automation'
+OPC_SERVER = 'Hci.TPNServer;HwHsc.OPCServer;opc.deltav.1;AIM.OPC.1;Yokogawa.ExaopcDAEXQ.1;OSI.DA.1;OPC.PHDServerDA.1;Aspen.Infoplus21_DA.1;National Instruments.OPCLabVIEW;RSLinx OPC Server;KEPware.KEPServerEx.V4;Matrikon.OPC.Simulation;Prosys.OPC.Simulation;CCOPC.XMLWrapper.1;OPC.SimaticHMI.CoRtHmiRTm.1'
+OPC_CLIENT = 'OpenOPC'
+
+
 __version__ = '2.0'
 
 current_client = None
@@ -52,17 +68,6 @@ if os.name == 'nt':
 else:
     win32com_found = False
 
-# OPC Constants
-
-SOURCE_CACHE = 1
-SOURCE_DEVICE = 2
-OPC_STATUS = (0, 'Running', 'Failed', 'NoConfig', 'Suspended', 'Test')
-BROWSER_TYPE = (0, 'Hierarchical', 'Flat')
-ACCESS_RIGHTS = (0, 'Read', 'Write', 'Read/Write')
-OPC_QUALITY = ('Bad', 'Uncertain', 'Unknown', 'Good')
-OPC_CLASS = 'Matrikon.OPC.Automation;Graybox.OPC.DAWrapper;HSCOPC.Automation;RSI.OPCAutomation;OPC.Automation'
-OPC_SERVER = 'Hci.TPNServer;HwHsc.OPCServer;opc.deltav.1;AIM.OPC.1;Yokogawa.ExaopcDAEXQ.1;OSI.DA.1;OPC.PHDServerDA.1;Aspen.Infoplus21_DA.1;National Instruments.OPCLabVIEW;RSLinx OPC Server;KEPware.KEPServerEx.V4;Matrikon.OPC.Simulation;Prosys.OPC.Simulation;CCOPC.XMLWrapper.1;OPC.SimaticHMI.CoRtHmiRTm.1'
-OPC_CLIENT = 'OpenOPC'
 
 
 def quality_str(quality_bits):
@@ -142,20 +147,6 @@ def open_client(host='localhost', port=7766):
     return server_obj.create_client()
 
 
-@Pyro4.expose
-class TimeoutError(Exception):
-    def __init__(self, txt):
-        Exception.__init__(self, txt)
-
-    __dict__ = None
-
-
-@Pyro4.expose
-class OPCError(Exception):
-    def __init__(self, txt):
-        Exception.__init__(self, txt)
-
-
 class GroupEvents:
     def __init__(self):
         self.client = current_client
@@ -166,42 +157,14 @@ class GroupEvents:
 
 @Pyro4.expose  # needed for 4.55+
 class client():
-    def __init__(self, opc_class=None, client_name=None):
+    def __init__(self, opc_server, client_name=None):
         """Instantiate OPC automation class"""
-
-        self.callback_queue = Queue()
-
-        pythoncom.CoInitialize()
-
-        if opc_class is None:
-            if 'OPC_CLASS' in os.environ:
-                opc_class = os.environ['OPC_CLASS']
-            else:
-                opc_class = OPC_CLASS
-
-        opc_class_list = opc_class.split(';')
-
-        for i, c in enumerate(opc_class_list):
-            try:
-                '''
-                Openopc service has a memory lead,or causes socket exhaustion, the number of handles gets bigger and bigger.
-                Therefore check... i think the objects do not get closed correctly
-                
-                https: // stackoverflow.com / questions / 22623123 / interaction - between - open - and -dispatched - excel - processes - win32com
-                '''
-                self._opc = win32com.client.gencache.EnsureDispatch(c, 0)
-                self.opc_class = c
-                break
-            except pythoncom.com_error as err:
-                if i == len(opc_class_list) - 1:
-                    error_msg = 'Dispatch: %s' % self._get_error_str(err)
-                    raise OPCError(error_msg)
-
-        self._event = win32event.CreateEvent(None, 0, 0, None)
 
         self.opc_server = None
         self.opc_host = None
         self.client_name = client_name
+        self.connected = False
+        self._opc: OpcCom = OpcCom(opc_server)
         self._groups = {}
         self._group_tags = {}
         self._group_valid_tags = {}
@@ -218,15 +181,14 @@ class client():
         self.trace = None
         self.cpu = None
 
+        self.callback_queue = Queue()
+        self._event = win32event.CreateEvent(None, 0, 0, None)
+
     def set_trace(self, trace):
         if self._open_serv is None:
             self.trace = trace
 
-    def connect(self, opc_server=None, opc_host='localhost'):
-        """Connect to the specified OPC server"""
-
-        pythoncom.CoInitialize()
-
+    def __get_opc_servers(self, opc_server):
         if opc_server is None:
             # Initial connect using environment vars
             if self.opc_server is None:
@@ -238,44 +200,22 @@ class client():
             else:
                 opc_server = self.opc_server
                 opc_host = self.opc_host
-
         opc_server_list = opc_server.split(';')
-        connected = False
+        return opc_server_list
 
-        for s in opc_server_list:
-            try:
-                if self.trace: self.trace('Connect(%s,%s)' % (s, opc_host))
-                self._opc.Connect(s, opc_host)
-            except pythoncom.com_error as err:
-                if len(opc_server_list) == 1:
-                    error_msg = 'Connect: %s' % self._get_error_str(err)
-                    raise OPCError(error_msg)
-            else:
-                # Set client name since some OPC servers use it for security
-                try:
-                    if self.client_name is None:
-                        if 'OPC_CLIENT' in os.environ:
-                            self._opc.ClientName = os.environ['OPC_CLIENT']
-                        else:
-                            self._opc.ClientName = OPC_CLIENT
-                    else:
-                        self._opc.ClientName = self.client_name
-                except:
-                    pass
-                connected = True
-                break
-
-        if not connected:
-            raise OPCError('Connect: Cannot connect to any of the servers in the OPC_SERVER list')
+    def connect(self, opc_server=None, opc_host='localhost'):
+        """Connect to the specified OPC server"""
+        opc_server_list = self.__get_opc_servers(opc_server)
+        self._opc.connect(opc_server, opc_host)
+        self._opc.client_name = self.client_name if self.client_name is None else os.environ.get('OPC_CLIENT', OPC_CLIENT)
+        self.connected = True
 
         # With some OPC servers, the next OPC call immediately after Connect()
         # will occationally fail.  Sleeping for 1/100 second seems to fix this.
         time.sleep(0.01)
 
         self.opc_server = opc_server
-        if opc_host == 'localhost':
-            opc_host = socket.gethostname()
-        self.opc_host = opc_host
+        self.opc_host = socket.gethostname() if opc_host == 'localhost' else opc_host
 
         # On reconnect we need to remove the old group names from OpenOPC's internal
         # cache since they are now invalid
@@ -305,7 +245,7 @@ class client():
 
         finally:
             if self.trace: self.trace('Disconnect()')
-            self._opc.Disconnect()
+            self._opc.disconnect()
 
             # Remove this object from the open gateway service
             if self._open_serv and del_object:
@@ -386,10 +326,10 @@ class client():
             return valid_tags, server_handles
 
         def remove_items(tags):
-            if self.trace: self.trace('RemoveItems(%s)' % tags2trace([''] + tags))
+            if self.trace:
+                self.trace('RemoveItems(%s)' % tags2trace([''] + tags))
             server_handles = [self._group_server_handles[sub_group][tag] for tag in tags]
             server_handles.insert(0, 0)
-            errors = []
 
             try:
                 errors = opc_items.Remove(len(server_handles) - 1, server_handles)
@@ -399,7 +339,7 @@ class client():
 
         try:
             self._update_tx_time()
-            pythoncom.CoInitialize()
+
 
             if include_error:
                 sync = True
@@ -434,7 +374,7 @@ class client():
                     time.sleep(pause / 1000.0)
 
                 error_msgs = {}
-                opc_groups = self._opc.OPCGroups
+                opc_groups = self._opc.groups()
                 opc_groups.DefaultGroupUpdateRate = update
 
                 # Anonymous group
@@ -660,10 +600,8 @@ class client():
         else:
             results = self.iread(tags, group, size, pause, source, update, timeout, sync, include_error, rebuild)
 
-        if single:
-            return list(results)[0]
-        else:
-            return list(results)
+        return list(results)[0] if single else list(results)
+
 
     def _read_health(self, tags):
         """Return values of special system health monitoring tags"""
@@ -731,7 +669,7 @@ class client():
 
         try:
             self._update_tx_time()
-            pythoncom.CoInitialize()
+
 
             def _valid_pair(p):
                 if type(p) in (list, tuple) and len(p) >= 2 and type(p[0]) in (str, bytes):
@@ -778,7 +716,7 @@ class client():
             for gid in range(num_groups):
                 if gid > 0 and pause > 0: time.sleep(pause / 1000.0)
 
-                opc_groups = self._opc.OPCGroups
+                opc_groups = self._opc.groups()
                 opc_group = opc_groups.Add()
                 opc_items = opc_group.OPCItems
 
@@ -896,8 +834,8 @@ class client():
         """Remove the specified tag group(s)"""
 
         try:
-            pythoncom.CoInitialize()
-            opc_groups = self._opc.OPCGroups
+
+            opc_groups = self._opc.groups()
 
             if type(groups) in (str, bytes):
                 groups = [groups]
@@ -938,7 +876,7 @@ class client():
 
         try:
             self._update_tx_time()
-            pythoncom.CoInitialize()
+
 
             tags, single_tag, valid = type_check(tags)
             if not valid:
@@ -972,7 +910,7 @@ class client():
                 if id is None:
                     descriptions = []
                     property_id = []
-                    count, property_id, descriptions, datatypes = list(self._opc.QueryAvailableProperties(tag))
+                    count, property_id, descriptions, datatypes =self._opc.get_properties(tag)
 
                     # TODO: Remove bogus negative property id (not sure why this sometimes happens)
                     tag_properties = list(zip(property_id, descriptions))
@@ -1044,7 +982,7 @@ class client():
 
         try:
             self._update_tx_time()
-            pythoncom.CoInitialize()
+
 
             try:
                 browser = self._opc.CreateBrowser()
@@ -1152,8 +1090,8 @@ class client():
         """Return list of available OPC servers"""
 
         try:
-            pythoncom.CoInitialize()
-            servers = self._opc.GetOPCServers(opc_host)
+
+            servers = self._opc.get_opc_servers(opc_host)
             servers = [s for s in servers if s != None]
             return servers
 
@@ -1166,7 +1104,6 @@ class client():
 
         try:
             self._update_tx_time()
-            pythoncom.CoInitialize()
 
             info_list = []
 
@@ -1181,23 +1118,23 @@ class client():
                 info_list += [('Gateway Host', '%s:%s' % (self._open_host, self._open_port))]
                 info_list += [('Gateway Version', '%s' % __version__)]
             info_list += [('Class', self.opc_class)]
-            info_list += [('Client Name', self._opc.ClientName)]
+            info_list += [('Client Name', self._opc.client_name)]
             info_list += [('OPC Host', self.opc_host)]
-            info_list += [('OPC Server', self._opc.ServerName)]
-            info_list += [('State', OPC_STATUS[self._opc.ServerState])]
+            info_list += [('OPC Server', self._opc.server_name())]
+            info_list += [('State', OPC_STATUS[self._opc.server_state])]
             info_list += [('Version', '%d.%d (Build %d)' % (
-                self._opc.MajorVersion, self._opc.MinorVersion, self._opc.BuildNumber))]
+                self._opc.major_version, self._opc.minor_version, self._opc.build_number))]
 
             try:
-                browser = self._opc.CreateBrowser()
+                browser = self._opc.create_browser()
                 browser_type = BROWSER_TYPE[browser.Organization]
             except:
                 browser_type = 'Not Supported'
 
             info_list += [('Browser', browser_type)]
-            info_list += [('Start Time', str(self._opc.StartTime))]
-            info_list += [('Current Time', str(self._opc.CurrentTime))]
-            info_list += [('Vendor', self._opc.VendorInfo)]
+            info_list += [('Start Time', str(self._opc.start_time))]
+            info_list += [('Current Time', str(self._opc.current_time))]
+            info_list += [('Vendor', self._opc.vendor_info)]
 
             return info_list
 

@@ -21,8 +21,8 @@ import datetime
 import re, time, csv
 import Pyro4
 
-from OpenOPC import OPC_CLASS, client, OPC_CLIENT, OPCError, open_client, TimeoutError, \
-    get_sessions, OPC_SERVER
+from OpenOPC import OPC_CLASS, client, OPC_CLIENT, open_client, get_sessions, OPC_SERVER
+from exceptions import TimeoutError, OPCError
 
 
 class Style:
