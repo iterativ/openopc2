@@ -157,14 +157,14 @@ class GroupEvents:
 
 @Pyro4.expose  # needed for 4.55+
 class client():
-    def __init__(self, opc_server, client_name=None):
+    def __init__(self, opc_class, client_name="OpenOPC2"):
         """Instantiate OPC automation class"""
 
         self.opc_server = None
         self.opc_host = None
         self.client_name = client_name
         self.connected = False
-        self._opc: OpcCom = OpcCom(opc_server)
+        self._opc: OpcCom = OpcCom(opc_class)
         self._groups = {}
         self._group_tags = {}
         self._group_valid_tags = {}
@@ -206,7 +206,7 @@ class client():
     def connect(self, opc_server=None, opc_host='localhost'):
         """Connect to the specified OPC server"""
         opc_server_list = self.__get_opc_servers(opc_server)
-        self._opc.connect(opc_server, opc_host)
+        self._opc.connect(opc_host, opc_server)
         self._opc.client_name = self.client_name if self.client_name is None else os.environ.get('OPC_CLIENT', OPC_CLIENT)
         self.connected = True
 
@@ -374,7 +374,7 @@ class client():
                     time.sleep(pause / 1000.0)
 
                 error_msgs = {}
-                opc_groups = self._opc.groups()
+                opc_groups = self._opc.groups
                 opc_groups.DefaultGroupUpdateRate = update
 
                 # Anonymous group
@@ -716,7 +716,7 @@ class client():
             for gid in range(num_groups):
                 if gid > 0 and pause > 0: time.sleep(pause / 1000.0)
 
-                opc_groups = self._opc.groups()
+                opc_groups = self._opc.groups
                 opc_group = opc_groups.Add()
                 opc_items = opc_group.OPCItems
 
@@ -835,7 +835,7 @@ class client():
 
         try:
 
-            opc_groups = self._opc.groups()
+            opc_groups = self._opc.groups
 
             if type(groups) in (str, bytes):
                 groups = [groups]
@@ -919,7 +919,9 @@ class client():
 
                 property_id.insert(0, 0)
 
-                values, errors = self._opc.GetItemProperties(tag, len(property_id) - 1, property_id)
+                values, errors = self._opc.get_properties(tag)
+
+               # /, len(property_id) - 1, property_id)
 
                 property_id.pop(0)
                 values = [str(v) if type(v) == pywintypes.TimeType else v for v in values]
@@ -983,11 +985,12 @@ class client():
         try:
             self._update_tx_time()
 
-
             try:
-                browser = self._opc.CreateBrowser()
+                browser = self._opc.create_browser()
+
             # For OPC servers that don't support browsing
             except:
+                print("This Server does not support Browsing")
                 return
 
             paths, single, valid = type_check(paths)
@@ -1117,10 +1120,10 @@ class client():
             if mode == 'OpenOPC':
                 info_list += [('Gateway Host', '%s:%s' % (self._open_host, self._open_port))]
                 info_list += [('Gateway Version', '%s' % __version__)]
-            info_list += [('Class', self.opc_class)]
+            info_list += [('Class', self._opc.opc_class)]
             info_list += [('Client Name', self._opc.client_name)]
             info_list += [('OPC Host', self.opc_host)]
-            info_list += [('OPC Server', self._opc.server_name())]
+            info_list += [('OPC Server', self._opc.server_name)]
             info_list += [('State', OPC_STATUS[self._opc.server_state])]
             info_list += [('Version', '%d.%d (Build %d)' % (
                 self._opc.major_version, self._opc.minor_version, self._opc.build_number))]
@@ -1146,7 +1149,7 @@ class client():
         """Check if we are still talking to the OPC server"""
         try:
             # Convert OPC server time to milliseconds
-            opc_serv_time = int(float(self._opc.CurrentTime.timestamp()) * 1000)
+            opc_serv_time = int(float(self._opc.current_time.timestamp()) * 1000)
             if opc_serv_time == self._prev_serv_time:
                 return False
             else:
