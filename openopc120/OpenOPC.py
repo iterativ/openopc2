@@ -27,8 +27,7 @@ SOURCE_CACHE = 1
 SOURCE_DEVICE = 2
 OPC_STATUS = (0, 'Running', 'Failed', 'NoConfig', 'Suspended', 'Test')
 BROWSER_TYPE = (0, 'Hierarchical', 'Flat')
-ACCESS_RIGHTS = (0, 'Read', 'Write', 'Read/Write')
-OPC_QUALITY = ('Bad', 'Uncertain', 'Unknown', 'Good')
+
 OPC_CLASS = 'Matrikon.OPC.Automation;Graybox.OPC.DAWrapper;HSCOPC.Automation;RSI.OPCAutomation;OPC.Automation'
 OPC_SERVER = 'Hci.TPNServer;HwHsc.OPCServer;opc.deltav.1;AIM.OPC.1;Yokogawa.ExaopcDAEXQ.1;OSI.DA.1;OPC.PHDServerDA.1;Aspen.Infoplus21_DA.1;National Instruments.OPCLabVIEW;RSLinx OPC Server;KEPware.KEPServerEx.V4;Matrikon.OPC.Simulation;Prosys.OPC.Simulation;CCOPC.XMLWrapper.1;OPC.SimaticHMI.CoRtHmiRTm.1'
 OPC_CLIENT = 'OpenOPC'
@@ -70,29 +69,18 @@ else:
 
 
 
-def quality_str(quality_bits):
-    """Convert OPC quality bits to a descriptive string"""
 
-    quality = (quality_bits >> 6) & 3
-    return OPC_QUALITY[quality]
 
 
 def type_check(tags):
     """Perform a type check on a list of tags"""
 
-    if type(tags) in (list, tuple):
-        single = False
-    elif tags == None:
-        tags = []
-        single = False
-    else:
-        tags = [tags]
-        single = True
+    single = type(tags) not in (list, tuple)
+    tags = tags if tags else []
 
-    if len([t for t in tags if type(t) not in (str, bytes)]) == 0:
-        valid = True
-    else:
-        valid = False
+    tags = [tags] if single else tags
+
+    valid = len([t for t in tags if type(t) not in (str, bytes)]) == 0
 
     return tags, single, valid
 
@@ -244,7 +232,8 @@ class client():
             pass
 
         finally:
-            if self.trace: self.trace('Disconnect()')
+            if self.trace:
+                self.trace('Disconnect()')
             self._opc.disconnect()
 
             # Remove this object from the open gateway service
@@ -537,7 +526,7 @@ class client():
                             value = tag_value[tag]
                             if type(value) == pywintypes.TimeType:
                                 value = str(value)
-                            quality = quality_str(tag_quality[tag])
+                            quality = OpcCom.get_quality_string(tag_quality[tag])
                             timestamp = str(tag_time[tag])
                         else:
                             value = None
@@ -908,9 +897,8 @@ class client():
             for tag in tags:
 
                 if id is None:
-                    descriptions = []
-                    property_id = []
-                    count, property_id, descriptions, datatypes =self._opc.get_properties(tag)
+
+                    count, property_id, descriptions, datatypes = list(self._opc.get_available_properties(tag))
 
                     # TODO: Remove bogus negative property id (not sure why this sometimes happens)
                     tag_properties = list(zip(property_id, descriptions))
@@ -919,33 +907,7 @@ class client():
 
                 property_id.insert(0, 0)
 
-                values, errors = self._opc.get_properties(tag)
-
-               # /, len(property_id) - 1, property_id)
-
-                property_id.pop(0)
-                values = [str(v) if type(v) == pywintypes.TimeType else v for v in values]
-
-                # Replace variant id with type strings
-                try:
-                    i = property_id.index(1)
-                    values[i] = vt[values[i]]
-                except:
-                    pass
-
-                # Replace quality bits with quality strings
-                try:
-                    i = property_id.index(3)
-                    values[i] = quality_str(values[i])
-                except:
-                    pass
-
-                # Replace access rights bits with strings
-                try:
-                    i = property_id.index(5)
-                    values[i] = ACCESS_RIGHTS[values[i]]
-                except:
-                    pass
+                values, errors = self._opc.get_tag_properties(tag, property_id)
 
                 # TODO: Refactor the following lines
                 if id is not None:
