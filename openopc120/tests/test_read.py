@@ -108,9 +108,9 @@ class TestReadTags(TestCase):
         self.assertEqual(values[2][2], 'Good')
 
     def test_group_read(self):
-        square_wave_tags = [tag for tag in self.tags if "square" in tag]
+        square_wave_tags = [tag for tag in self.tags if "Square" in tag]
         values = self.opc_client.read(square_wave_tags, group="square_group", timeout=READ_TIMEOUT)
-        values_group = self.opc_client.read(group='square_group')
+        values_group = self.opc_client.read(square_wave_tags, group='square_group')
         self.assertEqual(len(values_group), len(values))
         self.assertEqual(values_group, values)
 

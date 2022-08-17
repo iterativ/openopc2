@@ -20,7 +20,7 @@ import Pyro4.core
 
 
 # OPC Constants
-from OpcCom import OpcCom
+from Opc_Da import OpcCom
 from exceptions import TimeoutError, OPCError
 
 SOURCE_CACHE = 1
@@ -276,7 +276,7 @@ class client():
                     self._group_handles_tag[sub_group][n] = tag
                     n += 1
                 elif include_error:
-                    error_msgs[tag] = self._opc.GetErrorString(errors[i])
+                    error_msgs[tag] = self._opc.get_error_string(errors[i])
 
                 if self.trace and errors[i] != 0:
                     self.trace('%s failed validation' % tag)
@@ -533,7 +533,7 @@ class client():
                             quality = 'Error'
                             timestamp = None
                         if include_error:
-                            error_msgs[tag] = self._opc.GetErrorString(tag_error[tag]).strip('\r\n')
+                            error_msgs[tag] = self._opc.get_error_string(tag_error[tag]).strip('\r\n')
                     else:
                         value = None
                         quality = 'Error'
@@ -783,7 +783,7 @@ class client():
                             status = 'Success'
                         else:
                             status = 'Error'
-                        if include_error:  error_msgs[tag] = self._opc.GetErrorString(errors[n])
+                        if include_error:  error_msgs[tag] = self._opc.get_error_string(errors[n])
                         n += 1
                     else:
                         status = 'Error'
@@ -959,7 +959,8 @@ class client():
             if not valid:
                 raise TypeError("list(): 'paths' parameter must be a string or a list of strings")
 
-            if len(paths) == 0: paths = ['*']
+            if len(paths) == 0:
+                paths = ['*']
             nodes = {}
 
             for path in paths:
@@ -1035,10 +1036,13 @@ class client():
                     if not lowest_level and recursive:
                         queue += [path_str + x + path_postfix for x in matches]
                     else:
-                        if lowest_level:  matches = [exceptional(browser.GetItemID, x)(x) for x in matches]
-                        if include_type:  matches = [(x, node_type) for x in matches]
+                        if lowest_level:
+                            matches = [exceptional(browser.GetItemID, x)(x) for x in matches]
+                        if include_type:
+                            matches = [(x, node_type) for x in matches]
                         for node in matches:
-                            if not node in nodes: yield node
+                            if not node in nodes:
+                                yield node
                             nodes[node] = True
 
         except pythoncom.com_error as err:

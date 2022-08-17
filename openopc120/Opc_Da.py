@@ -2,12 +2,15 @@ import string
 
 import pythoncom
 import win32com.client
+import logging
 import os
 from exceptions import OPCError
 from pythoncom_datatypes import VtType
 from dataclasses import dataclass
+from enum import Enum
+from collections import namedtuple
 
-
+logger = logging.getLogger(__name__)
 
 # Win32 only modules not needed for 'open' protocol mode
 if os.name == 'nt':
@@ -55,14 +58,35 @@ class TagProperty:
     eu_info = None
     description = None
 
-    # from collections import namedtuple
-    # TagProperty = namedtuple('TagProperty', [
-    #     'DataType', 'Value', 'Quality', 'Timestamp', 'AccessRights', 'ServerScanRate', 'ItemEUType', 'ItemEUInfo',
-    #     'Description'])
+tag_property_fields = [
+     'DataType', 'Value', 'Quality', 'Timestamp', 'AccessRights', 'ServerScanRate', 'ItemEUType', 'ItemEUInfo',
+     'Description']
+TagPropertyNames = namedtuple('TagProperty',tag_property_fields, defaults=[None]*len(tag_property_fields))
+
+class TagPropertyId(Enum):
+    ItemCanonicalDatatype = 1
+    ItemValue = 2
+    ItemQuality = 3
+    ItemTimeStamp = 4
+    ItemAccessRights = 5
+    ServerScanRate = 6
+    ItemEUType = 7
+    ItemEUInfo = 8
+    ItemDescription = 101
+
+    @classmethod
+    def all_ids(cls):
+        return [e.value for e in cls]
+
+    @classmethod
+    def all_names(cls):
+        return [e.name for e in cls]
+
 
 
 class OpcCom:
     def __init__(self, opc_class: str):
+        # TODO: Get browser type (hierarchical etc)
         self.server: string = None
         self.host: string = 'localhost'
         self.groups = None
@@ -105,6 +129,17 @@ class OpcCom:
         self.current_time = self.opc_client.CurrentTime
         self.vendor_info = self.opc_client.VendorInfo
 
+        # for key in dir(self.opc_client):
+        #     method = getattr(self.opc_client, key)
+        #     print(key)
+        #     if str(type(method)) == "<type 'instance'>":
+        #         print(key)
+        #         for sub_method in dir(method):
+        #             if not sub_method.startswith("_") and not "clsid" in sub_method.lower():
+        #                 print("\t" + sub_method)
+        #     else:
+        #         print("\t", method)
+
     def create_browser(self):
         return self.opc_client.CreateBrowser()
 
@@ -121,22 +156,43 @@ class OpcCom:
         (count, property_id, descriptions, datatypes) = list(self.opc_client.QueryAvailableProperties(tag))
         return count, property_id, descriptions, datatypes
 
-    def get_tag_properties(self, tag, property_ids):
-        properties_raw, errors = self.opc_client.GetItemProperties(tag, len(property_ids) - 1, property_ids)
-
-        properties = TagProperty(*properties_raw)
-
-        values = []
-
-        # Replace variant id with type strings
-        # Replace quality bits with quality strings
-        # Replace access rights bits with strings
-        properties = properties._replace(DataType=self.get_vt_type(property_ids.index(1)),
-                                         Quality=self.get_quality_string(property_ids.index(3)),
-                                        AccessRights=ACCESS_RIGHTS[properties.AccessRights])
+    def get_tag_properties(self, tag, property_ids=TagPropertyId.all_ids()):
+        # TODO: Find out if it makes any difference to request selected properties (so far there is no benefit)
 
 
-        return properties, errors
+        property_ids_checked = [e.value for e in property_ids] if type(property_ids[0]) == TagPropertyId else property_ids
+
+        if any(p not in TagPropertyId.all_ids() for p in property_ids_checked):
+            logger.error(f"Invalid property id found. requested ids 0 {property_ids_checked} on tag: {tag}")
+            property_ids_checked = [i for i in property_ids_checked if i in TagPropertyId.all_ids()]
+
+        properties_raw, errors = self.opc_client.GetItemProperties(tag, len(property_ids_checked) - 1, property_ids_checked)
+
+        # try:
+        #     properties = TagPropertyNames(*properties_raw)
+        # except:
+        #     pass
+        #
+        #
+        # values = []
+        #
+        # # Replace variant id with type strings
+        # # Replace quality bits with quality string§s
+        # # Replace access rights bits with strings
+        # if properties.AccessRights:
+        #     properties = properties._replace(AccessRights=ACCESS_RIGHTS[properties.AccessRights])
+        #
+        # if properties.DataType:
+        #     properties = properties._replace(DataType=self.get_vt_type(property_ids.index(1)))
+        #
+        # if properties.Quality:
+        #     properties = properties._replace( Quality=self.get_quality_string(property_ids.index(3)))
+        #
+        # return properties, errors
+
+    def get_error_string(self, error_id:int):
+        return self.opc_client.GetErrorString(error_id)
+
 
     def __str__(self):
         return f"OPCCom Object: {self.host} {self.server} {self.minor_version}.{self.major_version}"

@@ -194,7 +194,7 @@ class OpcCli:
 
         opc_mode = 'dcom' if os.name == 'nt' else 'open'
 
-        self.opc_client = client()
+        self.opc_client = client(OPC_CLASS)
         self.action = None
         self.style = Style.TABLE
         self.append = ''
