@@ -18,10 +18,9 @@ from multiprocessing import Queue
 
 import Pyro4.core
 
-
 # OPC Constants
-from Opc_Da import OpcCom
-from exceptions import TimeoutError, OPCError
+from openopc120.Opc_Da import OpcCom
+from openopc120.exceptions import TimeoutError, OPCError
 
 SOURCE_CACHE = 1
 SOURCE_DEVICE = 2
@@ -31,7 +30,6 @@ BROWSER_TYPE = (0, 'Hierarchical', 'Flat')
 OPC_CLASS = 'Matrikon.OPC.Automation;Graybox.OPC.DAWrapper;HSCOPC.Automation;RSI.OPCAutomation;OPC.Automation'
 OPC_SERVER = 'Hci.TPNServer;HwHsc.OPCServer;opc.deltav.1;AIM.OPC.1;Yokogawa.ExaopcDAEXQ.1;OSI.DA.1;OPC.PHDServerDA.1;Aspen.Infoplus21_DA.1;National Instruments.OPCLabVIEW;RSLinx OPC Server;KEPware.KEPServerEx.V4;Matrikon.OPC.Simulation;Prosys.OPC.Simulation;CCOPC.XMLWrapper.1;OPC.SimaticHMI.CoRtHmiRTm.1'
 OPC_CLIENT = 'OpenOPC'
-
 
 __version__ = '2.0'
 
@@ -66,10 +64,6 @@ if os.name == 'nt':
         win32com_found = True
 else:
     win32com_found = False
-
-
-
-
 
 
 def type_check(tags):
@@ -195,7 +189,8 @@ class client():
         """Connect to the specified OPC server"""
         opc_server_list = self.__get_opc_servers(opc_server)
         self._opc.connect(opc_host, opc_server)
-        self._opc.client_name = self.client_name if self.client_name is None else os.environ.get('OPC_CLIENT', OPC_CLIENT)
+        self._opc.client_name = self.client_name if self.client_name is None else os.environ.get('OPC_CLIENT',
+                                                                                                 OPC_CLIENT)
         self.connected = True
 
         # With some OPC servers, the next OPC call immediately after Connect()
@@ -328,7 +323,6 @@ class client():
 
         try:
             self._update_tx_time()
-
 
             if include_error:
                 sync = True
@@ -591,7 +585,6 @@ class client():
 
         return list(results)[0] if single else list(results)
 
-
     def _read_health(self, tags):
         """Return values of special system health monitoring tags"""
 
@@ -658,7 +651,6 @@ class client():
 
         try:
             self._update_tx_time()
-
 
             def _valid_pair(p):
                 if type(p) in (list, tuple) and len(p) >= 2 and type(p[0]) in (str, bytes):
@@ -866,7 +858,6 @@ class client():
         try:
             self._update_tx_time()
 
-
             tags, single_tag, valid = type_check(tags)
             if not valid:
                 raise TypeError("properties(): 'tags' parameter must be a string or a list of strings")
@@ -897,7 +888,6 @@ class client():
             for tag in tags:
 
                 if id is None:
-
                     count, property_id, descriptions, datatypes = list(self._opc.get_available_properties(tag))
 
                     # TODO: Remove bogus negative property id (not sure why this sometimes happens)
