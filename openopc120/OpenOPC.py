@@ -852,7 +852,7 @@ class client():
             error_msg = 'remove: %s' % self._get_error_str(err)
             raise OPCError(error_msg)
 
-    def iproperties(self, tags, id=None):
+    def iproperties(self, tags, property_ids: list=[]):
         """Iterable version of properties()"""
 
         try:
@@ -862,61 +862,8 @@ class client():
             if not valid:
                 raise TypeError("properties(): 'tags' parameter must be a string or a list of strings")
 
-            try:
-                id.remove(0)
-                include_name = True
-            except:
-                include_name = False
-
-            if id is not None:
-                descriptions = []
-
-                if isinstance(id, list) or isinstance(id, tuple):
-                    property_id = list(id)
-                    single_property = False
-                else:
-                    property_id = [id]
-                    single_property = True
-
-                for i in property_id:
-                    descriptions.append('Property id %d' % i)
-            else:
-                single_property = False
-
-            properties = []
-
             for tag in tags:
-
-                if id is None:
-                    count, property_id, descriptions, datatypes = list(self._opc.get_available_properties(tag))
-
-                    # TODO: Remove bogus negative property id (not sure why this sometimes happens)
-                    tag_properties = list(zip(property_id, descriptions))
-                    property_id = [p for p, d in tag_properties if p > 0]
-                    descriptions = [d for p, d in tag_properties if p > 0]
-
-                property_id.insert(0, 0)
-
-                values, errors = self._opc.get_tag_properties(tag, property_id)
-
-                # TODO: Refactor the following lines
-                if id is not None:
-                    if single_property:
-                        if single_tag:
-                            tag_properties = values
-                        else:
-                            tag_properties = [values]
-                    else:
-                        tag_properties = list(zip(property_id, values))
-                else:
-                    tag_properties = list(zip(property_id, descriptions, values))
-                    tag_properties.insert(0, (0, 'Item ID (virtual property)', tag))
-
-                if include_name:
-                    tag_properties.insert(0, (0, tag))
-                if not single_tag:
-                    tag_properties = [tuple([tag] + list(p)) for p in tag_properties]
-
+                tag_properties, errors = self._opc.get_tag_properties(tag, property_ids)
                 for p in tag_properties:
                     yield p
 

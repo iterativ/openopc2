@@ -5,7 +5,6 @@ from openopc120.Opc_Da import OpcCom, TagPropertyId
 from opc_server_config import OPC_HOST, OPC_SERVER, USE_GATEWAY, OPC_CLASS
 
 TAG = 'Bucket Brigade.Int1'
-TAG = 'controllers.AC800PECController.AccessVariables.PNL_SL_50_CmdOpenQB1'
 
 class TestOpenOpcCom(TestCase):
     def setUp(self):
@@ -49,6 +48,7 @@ class TestOpenOpcCom(TestCase):
     def test_get_all_tag_properties(self):
         start = time.time()
         for i in range(100):
+            print(TAG)
             properties = self.opccom.get_tag_properties(TAG)
         print(f"all {time.time() - start}")
 

@@ -58,4 +58,4 @@ class VtType(IntEnum):
 
     @classmethod
     def _missing_(cls, value):
-        return str(value)
+        return cls.VT_BSTR

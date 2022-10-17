@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 # Win32 only modules not needed for 'open' protocol mode
 if os.name == 'nt':
     try:
+        # TODO: chose bewtween pywin pythoncom and wind32 but do not use both
         import pythoncom
         from pythoncom_datatypes import VtType
 
@@ -41,8 +42,26 @@ if os.name == 'nt':
 else:
     win32com_found = False
 
+# class ACCESS_RIGHTS(Enum):
+#     0: '0'
+#     1: 'Read'
+#     2: 'Write'
+#     3: 'Read/Write'
+
+
 ACCESS_RIGHTS = (0, 'Read', 'Write', 'Read/Write')
 OPC_QUALITY = ('Bad', 'Uncertain', 'Unknown', 'Good')
+
+
+@dataclass
+class TagPropertyItem:
+    data_type = None
+    value = None
+    description = None
+    property_id = None
+
+    def get_default_tuple(self):
+        return self.property_id, self.description, self.value
 
 
 @dataclass
@@ -56,6 +75,9 @@ class TagProperty:
     eu_type = None
     eu_info = None
     description = None
+
+    def get_default_tuple(self):
+        return self.property_id, self.description, self.value
 
 
 tag_property_fields = [
@@ -77,11 +99,11 @@ class TagPropertyId(Enum):
 
     @classmethod
     def all_ids(cls):
-        return [e.value for e in cls]
+        return [property_id.value for property_id in cls]
 
     @classmethod
     def all_names(cls):
-        return [e.name for e in cls]
+        return [property_id.name for property_id in cls]
 
 
 class OpcCom:
@@ -156,40 +178,77 @@ class OpcCom:
         (count, property_id, descriptions, datatypes) = list(self.opc_client.QueryAvailableProperties(tag))
         return count, property_id, descriptions, datatypes
 
-    def get_tag_properties(self, tag, property_ids=TagPropertyId.all_ids()):
+    def _property_value_conversion(self, description, input_value):
+        value = input_value
+
+        if description == 'Item Canonical DataType':
+            value = VtType(value).name
+        if description == 'Item Timestamp':
+            value = str(value)
+        if description == 'Item Access Rights':
+            value = ACCESS_RIGHTS[value]
+        if description == 'Item Quality':
+            if value > 3:
+                value = 3
+            value = OPC_QUALITY[value]
+
+        return value
+
+    def get_tag_properties(self, tag, property_ids=[]):
         # TODO: Find out if it makes any difference to request selected properties (so far there is no benefit)
+        property_ids_filter = property_ids
 
-        property_ids_checked = [e.value for e in property_ids] if type(
-            property_ids[0]) == TagPropertyId else property_ids
 
-        if any(p not in TagPropertyId.all_ids() for p in property_ids_checked):
-            logger.error(f"Invalid property id found. requested ids 0 {property_ids_checked} on tag: {tag}")
-            property_ids_checked = [i for i in property_ids_checked if i in TagPropertyId.all_ids()]
+        count, property_ids, descriptions, datatypes = self.get_available_properties(tag)
+        available_properies_by_id = {}
+        for result in zip(property_ids, descriptions, datatypes ):
+            available_properies_by_id[result[0]] = {
+                'property_id': result[0],
+                'description': result[1],
+                'data_type': result[2]
+            }
 
-        properties_raw, errors = self.opc_client.GetItemProperties(tag, len(property_ids_checked) - 1,
-                                                                   property_ids_checked)
+        property_ids_cleaned = [p for p in property_ids if p > 0]
+        if property_ids_filter:
+            property_ids_cleaned = [p for p in property_ids if p in property_ids_filter]
+            # I assume this is nevessary due to 1 indexed arrays in windows
+            property_ids_cleaned.insert(0, 0)
 
-        # try:
-        #     properties = TagPropertyNames(*properties_raw)
-        # except:
-        #     pass
-        #
-        #
-        # values = []
-        #
-        # # Replace variant id with type strings
-        # # Replace quality bits with quality string§s
-        # # Replace access rights bits with strings
-        # if properties.AccessRights:
-        #     properties = properties._replace(AccessRights=ACCESS_RIGHTS[properties.AccessRights])
-        #
-        # if properties.DataType:
-        #     properties = properties._replace(DataType=self.get_vt_type(property_ids.index(1)))
-        #
-        # if properties.Quality:
-        #     properties = properties._replace( Quality=self.get_quality_string(property_ids.index(3)))
-        #
-        # return properties, errors
+
+        item_properties_values, errors = self.opc_client.GetItemProperties(tag, len(property_ids_cleaned)-1,
+                                                                           property_ids_cleaned)
+
+        if property_ids_filter:
+            property_ids_cleaned.remove(0)
+
+        # Create tag property item in a readable form. One item is one propeterty, there are many properties for one tag
+        properties_by_description = {}
+
+        if not property_ids_filter:
+            # Add first property for compatibility
+            tag_property_item = TagPropertyItem()
+            tag_property_item.property_id = 0
+            tag_property_item.description = 'Item ID (virtual property)'
+            tag_property_item.value = tag
+
+            properties_by_description[tag_property_item.description] = tag_property_item
+            item_properties_values = list(item_properties_values)
+            item_properties_values.insert(0, 0)
+
+
+        for property_result in zip(property_ids_cleaned, item_properties_values ):
+            tag_property_item = TagPropertyItem()
+            property = available_properies_by_id[property_result[0]]
+            tag_property_item.data_type = VtType(property['data_type']).name
+            tag_property_item.property_id = property['property_id']
+            tag_property_item.description = property['description']
+            tag_property_item.value = self._property_value_conversion(tag_property_item.description,  property_result[1])
+
+            properties_by_description[tag_property_item.description] = tag_property_item
+
+        return [tag_property.get_default_tuple() for tag_property in properties_by_description.values()], errors
+
+
 
     def get_error_string(self, error_id: int):
         return self.opc_client.GetErrorString(error_id)
