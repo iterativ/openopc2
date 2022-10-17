@@ -1,11 +1,8 @@
 import string
 
-import pythoncom
-import win32com.client
 import logging
 import os
-from exceptions import OPCError
-from pythoncom_datatypes import VtType
+from openopc120.exceptions import OPCError
 from dataclasses import dataclass
 from enum import Enum
 from collections import namedtuple
@@ -15,6 +12,9 @@ logger = logging.getLogger(__name__)
 # Win32 only modules not needed for 'open' protocol mode
 if os.name == 'nt':
     try:
+        import pythoncom
+        from pythoncom_datatypes import VtType
+
         import win32com.client
         import win32com.server.util
         import win32event
@@ -41,7 +41,6 @@ if os.name == 'nt':
 else:
     win32com_found = False
 
-
 ACCESS_RIGHTS = (0, 'Read', 'Write', 'Read/Write')
 OPC_QUALITY = ('Bad', 'Uncertain', 'Unknown', 'Good')
 
@@ -58,10 +57,12 @@ class TagProperty:
     eu_info = None
     description = None
 
+
 tag_property_fields = [
-     'DataType', 'Value', 'Quality', 'Timestamp', 'AccessRights', 'ServerScanRate', 'ItemEUType', 'ItemEUInfo',
-     'Description']
-TagPropertyNames = namedtuple('TagProperty',tag_property_fields, defaults=[None]*len(tag_property_fields))
+    'DataType', 'Value', 'Quality', 'Timestamp', 'AccessRights', 'ServerScanRate', 'ItemEUType', 'ItemEUInfo',
+    'Description']
+TagPropertyNames = namedtuple('TagProperty', tag_property_fields, defaults=[None] * len(tag_property_fields))
+
 
 class TagPropertyId(Enum):
     ItemCanonicalDatatype = 1
@@ -81,7 +82,6 @@ class TagPropertyId(Enum):
     @classmethod
     def all_names(cls):
         return [e.name for e in cls]
-
 
 
 class OpcCom:
@@ -159,14 +159,15 @@ class OpcCom:
     def get_tag_properties(self, tag, property_ids=TagPropertyId.all_ids()):
         # TODO: Find out if it makes any difference to request selected properties (so far there is no benefit)
 
-
-        property_ids_checked = [e.value for e in property_ids] if type(property_ids[0]) == TagPropertyId else property_ids
+        property_ids_checked = [e.value for e in property_ids] if type(
+            property_ids[0]) == TagPropertyId else property_ids
 
         if any(p not in TagPropertyId.all_ids() for p in property_ids_checked):
             logger.error(f"Invalid property id found. requested ids 0 {property_ids_checked} on tag: {tag}")
             property_ids_checked = [i for i in property_ids_checked if i in TagPropertyId.all_ids()]
 
-        properties_raw, errors = self.opc_client.GetItemProperties(tag, len(property_ids_checked) - 1, property_ids_checked)
+        properties_raw, errors = self.opc_client.GetItemProperties(tag, len(property_ids_checked) - 1,
+                                                                   property_ids_checked)
 
         # try:
         #     properties = TagPropertyNames(*properties_raw)
@@ -190,9 +191,8 @@ class OpcCom:
         #
         # return properties, errors
 
-    def get_error_string(self, error_id:int):
+    def get_error_string(self, error_id: int):
         return self.opc_client.GetErrorString(error_id)
-
 
     def __str__(self):
         return f"OPCCom Object: {self.host} {self.server} {self.minor_version}.{self.major_version}"
@@ -207,7 +207,3 @@ class OpcCom:
     @staticmethod
     def get_vt_type(datatype_number: int):
         return VtType(datatype_number).name
-
-
-
-
