@@ -20,7 +20,7 @@ import Pyro4.core
 
 # OPC Constants
 from openopc120.Opc_Da import OpcCom
-from openopc120.exceptions import TimeoutError, OPCError
+from openopc120.exceptions import OPCError
 
 SOURCE_CACHE = 1
 SOURCE_DEVICE = 2
@@ -42,8 +42,8 @@ if os.name == 'nt':
         import win32com.server.util
         import win32event
         import pythoncom
-        import pywintypes
-        import SystemHealth as SystemHealth
+        import openopc120.pywintypes as pywintypes
+        import openopc120.SystemHealth as SystemHealth
 
         # Win32 variant types
         pywintypes.datetime = pywintypes.TimeType

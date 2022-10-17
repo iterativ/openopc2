@@ -22,9 +22,9 @@ import win32serviceutil
 import winerror
 import winreg
 
-from openopc120.OpenOPC import OPC_CLASS, client
 import Pyro4.core
 
+from openopc120.OpenOPC import client, OPC_CLIENT, OPC_CLASS
 
 Pyro4.config.SERVERTYPE = 'thread'
 # Pyro4.config.SERIALIZER='marshal'

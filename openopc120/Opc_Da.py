@@ -2,10 +2,11 @@ import string
 
 import logging
 import os
-from openopc120.exceptions import OPCError
 from dataclasses import dataclass
 from enum import Enum
 from collections import namedtuple
+
+from openopc120.exceptions import OPCError
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +14,6 @@ logger = logging.getLogger(__name__)
 if os.name == 'nt':
     try:
         # TODO: chose bewtween pywin pythoncom and wind32 but do not use both
-        import pythoncom
         from pythoncom_datatypes import VtType
 
         import win32com.client
@@ -131,7 +131,6 @@ class OpcCom:
             self.opc_client = win32com.client.gencache.EnsureDispatch(opc_class, 0)
         except pythoncom.com_error as err:
             # TODO: potential memory leak, destroy pythoncom
-            print(opc_class)
             pythoncom.CoUninitialize()
             raise OPCError(f'Dispatch: {err}')
 
