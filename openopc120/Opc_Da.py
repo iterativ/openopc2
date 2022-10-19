@@ -7,6 +7,9 @@ from enum import Enum
 from collections import namedtuple
 
 from openopc120.exceptions import OPCError
+import pythoncom
+import pywintypes
+from openopc120.pythoncom_datatypes import VtType
 
 logger = logging.getLogger(__name__)
 
@@ -14,13 +17,12 @@ logger = logging.getLogger(__name__)
 if os.name == 'nt':
     try:
         # TODO: chose bewtween pywin pythoncom and wind32 but do not use both
-        from pythoncom_datatypes import VtType
 
         import win32com.client
         import win32com.server.util
         import win32event
-        import pythoncom
-        import pywintypes
+        # import pythoncom
+        # import pywintypes
         import SystemHealth as SystemHealth
 
         # Win32 variant types

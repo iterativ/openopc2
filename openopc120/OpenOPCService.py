@@ -27,10 +27,13 @@ import Pyro4.core
 from openopc120.OpenOPC import client, OPC_CLIENT, OPC_CLASS
 
 Pyro4.config.SERVERTYPE = 'thread'
+Pyro4.config.SERIALIZER = 'pickle'
 # Pyro4.config.SERIALIZER='marshal'
 
 opc_gate_host = os.environ['OPC_GATE_HOST']
 opc_gate_port = int(os.environ['OPC_GATE_PORT'])
+print(opc_gate_host)
+print(opc_gate_port)
 
 
 def getvar(env_var):
@@ -91,7 +94,7 @@ class opc(object):
         #            self._remote_hosts[uuid] = '%s (%s)' % (remote_ip, remote_name)
         #        except socket.herror:
         #            self._remote_hosts[uuid] = '%s' % (remote_ip)
-        self._remote_hosts[uuid] = '%s' % (remote_ip)
+        self._remote_hosts[uuid] = str(remote_ip)
         self._init_times[uuid] = time.time()
         self._tx_times[uuid] = time.time()
         return Pyro4.Proxy(uri)
