@@ -10,7 +10,11 @@ from openopc120.exceptions import OPCError
 
 from openopc120.pythoncom_datatypes import VtType
 
+from openopc120.pythoncom_datatypes import VtType
+import pythoncom
 logger = logging.getLogger(__name__)
+
+import pywintypes
 
 # Win32 only modules not needed for 'open' protocol mode
 if os.name == 'nt':
@@ -120,10 +124,12 @@ class OpcCom:
 
     def initialize_client(self, opc_class):
         try:
+            print(f"Initialize OPC DA client: '{opc_class}'")
             pythoncom.CoInitialize()
             self.opc_client = win32com.client.gencache.EnsureDispatch(opc_class, 0)
         except pythoncom.com_error as err:
             # TODO: potential memory leak, destroy pythoncom
+            logger.exception(exc_info=True)
             logger.exception('Error in initialize client')
             pythoncom.CoUninitialize()
             raise OPCError(f'Dispatch: {err}')
@@ -131,8 +137,14 @@ class OpcCom:
     def connect(self, host: str, server: str):
         self.server = server
         self.host = host
+        try:
+            print(f"Connectiong OPC Client Com interface: {self.server}, {self.host}")
+            self.opc_client.Connect(self.server, self.host)
+        except Exception as e:
+            print(f"Error Connecting OPC Client Com interface: {self.server}, {self.host}")
 
-        self.opc_client.Connect(self.server, self.host)
+            logger.exception('Error connecting OPC Client', exc_info=True)
+            pass
         self.groups = self.opc_client.OPCGroups
         self.client_name = self.opc_client.ClientName
         self.server_name = self.opc_client.ServerName

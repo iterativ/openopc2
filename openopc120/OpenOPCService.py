@@ -33,6 +33,7 @@ Pyro4.config.SERVERTYPE = 'thread'
 
 OPC_GATE_HOST = os.environ['OPC_GATE_HOST']
 OPC_GATE_PORT = int(os.environ['OPC_GATE_PORT'])
+OPC_CLASS =  "OPC.Automation"
 
 @Pyro4.expose  # needed for version 4.55+
 class opc(object):

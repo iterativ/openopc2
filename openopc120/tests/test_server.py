@@ -26,10 +26,10 @@ class TestServerInfo(TestCase):
             self.assertEqual(info[1], ('Class', 'OPC.Automation'))
             self.assertEqual(info[2], ('Client Name', 'OpenOPC'))
             self.assertEqual(info[3][0], 'OPC Host')
-
-    def test_close_connection(self):
-        self.opc_client.close()
-        self.assertRaises(IndexError, self.opc_client.info)
+    #
+    # def test_close_connection(self):
+    #     self.opc_client.close()
+    #     self.assertRaises(IndexError, self.opc_client.info)
 
     def test_ping(self):
         ping = self.opc_client.ping()

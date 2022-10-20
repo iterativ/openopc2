@@ -459,6 +459,7 @@ class OpcCli:
 
     def cli_connect(self):
         try:
+            print(self.opc_server, self.opc_host)
             self.opc_client.connect(self.opc_server, self.opc_host)
         except OPCError as error_msg:
             if self.opc_mode == 'open':

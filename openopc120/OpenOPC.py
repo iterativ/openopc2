@@ -31,7 +31,7 @@ SOURCE_DEVICE = 2
 OPC_STATUS = (0, 'Running', 'Failed', 'NoConfig', 'Suspended', 'Test')
 BROWSER_TYPE = (0, 'Hierarchical', 'Flat')
 
-OPC_CLASS = 'Matrikon.OPC.Automation;Graybox.OPC.DAWrapper;HSCOPC.Automation;RSI.OPCAutomation;OPC.Automation'
+OPC_CLASS = 'OPC.Automation'
 OPC_SERVER = 'Hci.TPNServer;HwHsc.OPCServer;opc.deltav.1;AIM.OPC.1;Yokogawa.ExaopcDAEXQ.1;OSI.DA.1;OPC.PHDServerDA.1;Aspen.Infoplus21_DA.1;National Instruments.OPCLabVIEW;RSLinx OPC Server;KEPware.KEPServerEx.V4;Matrikon.OPC.Simulation;Prosys.OPC.Simulation;CCOPC.XMLWrapper.1;OPC.SimaticHMI.CoRtHmiRTm.1'
 OPC_CLIENT = 'OpenOPC'
 
