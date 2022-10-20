@@ -9,6 +9,8 @@ from collections import namedtuple
 from openopc120.exceptions import OPCError
 
 from openopc120.pythoncom_datatypes import VtType
+
+from openopc120.pythoncom_datatypes import VtType
 import pythoncom
 logger = logging.getLogger(__name__)
 
@@ -19,6 +21,7 @@ if os.name == 'nt':
     try:
         # TODO: chose bewtween pywin pythoncom and wind32 but do not use both
         import pythoncom
+        import pywintypes
         import win32com.client
         import win32com.server.util
         import win32event
