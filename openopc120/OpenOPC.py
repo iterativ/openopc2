@@ -15,7 +15,7 @@ import string
 import sys
 import time
 from multiprocessing import Queue
-
+import logging
 import Pyro4.core
 
 # OPC Constants
@@ -24,7 +24,7 @@ from openopc120.exceptions import OPCError
 import openopc120.SystemHealth as SystemHealth
 
 
-import pywintypes
+logger = logging.getLogger(__name__)
 
 SOURCE_CACHE = 1
 SOURCE_DEVICE = 2
@@ -46,7 +46,7 @@ if os.name == 'nt':
         import win32com.server.util
         import win32event
         import pythoncom
-
+        import pywintypes
 
         # Win32 variant types
         pywintypes.datetime = pywintypes.TimeType
@@ -190,7 +190,8 @@ class client():
 
     def connect(self, opc_server=None, opc_host='localhost'):
         """Connect to the specified OPC server"""
-        opc_server_list = self.__get_opc_servers(opc_server)
+
+        logger.info(f"OPC DA client connecting to {opc_server} {opc_host}")
         self._opc.connect(opc_host, opc_server)
         self._opc.client_name = self.client_name if self.client_name is None else os.environ.get('OPC_CLIENT',
                                                                                                  OPC_CLIENT)

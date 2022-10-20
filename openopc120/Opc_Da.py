@@ -7,8 +7,7 @@ from enum import Enum
 from collections import namedtuple
 
 from openopc120.exceptions import OPCError
-import pythoncom
-import pywintypes
+
 from openopc120.pythoncom_datatypes import VtType
 
 logger = logging.getLogger(__name__)
@@ -17,12 +16,11 @@ logger = logging.getLogger(__name__)
 if os.name == 'nt':
     try:
         # TODO: chose bewtween pywin pythoncom and wind32 but do not use both
-
+        import pythoncom
+        import pywintypes
         import win32com.client
         import win32com.server.util
         import win32event
-        # import pythoncom
-        # import pywintypes
         import SystemHealth as SystemHealth
 
         # Win32 variant types
@@ -43,13 +41,6 @@ if os.name == 'nt':
         win32com_found = True
 else:
     win32com_found = False
-
-# class ACCESS_RIGHTS(Enum):
-#     0: '0'
-#     1: 'Read'
-#     2: 'Write'
-#     3: 'Read/Write'
-
 
 ACCESS_RIGHTS = (0, 'Read', 'Write', 'Read/Write')
 OPC_QUALITY = ('Bad', 'Uncertain', 'Unknown', 'Good')
@@ -133,6 +124,7 @@ class OpcCom:
             self.opc_client = win32com.client.gencache.EnsureDispatch(opc_class, 0)
         except pythoncom.com_error as err:
             # TODO: potential memory leak, destroy pythoncom
+            logger.exception('Error in initialize client')
             pythoncom.CoUninitialize()
             raise OPCError(f'Dispatch: {err}')
 
@@ -199,10 +191,9 @@ class OpcCom:
         # TODO: Find out if it makes any difference to request selected properties (so far there is no benefit)
         property_ids_filter = property_ids
 
-
         count, property_ids, descriptions, datatypes = self.get_available_properties(tag)
         available_properies_by_id = {}
-        for result in zip(property_ids, descriptions, datatypes ):
+        for result in zip(property_ids, descriptions, datatypes):
             available_properies_by_id[result[0]] = {
                 'property_id': result[0],
                 'description': result[1],
@@ -215,8 +206,7 @@ class OpcCom:
             # I assume this is nevessary due to 1 indexed arrays in windows
             property_ids_cleaned.insert(0, 0)
 
-
-        item_properties_values, errors = self.opc_client.GetItemProperties(tag, len(property_ids_cleaned)-1,
+        item_properties_values, errors = self.opc_client.GetItemProperties(tag, len(property_ids_cleaned) - 1,
                                                                            property_ids_cleaned)
 
         if property_ids_filter:
@@ -236,20 +226,17 @@ class OpcCom:
             item_properties_values = list(item_properties_values)
             item_properties_values.insert(0, 0)
 
-
-        for property_result in zip(property_ids_cleaned, item_properties_values ):
+        for property_result in zip(property_ids_cleaned, item_properties_values):
             tag_property_item = TagPropertyItem()
             property = available_properies_by_id[property_result[0]]
             tag_property_item.data_type = VtType(property['data_type']).name
             tag_property_item.property_id = property['property_id']
             tag_property_item.description = property['description']
-            tag_property_item.value = self._property_value_conversion(tag_property_item.description,  property_result[1])
+            tag_property_item.value = self._property_value_conversion(tag_property_item.description, property_result[1])
 
             properties_by_description[tag_property_item.description] = tag_property_item
 
         return [tag_property.get_default_tuple() for tag_property in properties_by_description.values()], errors
-
-
 
     def get_error_string(self, error_id: int):
         return self.opc_client.GetErrorString(error_id)
