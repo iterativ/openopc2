@@ -6,6 +6,8 @@ from opc_server_config import OPC_HOST, OPC_SERVER, USE_GATEWAY, OPC_CLASS
 
 TAG = 'Bucket Brigade.Int1'
 
+
+@skipIf(USE_GATEWAY, "COM interface tests ony if USE Gateway is disabled")
 class TestOpenOpcCom(TestCase):
     def setUp(self):
         self.opccom = OpcCom(OPC_CLASS)

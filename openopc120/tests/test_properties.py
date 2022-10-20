@@ -1,10 +1,5 @@
 from unittest import TestCase
-
-import pywintypes
-
 from opc_server_config import connect_opc_client
-
-pywintypes.datetime = pywintypes.TimeType
 
 
 class TestProperties(TestCase):
