@@ -15,7 +15,7 @@ import string
 import sys
 import time
 from multiprocessing import Queue
-
+import logging
 import Pyro4.core
 
 # OPC Constants
@@ -24,14 +24,14 @@ from openopc120.exceptions import OPCError
 import openopc120.SystemHealth as SystemHealth
 
 
-import pywintypes
+logger = logging.getLogger(__name__)
 
 SOURCE_CACHE = 1
 SOURCE_DEVICE = 2
 OPC_STATUS = (0, 'Running', 'Failed', 'NoConfig', 'Suspended', 'Test')
 BROWSER_TYPE = (0, 'Hierarchical', 'Flat')
 
-OPC_CLASS = 'Matrikon.OPC.Automation;Graybox.OPC.DAWrapper;HSCOPC.Automation;RSI.OPCAutomation;OPC.Automation'
+OPC_CLASS = 'OPC.Automation'
 OPC_SERVER = 'Hci.TPNServer;HwHsc.OPCServer;opc.deltav.1;AIM.OPC.1;Yokogawa.ExaopcDAEXQ.1;OSI.DA.1;OPC.PHDServerDA.1;Aspen.Infoplus21_DA.1;National Instruments.OPCLabVIEW;RSLinx OPC Server;KEPware.KEPServerEx.V4;Matrikon.OPC.Simulation;Prosys.OPC.Simulation;CCOPC.XMLWrapper.1;OPC.SimaticHMI.CoRtHmiRTm.1'
 OPC_CLIENT = 'OpenOPC'
 
@@ -46,7 +46,7 @@ if os.name == 'nt':
         import win32com.server.util
         import win32event
         import pythoncom
-
+        import pywintypes
 
         # Win32 variant types
         pywintypes.datetime = pywintypes.TimeType
@@ -190,7 +190,8 @@ class client():
 
     def connect(self, opc_server=None, opc_host='localhost'):
         """Connect to the specified OPC server"""
-        opc_server_list = self.__get_opc_servers(opc_server)
+
+        logger.info(f"OPC DA client connecting to {opc_server} {opc_host}")
         self._opc.connect(opc_host, opc_server)
         self._opc.client_name = self.client_name if self.client_name is None else os.environ.get('OPC_CLIENT',
                                                                                                  OPC_CLIENT)

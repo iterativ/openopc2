@@ -15,45 +15,25 @@ import select
 import sys
 import time
 
+import logging
+
 import servicemanager
 import win32event
 import win32service
 import win32serviceutil
 import winerror
-import winreg
 
 import Pyro4.core
 
-from openopc120.OpenOPC import client, OPC_CLIENT, OPC_CLASS
+from openopc120.OpenOPC import client, OPC_CLIENT, OPC_CLASS,  __version__
+
+logger = logging.getLogger(__name__)
 
 Pyro4.config.SERVERTYPE = 'thread'
-Pyro4.config.SERIALIZER = 'pickle'
-# Pyro4.config.SERIALIZER='marshal'
 
-opc_gate_host = os.environ['OPC_GATE_HOST']
-opc_gate_port = int(os.environ['OPC_GATE_PORT'])
-print(opc_gate_host)
-print(opc_gate_port)
-
-
-def getvar(env_var):
-    """Read system environment variable from registry"""
-    try:
-        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
-                              'SYSTEM\\CurrentControlSet\\Control\Session Manager\Environment', 0, winreg.KEY_READ)
-        value, valuetype = winreg.QueryValueEx(key, env_var)
-        return value
-    except Exception as e:
-        print(e)
-        return None
-
-
-# Get env vars directly from the Registry since a reboot is normally required
-# for the Local System account to inherit these.
-
-# if getvar('OPC_CLASS'):  opc_class = getvar('OPC_CLASS')
-# if getvar('OPC_GATE_HOST'):  opc_gate_host = getvar('OPC_GATE_HOST')
-# if getvar('OPC_GATE_PORT'):  opc_gate_port = int(getvar('OPC_GATE_PORT'))
+OPC_GATE_HOST = os.environ['OPC_GATE_HOST']
+OPC_GATE_PORT = int(os.environ['OPC_GATE_PORT'])
+OPC_CLASS =  "OPC.Automation"
 
 @Pyro4.expose  # needed for version 4.55+
 class opc(object):
@@ -61,6 +41,7 @@ class opc(object):
         self._remote_hosts = {}
         self._init_times = {}
         self._tx_times = {}
+        self._pyroDaemon = None
 
     def get_clients(self):
         """Return list of server instances as a list of (GUID,host,time) tuples"""
@@ -68,7 +49,7 @@ class opc(object):
         # reg = Pyro4.core.DaemonObject(self._pyroDaemon).registered()[2:]
         reg1 = Pyro4.core.DaemonObject(self._pyroDaemon).registered()  # needed for version 4.55
         reg2 = [si for si in reg1 if si.find('obj_') == 0]
-        reg = ["PYRO:{0}@{1}:{2}".format(obj, opc_gate_host, opc_gate_port) for obj in reg2]
+        reg = ["PYRO:{0}@{1}:{2}".format(obj, OPC_GATE_HOST, OPC_GATE_PORT) for obj in reg2]
         hosts = self._remote_hosts
         init_times = self._init_times
         tx_times = self._tx_times
@@ -84,8 +65,8 @@ class opc(object):
         uuid = uri.asString()
         opc_obj._open_serv = self
         opc_obj._open_self = opc_obj
-        opc_obj._open_host = opc_gate_host
-        opc_obj._open_port = opc_gate_port
+        opc_obj._open_host = OPC_GATE_HOST
+        opc_obj._open_port = OPC_GATE_PORT
         opc_obj._open_guid = uuid
 
         remote_ip = uuid  # self.getLocalStorage().caller.addr[0]
@@ -116,25 +97,38 @@ class OpcService(win32serviceutil.ServiceFramework):
     def __init__(self, args):
         win32serviceutil.ServiceFramework.__init__(self, args)
         self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
+        self.print_config()
 
     def SvcStop(self):
-        servicemanager.LogInfoMsg('\n\nStopping service')
+        servicemanager.LogInfoMsg('\nOpenOpcService Stopping service')
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
         win32event.SetEvent(self.hWaitStop)
 
     def SvcDoRun(self):
-        servicemanager.LogInfoMsg('\n\nStarting service on port %d' % opc_gate_port)
+        servicemanager.LogInfoMsg(f'\nOpenOpcService Starting service on port {OPC_GATE_PORT}')
 
-        daemon = Pyro4.core.Daemon(host=opc_gate_host, port=opc_gate_port)
+        daemon = Pyro4.core.Daemon(host=OPC_GATE_HOST, port=OPC_GATE_PORT)
         daemon.register(opc(), "opc")
 
         socks = daemon.sockets
+
         while win32event.WaitForSingleObject(self.hWaitStop, 0) != win32event.WAIT_OBJECT_0:
             ins, outs, exs = select.select(socks, [], [], 1)
             if ins:
                 daemon.events(ins)
 
         daemon.shutdown()
+
+    def print_config(self):
+        welcome_message = f"""
+        Started OpenOpcService
+        Version:    {__version__}
+        
+        OPC_GATE_HOST:  {OPC_GATE_HOST}
+        OPC_GATE_PORT:  {OPC_GATE_PORT}
+        OPC_CLASS:      {OPC_CLASS}
+        """
+        print(welcome_message)
 
 
 if __name__ == '__main__':
@@ -147,13 +141,13 @@ if __name__ == '__main__':
         except win32service.error as details:
             if details.winerror == winerror.ERROR_FAILED_SERVICE_CONTROLLER_CONNECT:
                 win32serviceutil.usage()
-                print(' --foreground: Run OpenOPCService in foreground.')
-            print(details)
+                logger.info(' --foreground: Run OpenOPCService in foreground.')
+            logger.exception(details)
 
     else:
         if sys.argv[1] == '--foreground':
             print('Starting OpenOPC Service in the foreground')
-            daemon = Pyro4.core.Daemon(host=opc_gate_host, port=opc_gate_port)
+            daemon = Pyro4.core.Daemon(host=OPC_GATE_HOST, port=OPC_GATE_PORT)
             daemon.register(opc(), 'opc')
 
             socks = set(daemon.sockets)

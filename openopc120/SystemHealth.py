@@ -3,14 +3,15 @@ import math
 import os
 import time
 
-import pywintypes
-import win32pdh
-import win32process
+
 
 __version__ = '1.0.1'
 
 try:
     import wmi
+    import pywintypes
+    import win32pdh
+    import win32process
     wmi_found = True
 except ImportError:
     wmi_found = False

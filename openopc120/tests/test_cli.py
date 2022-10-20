@@ -23,7 +23,7 @@ class TestOpcCli(TestCase):
         self.opc_cli.cli_list('*')
 
     def test_read_tag(self):
-        self.opc_cli.cli_read('Bucket Brigade.Boolean')
+        self.opc_cli.cli_read('Bucket Brigade.Int1')
 
     def test_read_tags(self):
         self.opc_cli.cli_read(['Bucket Brigade.Int1', 'Bucket Brigade.Int2'])
