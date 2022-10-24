@@ -21,8 +21,8 @@ import datetime
 import re, time, csv
 import Pyro4
 
-from openopc120.opc_da_client import OPC_CLASS, OpcDaClient, OPC_CLIENT, OPC_SERVER
 from openopc120.opc_gateway_proxy import OpenOpcGatewayProxy
+from openopc120.opc_da_client import OPC_CLASS, OpcDaClient, OPC_CLIENT, OPC_SERVER
 from exceptions import TimeoutError, OPCError
 
 
