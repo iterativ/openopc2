@@ -2,7 +2,7 @@
 #
 # OpenOPC Command Line Client
 #
-# A cross-platform OPC-DA client built using the OpenOPC for Python
+# A cross-platform OPC-DA OpcDaClient built using the OpenOPC for Python
 # library module.
 #
 # Copyright (c) 2007-2015 Barry Barnreiter (barrybb@gmail.com)
@@ -21,7 +21,7 @@ import datetime
 import re, time, csv
 import Pyro4
 
-from OpenOPC import OPC_CLASS, client, OPC_CLIENT, open_client, get_sessions, OPC_SERVER
+from OpenOPC import OPC_CLASS, OpcDaClient, OPC_CLIENT, open_client, get_sessions, OPC_SERVER
 from exceptions import TimeoutError, OPCError
 
 
@@ -194,7 +194,7 @@ class OpcCli:
 
         opc_mode = 'dcom' if os.name == 'nt' else 'open'
 
-        self.opc_client = client(OPC_CLASS)
+        self.opc_client = OpcDaClient(OPC_CLASS)
         self.action = None
         self.style = Style.TABLE
         self.append = ''
@@ -409,7 +409,7 @@ class OpcCli:
 
         else:
             try:
-                self.opc = client(self.opc_class, self.client_name)
+                self.opc = OpcDaClient(self.opc_class, self.client_name)
             except OPCError as error_msg:
                 print("Failed to initialize an OPC Automation Class from the search list '%s' - %s" % (
                     self.opc_class, error_msg))
@@ -668,7 +668,7 @@ class OpcCli:
             OpenOPC Command Line Client', OpenOPC.__version__
             Copyright (c) 2007-2015 Barry Barnreiter (barrybb@gmail.com)'
             
-            Usage:  opc [OPTIONS] [ACTION] [ITEM|PATH...]'
+            Usage:  OpenOpcGatewayServer [OPTIONS] [ACTION] [ITEM|PATH...]'
          
             
             Actions:'

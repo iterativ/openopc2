@@ -1,7 +1,7 @@
 import os
 from unittest import TestCase
 
-from openopc120.opc import OpcCli
+from openopc120.open_opc_cli import OpcCli
 from opc_server_config import OPC_SERVER, OPC_HOST
 
 

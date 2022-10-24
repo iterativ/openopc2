@@ -7,14 +7,10 @@ from enum import Enum
 from collections import namedtuple
 
 from openopc120.exceptions import OPCError
-
 from openopc120.pythoncom_datatypes import VtType
 
-from openopc120.pythoncom_datatypes import VtType
-import pythoncom
 logger = logging.getLogger(__name__)
 
-import pywintypes
 
 # Win32 only modules not needed for 'open' protocol mode
 if os.name == 'nt':
@@ -104,6 +100,9 @@ class TagPropertyId(Enum):
 
 
 class OpcCom:
+    """
+    This class handles the com interface of the OPC DA server.
+    """
     def __init__(self, opc_class: str):
         # TODO: Get browser type (hierarchical etc)
         self.server: string = None
@@ -124,13 +123,13 @@ class OpcCom:
 
     def initialize_client(self, opc_class):
         try:
-            print(f"Initialize OPC DA client: '{opc_class}'")
+            print(f"Initialize OPC DA OpcDaClient: '{opc_class}'")
             pythoncom.CoInitialize()
             self.opc_client = win32com.client.gencache.EnsureDispatch(opc_class, 0)
         except pythoncom.com_error as err:
             # TODO: potential memory leak, destroy pythoncom
             logger.exception(exc_info=True)
-            logger.exception('Error in initialize client')
+            logger.exception('Error in initialize OpcDaClient')
             pythoncom.CoUninitialize()
             raise OPCError(f'Dispatch: {err}')
 

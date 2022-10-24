@@ -19,7 +19,7 @@ import logging
 import Pyro4.core
 
 # OPC Constants
-from openopc120.Opc_Da import OpcCom
+from openopc120.opc_da_com import OpcCom
 from openopc120.exceptions import OPCError
 import openopc120.SystemHealth as SystemHealth
 
@@ -32,7 +32,7 @@ OPC_STATUS = (0, 'Running', 'Failed', 'NoConfig', 'Suspended', 'Test')
 BROWSER_TYPE = (0, 'Hierarchical', 'Flat')
 
 OPC_CLASS = 'OPC.Automation'
-OPC_SERVER = 'Hci.TPNServer;HwHsc.OPCServer;opc.deltav.1;AIM.OPC.1;Yokogawa.ExaopcDAEXQ.1;OSI.DA.1;OPC.PHDServerDA.1;Aspen.Infoplus21_DA.1;National Instruments.OPCLabVIEW;RSLinx OPC Server;KEPware.KEPServerEx.V4;Matrikon.OPC.Simulation;Prosys.OPC.Simulation;CCOPC.XMLWrapper.1;OPC.SimaticHMI.CoRtHmiRTm.1'
+OPC_SERVER = 'Hci.TPNServer;HwHsc.OPCServer;OpenOpcGatewayServer.deltav.1;AIM.OPC.1;Yokogawa.ExaopcDAEXQ.1;OSI.DA.1;OPC.PHDServerDA.1;Aspen.Infoplus21_DA.1;National Instruments.OPCLabVIEW;RSLinx OPC Server;KEPware.KEPServerEx.V4;Matrikon.OPC.Simulation;Prosys.OPC.Simulation;CCOPC.XMLWrapper.1;OPC.SimaticHMI.CoRtHmiRTm.1'
 OPC_CLIENT = 'OpenOPC'
 
 __version__ = '2.0'
@@ -54,7 +54,6 @@ if os.name == 'nt':
 
         # Allow gencache to create the cached wrapper objects
         win32com.client.gencache.is_readonly = False
-
         # Under p2exe the call in gencache to __init__() does not happen
         # so we use Rebuild() to force the creation of the gen_py folder
         win32com.client.gencache.Rebuild(verbose=0)
@@ -71,14 +70,10 @@ else:
 
 def type_check(tags):
     """Perform a type check on a list of tags"""
-
     single = type(tags) not in (list, tuple)
     tags = tags if tags else []
-
     tags = [tags] if single else tags
-
     valid = len([t for t in tags if type(t) not in (str, bytes)]) == 0
-
     return tags, single, valid
 
 
@@ -116,22 +111,6 @@ def exceptional(func, alt_return=None, alt_exceptions=(Exception,), final=None, 
     return _exceptional
 
 
-def get_sessions(host='localhost', port=7766):
-    """Return sessions in OpenOPC Gateway Service as GUID:host hash"""
-
-    import Pyro4.core
-    server_obj = Pyro4.Proxy("PYRO:opc@{0}:{1}".format(host, port))
-    return server_obj.get_clients()
-
-
-def open_client(host='localhost', port=7766):
-    """Connect to the specified OpenOPC Gateway Service"""
-
-    import Pyro4.core
-    server_obj = Pyro4.Proxy("PYRO:opc@{0}:{1}".format(host, port))
-    return server_obj.create_client()
-
-
 class GroupEvents:
     def __init__(self):
         self.client = current_client
@@ -141,7 +120,7 @@ class GroupEvents:
 
 
 @Pyro4.expose  # needed for 4.55+
-class client():
+class OpcDaClient:
     def __init__(self, opc_class, client_name="OpenOPC2"):
         """Instantiate OPC automation class"""
 
@@ -191,7 +170,7 @@ class client():
     def connect(self, opc_server=None, opc_host='localhost'):
         """Connect to the specified OPC server"""
 
-        logger.info(f"OPC DA client connecting to {opc_server} {opc_host}")
+        logger.info(f"OPC DA OpcDaClient connecting to {opc_server} {opc_host}")
         self._opc.connect(opc_host, opc_server)
         self._opc.client_name = self.client_name if self.client_name is None else os.environ.get('OPC_CLIENT',
                                                                                                  OPC_CLIENT)
@@ -220,7 +199,6 @@ class client():
         """Disconnect from the currently connected OPC server"""
 
         try:
-            pythoncom.CoInitialize()
             self.remove(self.groups())
 
         except pythoncom.com_error as err:
@@ -254,6 +232,7 @@ class client():
             try:
                 errors = opc_items.Validate(len(names) - 1, names)
             except:
+                logger.exception("Validation error", errors)
                 pass
 
             valid_tags = []
@@ -290,7 +269,8 @@ class client():
 
             try:
                 server_handles, errors = opc_items.AddItems(len(client_handles) - 1, valid_tags, client_handles)
-            except:
+            except Exception as e:
+                logger.exception("Error adding items to Group", exc_info=True)
                 pass
 
             valid_tags_tmp = []
@@ -1104,7 +1084,7 @@ class client():
     def _update_tx_time(self):
         """Update the session's last transaction time in the Gateway Service"""
         if self._open_serv:
-            self._open_serv._tx_times[self._open_guid] = time.time()
+            self._open_serv.tx_times[self._open_guid] = time.time()
 
     def __getitem__(self, key):
         """Read single item (tag as dictionary key)"""
