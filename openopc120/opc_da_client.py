@@ -14,6 +14,7 @@ import socket
 import string
 import sys
 import time
+import uuid
 from multiprocessing import Queue
 import logging
 import Pyro4.core
@@ -128,6 +129,7 @@ class OpcDaClient:
         self.opc_host = None
         self.client_name = client_name
         self.connected = False
+        self.client_id = uuid.uuid4()
         self._opc: OpcCom = OpcCom(opc_class)
         self._groups = {}
         self._group_tags = {}

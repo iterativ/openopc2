@@ -8,33 +8,37 @@
 # Created on 2022-10-24
 # @author: lorenz.padberg@iterativ.ch
 import time
+import os
 
 import Pyro4.core
 
 from openopc120.opc_da_client import OpcDaClient, __version__
-from openopc120.opc_service import OPC_GATE_PORT, OPC_GATE_HOST, OPC_CLASS
 
+OPC_GATE_HOST = os.environ.get('OPC_GATE_HOST', 'localhost')
+OPC_GATE_PORT = os.environ.get('OPC_GATE_PORT', 7766)
+OPC_CLASS = os.environ.get('OPC_CLASS', "OPC.Automation")
 
 @Pyro4.expose  # needed for version 4.55+
 class OpenOpcGatewayServer:
     def __init__(self, host: str = 'localhost', port=OPC_GATE_PORT):
-        self.host = host
-        self.port = port
+        self.host = str(host)
+        self.port = int(port)
 
         self.remote_hosts = {}
         self.init_times = {}
         self.tx_times = {}
-        self.pyro_deamon: Pyro4.core.Daemon = Pyro4.core.Daemon(host=self.host, port=self.port)
-        self.register_self()
+        self.pyro_daemon = None
+        self.uri = None
+        print(f'Initialized OpenOPC gateway Server uri: {self.uri}')
 
     def register_self(self):
-        self.pyro_deamon.register(OpenOpcGatewayServer(), "OpenOpcGatewayServer")
+        return
 
     def get_clients(self):
         """Return list of server instances as a list of (GUID,host,time) tuples"""
-        reg1 = Pyro4.core.DaemonObject(self.pyro_deamon).registered()  # needed for version 4.55
-        reg2 = [si for si in reg1 if si.find('obj_') == 0]
-        reg = [f"PYRO:{obj}@{OPC_GATE_HOST}:{OPC_GATE_PORT}" for obj in reg2]
+        registered_pyro_objects = Pyro4.core.DaemonObject(self.pyro_daemon).registered()  # needed for version 4.55
+        registered_opd_da_clients = [proxy_name for proxy_name in registered_pyro_objects if"OpcDaClient" in proxy_name]
+        reg = [f"PYRO:{obj}@{OPC_GATE_HOST}:{OPC_GATE_PORT}" for obj in registered_opd_da_clients]
         hosts = self.remote_hosts
         init_times = self.init_times
         tx_times = self.tx_times
@@ -43,33 +47,28 @@ class OpenOpcGatewayServer:
 
     def create_client(self, opc_class: str = OPC_CLASS):
         """Create a new OpenOPC instance in the Pyro server"""
+        print(f"-"*80)
 
         opc_da_client = OpcDaClient(opc_class)
-        uri = self.pyro_deamon.register(opc_da_client)
+        #uri = self.pyro_daemon.register(opc_da_client)
 
-        uuid = uri.asString()
+        client_id = opc_da_client.client_id
         # TODO: This seems like a circular object tree...
         opc_da_client._open_serv = self
-        opc_da_client._open_self = opc_da_client
         opc_da_client._open_host = self.host
         opc_da_client._open_port = self.port
-        opc_da_client._open_guid = uuid
+        opc_da_client._open_guid = client_id
 
-        remote_ip = uuid  # self.getLocalStorage().caller.addr[0]
-        #        try:
-        #            remote_name = socket.gethostbyaddr(remote_ip)[0]
-        #            self.remote_hosts[uuid] = '%s (%s)' % (remote_ip, remote_name)
-        #        except socket.herror:
-        #            self.remote_hosts[uuid] = '%s' % (remote_ip)
-        self.remote_hosts[uuid] = str(remote_ip)
-        self.init_times[uuid] = time.time()
-        self.tx_times[uuid] = time.time()
-        return Pyro4.Proxy(uri)
+        self.remote_hosts[client_id] = str(client_id)
+        self.init_times[client_id] = time.time()
+        self.tx_times[client_id] = time.time()
+        self.pyro_daemon.register(opc_da_client, f"OpcDaClient-{client_id}")
+        return opc_da_client
 
     def release_client(self, obj):
         """Release an OpenOPC instance in the Pyro server"""
 
-        self.pyro_deamon.unregister(obj)
+        self.pyro_daemon.unregister(obj)
         del self.remote_hosts[obj.GUID()]
         del self.init_times[obj.GUID()]
         del self.tx_times[obj.GUID()]
@@ -85,3 +84,23 @@ class OpenOpcGatewayServer:
         OPC_CLASS:      {self.opc_class}
         """
         print(welcome_message)
+
+
+def main(host, port):
+    server = OpenOpcGatewayServer()
+
+
+    pyro_daemon = Pyro4.core.Daemon(host=host,
+                                    port=int(port))
+
+    server.pyro_daemon = pyro_daemon
+
+    pyro_daemon.register(server, objectId="OpenOpcGatewayServer")
+
+
+    print(f"server started {pyro_daemon}")
+    pyro_daemon.requestLoop()
+
+
+if __name__ == '__main__':
+    main(OPC_GATE_HOST, OPC_GATE_PORT)

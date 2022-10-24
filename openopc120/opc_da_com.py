@@ -135,12 +135,12 @@ class OpcCom:
 
     def connect(self, host: str, server: str):
         self.server = server
-        self.host = host
+        self.host = "localhost"
         try:
-            print(f"Connectiong OPC Client Com interface: {self.server}, {self.host}")
+            print(f"Connectiong OPC Client Com interface: '{self.server}', '{self.host}'")
             self.opc_client.Connect(self.server, self.host)
         except Exception as e:
-            print(f"Error Connecting OPC Client Com interface: {self.server}, {self.host}")
+            print(f"Error Connecting OPC Client Com interface: '{self.server}', '{self.host}'")
 
             logger.exception('Error connecting OPC Client', exc_info=True)
             pass
