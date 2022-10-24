@@ -18,7 +18,11 @@ class TestOpcGatewayServer(TestCase):
     def test_get_clients(self):
         server = OpenOpcGatewayServer()
         opc_client = server.create_client("OPC.Automation")
-
-
         clients = server.get_clients()
-        pass
+
+    def test_print_clients(self):
+        server = OpenOpcGatewayServer()
+        server.create_client("OPC.Automation")
+        server.create_client("OPC.Automation")
+        server.print_clients()
+
