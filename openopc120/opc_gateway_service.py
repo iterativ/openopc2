@@ -24,7 +24,7 @@ import winerror
 
 import Pyro4.core
 
-from openopc120.opc_gateway_server import OpenOpcGatewayServer
+from openopc120.opc_gateway_server import OpenOpcGatewayServer, main
 from openopc120.opc_da_client import __version__
 
 logger = logging.getLogger(__name__)
@@ -48,18 +48,19 @@ class OpcService(win32serviceutil.ServiceFramework):
         self.port = os.environ.get('OPC_GATE_PORT', OPC_GATE_PORT)
         self.opc_class = os.environ.get('OPC_GATE_Clas', OPC_CLASS)
         self.print_config()
+        self.pyro_deamon = None
 
     def SvcStop(self):
         servicemanager.LogInfoMsg('\nOpenOpcService Stopping service')
+        self.pyro_deamon.close()
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
         win32event.SetEvent(self.hWaitStop)
 
     def SvcDoRun(self):
         servicemanager.LogInfoMsg(f'\nOpenOpcService Starting service on port {self.port}')
-
-        open_opc_gateway_server = OpenOpcGatewayServer(host=self.host, port=self.port)
-        daemon = open_opc_gateway_server.pyro_daemon
+        daemon = main(host=self.host, port=self.port)
         socks = daemon.sockets
+        self.pyro_deamon = daemon
 
         while win32event.WaitForSingleObject(self.hWaitStop, 0) != win32event.WAIT_OBJECT_0:
             ins, outs, exs = select.select(socks, [], [], 1)
@@ -96,8 +97,9 @@ if __name__ == '__main__':
     else:
         if sys.argv[1] == '--foreground':
             print('Starting OpenOPC Service in the foreground')
-            open_opc_gateway_server = OpenOpcGatewayServer(host=OPC_GATE_HOST, port=OPC_GATE_PORT)
-            daemon = open_opc_gateway_server.pyro_daemon
+
+            daemon = main(host=OPC_GATE_HOST, port=OPC_GATE_PORT)
+
             while True:
                 ins, outs, exs = select.select(daemon.sockets, [], [], 1)
                 if ins:

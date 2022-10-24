@@ -34,12 +34,10 @@ class OpenOpcGatewayServer:
         self.uri = None
         print(f'Initialized OpenOPC gateway Server uri: {self.uri}')
 
-    def register_self(self):
-        return
-
     def print_clients(self):
         for client in self.get_clients():
             print(client)
+        print(self.pyro_daemon)
 
     def get_clients(self):
         """Return list of server instances as a list of (GUID,host,time) tuples"""
@@ -94,18 +92,15 @@ class OpenOpcGatewayServer:
 
 
 def main(host, port):
+    Pyro4.config.SERIALIZER = "pickle"
     server = OpenOpcGatewayServer()
-
-    pyro_daemon = Pyro4.core.Daemon(host=host,
-                                    port=int(port))
-
-    server.pyro_daemon = pyro_daemon
-
+    pyro_daemon = Pyro4.core.Daemon(host=host, port=int(port))
     pyro_daemon.register(server, objectId="OpenOpcGatewayServer")
-
     print(f"server started {pyro_daemon}")
-    pyro_daemon.requestLoop()
+    return pyro_daemon
 
 
 if __name__ == '__main__':
-    main(OPC_GATE_HOST, OPC_GATE_PORT)
+    pyro_daemon = main(OPC_GATE_HOST, OPC_GATE_PORT)
+    pyro_daemon.requestLoop()
+
