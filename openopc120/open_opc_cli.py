@@ -2,7 +2,7 @@
 #
 # OpenOPC Command Line Client
 #
-# A cross-platform OPC-DA client built using the OpenOPC for Python
+# A cross-platform OPC-DA OpcDaClient built using the OpenOPC for Python
 # library module.
 #
 # Copyright (c) 2007-2015 Barry Barnreiter (barrybb@gmail.com)
@@ -21,7 +21,8 @@ import datetime
 import re, time, csv
 import Pyro4
 
-from OpenOPC import OPC_CLASS, client, OPC_CLIENT, open_client, get_sessions, OPC_SERVER
+from openopc120.opc_da_client import OPC_CLASS, OpcDaClient, OPC_CLIENT, OPC_SERVER
+from openopc120.opc_gateway_proxy import OpenOpcGatewayProxy
 from exceptions import TimeoutError, OPCError
 
 
@@ -193,8 +194,8 @@ class OpcCli:
         # Initialize default settings
 
         opc_mode = 'dcom' if os.name == 'nt' else 'open'
-
-        self.opc_client = client(OPC_CLASS)
+        self.opc = None
+        self.opc_client = OpcDaClient(OPC_CLASS)
         self.action = None
         self.style = Style.TABLE
         self.append = ''
@@ -398,7 +399,7 @@ class OpcCli:
 
         if self.opc_mode == 'open':
             try:
-                self.opc = open_client(self.open_host, self.open_port)
+                self.opc = OpenOpcGatewayProxy(self.open_host, self.open_port).open_opc_gateway
             except:
                 error_msg = sys.exc_info()[1]
                 print("Cannot connect to OpenOPC Gateway Service at %s:%s - %s" % (
@@ -409,7 +410,7 @@ class OpcCli:
 
         else:
             try:
-                self.opc = client(self.opc_class, self.client_name)
+                self.opc = OpcDaClient(self.opc_class, self.client_name)
             except OPCError as error_msg:
                 print("Failed to initialize an OPC Automation Class from the search list '%s' - %s" % (
                     self.opc_class, error_msg))
@@ -486,7 +487,7 @@ class OpcCli:
     def cli_sessions(self):
         print('  %-38s %-18s %-18s' % ('Remote Client', 'Start Time', 'Last Transaction'))
         try:
-            for guid, host, init_time, tx_time in get_sessions(self.open_host, self.open_port):
+            for guid, host, init_time, tx_time in OpenOpcGatewayProxy(self.open_host, self.open_port).get_sessions():
                 print('  %-38s %-18s %-18s' % (host, time2str(init_time), time2str(tx_time)))
         except:
             error_msg = sys.exc_info()[1]
@@ -587,7 +588,7 @@ class OpcCli:
 
             try:
                 if not pyro_connected:
-                    opc = open_client(self.open_host, self.open_port)
+                    self.opc_client = OpenOpcGatewayProxy(self.open_host, self.open_port).open_client(self.opc_class)
                     self.opc_client.connect(self.opc_server, self.opc_host)
                     opc_read = self.opc_client.read
                     pyro_connected = True
@@ -668,7 +669,7 @@ class OpcCli:
             OpenOPC Command Line Client', OpenOPC.__version__
             Copyright (c) 2007-2015 Barry Barnreiter (barrybb@gmail.com)'
             
-            Usage:  opc [OPTIONS] [ACTION] [ITEM|PATH...]'
+            Usage:  OpenOpcGatewayServer [OPTIONS] [ACTION] [ITEM|PATH...]'
          
             
             Actions:'

@@ -1,7 +1,7 @@
 import time
 from unittest import TestCase, skipIf
 
-from openopc120.Opc_Da import OpcCom, TagPropertyId
+from openopc120.opc_da_com import OpcCom
 from opc_server_config import OPC_HOST, OPC_SERVER, USE_GATEWAY, OPC_CLASS
 
 TAG = 'Bucket Brigade.Int1'
