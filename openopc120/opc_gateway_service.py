@@ -33,7 +33,7 @@ Pyro4.config.SERVERTYPE = 'thread'
 
 OPC_GATE_HOST = os.environ.get('OPC_GATE_HOST', 'localhost')
 OPC_GATE_PORT = os.environ.get('OPC_GATE_PORT', 7766)
-OPC_CLASS = os.environ.get('OPC_GATE_Clas', "OPC.Automation")
+OPC_CLASS = os.environ.get('OPC_GATE_CLASS', "OPC.Automation")
 
 
 class OpcService(win32serviceutil.ServiceFramework):
@@ -46,7 +46,7 @@ class OpcService(win32serviceutil.ServiceFramework):
         self.print_config()
         self.host = os.environ.get('OPC_GATE_HOST', OPC_GATE_HOST)
         self.port = os.environ.get('OPC_GATE_PORT', OPC_GATE_PORT)
-        self.opc_class = os.environ.get('OPC_GATE_Clas', OPC_CLASS)
+        self.opc_class = os.environ.get('OPC_GATE_CLASS', OPC_CLASS)
         self.print_config()
         self.pyro_deamon = None
 
