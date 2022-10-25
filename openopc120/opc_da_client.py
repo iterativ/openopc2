@@ -31,7 +31,9 @@ logger = logging.getLogger(__name__)
 SOURCE_CACHE = 1
 SOURCE_DEVICE = 2
 OPC_STATUS = (0, 'Running', 'Failed', 'NoConfig', 'Suspended', 'Test')
-BROWSER_TYPE = (0, 'Hierarchical', 'Flat')
+BROWSER_TYPE = {0: 0,
+                1: 'Hierarchical',
+                2: 'Flat'}
 
 __version__ = '2.0'
 
@@ -319,8 +321,6 @@ class OpcDaClient:
 
                 num_groups = len(tag_groups)
                 data_source = SOURCE_DEVICE
-
-            results = []
 
             for gid in range(num_groups):
                 if gid > 0 and pause > 0:
@@ -998,14 +998,10 @@ class OpcDaClient:
             info_list += [('OPC Host', self.opc_host)]
             info_list += [('OPC Server', self._opc.server_name)]
             info_list += [('State', OPC_STATUS[self._opc.server_state])]
-            info_list += [('Version', '%d.%d (Build %d)' % (
-                self._opc.major_version, self._opc.minor_version, self._opc.build_number))]
+            info_list += [('Version', f'{self._opc.major_version}.{self._opc.minor_version} (Build{self._opc.build_number})')]
 
-            try:
-                browser = self._opc.create_browser()
-                browser_type = BROWSER_TYPE[browser.Organization]
-            except:
-                browser_type = 'Not Supported'
+            browser = self._opc.create_browser()
+            browser_type = BROWSER_TYPE.get(browser.Organization, 'Not Supported')
 
             info_list += [('Browser', browser_type)]
             info_list += [('Start Time', str(self._opc.start_time))]

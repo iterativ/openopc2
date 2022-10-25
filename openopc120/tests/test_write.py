@@ -20,7 +20,7 @@ class TestWriteTags(TestCase):
             old_value = self.opc_client.read(tag)[0]
             if old_value is not None:
                 new_value = create_new_value(old_value)
-                write = self.opc_client.write((tag, new_value))
+                write = self.opc_client.write(tag, new_value)
                 written_value = self.opc_client.read(tag)[0]
                 print_write_result(write, tag, old_value, written_value)
             else:
@@ -39,13 +39,17 @@ class TestWriteTags(TestCase):
             write = self.opc_client.write((tag, new_value), include_error=True)
             written_value = self.opc_client.read(tag)[0]
             print_write_result(write, tag, old_value, written_value)
-
-
-                # self.assertEqual(new_value, writen_value)
-                # write = self.opc_client.write((tag, old_value))
+            # self.assertEqual(new_value, writen_value)
+            # write = self.opc_client.write((tag, old_value))
 
     def test_write_tags_list(self):
-        values = self.opc_client.write(list(zip([self.no_system_tags[4], self.no_system_tags[5]], [1, 10])))
+        tag_values = list(zip([self.no_system_tags[4], self.no_system_tags[5]], [1, 10]))
+        values = self.opc_client.write(tag_values)
+        print(f"{values}")
+
+    def test_write_tags_single(self):
+        tag_values = (self.no_system_tags[4], 1)
+        values = self.opc_client.write(tag_values)
         print(f"{values}")
 
 

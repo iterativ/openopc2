@@ -52,7 +52,6 @@ class OpenOpcGatewayServer:
         print(f"-" * 80)
 
         opc_da_client = OpcDaClient(opc_class)
-        uri = self.pyro_daemon.register(opc_da_client)
 
         client_id = opc_da_client.client_id
         # TODO: This seems like a circular object tree...
