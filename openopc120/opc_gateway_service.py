@@ -24,16 +24,14 @@ import winerror
 
 import Pyro4.core
 
-from openopc120.opc_gateway_server import OpenOpcGatewayServer, main
+from openopc120.opc_gateway_server import main
+from openopc120.config import open_opc_config
 from openopc120.opc_da_client import __version__
 
 logger = logging.getLogger(__name__)
 
 Pyro4.config.SERVERTYPE = 'thread'
 
-OPC_GATE_HOST = os.environ.get('OPC_GATE_HOST', 'localhost')
-OPC_GATE_PORT = os.environ.get('OPC_GATE_PORT', 7766)
-OPC_CLASS = os.environ.get('OPC_GATE_CLASS', "OPC.Automation")
 
 
 class OpcService(win32serviceutil.ServiceFramework):
@@ -44,9 +42,9 @@ class OpcService(win32serviceutil.ServiceFramework):
         win32serviceutil.ServiceFramework.__init__(self, args)
         self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
         self.print_config()
-        self.host = os.environ.get('OPC_GATE_HOST', OPC_GATE_HOST)
-        self.port = os.environ.get('OPC_GATE_PORT', OPC_GATE_PORT)
-        self.opc_class = os.environ.get('OPC_GATE_CLASS', OPC_CLASS)
+        self.host = open_opc_config.OPC_GATEWAY_HOST
+        self.port = open_opc_config.OPC_GATEWAY_PORT
+        self.opc_class = open_opc_config.OPC_CLASS
         self.print_config()
         self.pyro_deamon = None
 
@@ -70,7 +68,8 @@ class OpcService(win32serviceutil.ServiceFramework):
         daemon.shutdown()
 
     def print_config(self):
-        welcome_message = f"""
+        welcome_message = f"""python
+        
         Started OpenOpcService
         Version:    {__version__}
         
@@ -98,7 +97,7 @@ if __name__ == '__main__':
         if sys.argv[1] == '--foreground':
             print('Starting OpenOPC Service in the foreground')
 
-            daemon = main(host=OPC_GATE_HOST, port=OPC_GATE_PORT)
+            daemon = main(host=open_opc_config.OPC_GATEWAY_HOST, port=open_opc_config.OPC_GATEWAY_PORT)
 
             while True:
                 ins, outs, exs = select.select(daemon.sockets, [], [], 1)
