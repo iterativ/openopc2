@@ -8,6 +8,7 @@ from collections import namedtuple
 
 from openopc120.exceptions import OPCError
 from openopc120.pythoncom_datatypes import VtType
+import Pyro4.core
 
 logger = logging.getLogger(__name__)
 
@@ -99,6 +100,7 @@ class TagPropertyId(Enum):
         return [property_id.name for property_id in cls]
 
 
+@Pyro4.expose
 class OpcCom:
     """
     This class handles the com interface of the OPC DA server.
@@ -154,17 +156,6 @@ class OpcCom:
         self.start_time = self.opc_client.StartTime
         self.current_time = self.opc_client.CurrentTime
         self.vendor_info = self.opc_client.VendorInfo
-
-        # for key in dir(self.opc_client):
-        #     method = getattr(self.opc_client, key)
-        #     print(key)
-        #     if str(type(method)) == "<type 'instance'>":
-        #         print(key)
-        #         for sub_method in dir(method):
-        #             if not sub_method.startswith("_") and not "clsid" in sub_method.lower():
-        #                 print("\t" + sub_method)
-        #     else:
-        #         print("\t", method)
 
     def create_browser(self):
         return self.opc_client.CreateBrowser()

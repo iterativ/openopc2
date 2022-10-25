@@ -22,7 +22,8 @@ import re, time, csv
 import Pyro4
 
 from openopc120.opc_gateway_proxy import OpenOpcGatewayProxy
-from openopc120.opc_da_client import OPC_CLASS, OpcDaClient, OPC_CLIENT, OPC_SERVER
+from openopc120.opc_da_client import OpcDaClient
+from openopc120.config import open_opc_config
 from exceptions import TimeoutError, OPCError
 
 
@@ -195,7 +196,7 @@ class OpcCli:
 
         opc_mode = 'dcom' if os.name == 'nt' else 'open'
         self.opc = None
-        self.opc_client = OpcDaClient(OPC_CLASS)
+        self.opc_client = OpcDaClient(open_opc_config.OPC_CLASS)
         self.action = None
         self.style = Style.TABLE
         self.append = ''
@@ -215,14 +216,14 @@ class OpcCli:
         self.include_err_msg = False
         self.start_time = time.time()
 
-        self.opc_mode = environ.get('OPC_MODE', opc_mode)
-        self.opc_class = environ.get('OPC_CLASS', OPC_CLASS)
-        self.client_name = environ.get('OPC_CLIENT', OPC_CLIENT)
-        self.opc_host = environ.get('OPC_HOST', 'localhost')
-        self.opc_server = environ.get('OPC_SERVER', OPC_SERVER)
-        self.open_host = environ.get('OPC_GATE_HOST', 'localhost')
-        self.open_port = environ.get('OPC_GATE_PORT', 7766)
-        self.timeout = int(environ.get('OPC_TIMEOUT', 5000))
+        self.opc_mode = open_opc_config.OPC_MODE
+        self.opc_class = open_opc_config.OPC_CLASS
+        self.client_name = open_opc_config.OPC_CLIENT
+        self.opc_host = open_opc_config.OPC_HOST
+        self.opc_server = open_opc_config.OPC_SERVER
+        self.open_host = open_opc_config.OPC_GATEWAY_HOST
+        self.open_port = open_opc_config.OPC_GATEWAY_PORT
+        self.timeout = open_opc_config.OPC_TIMEOUT
 
         self.signal_handler = SigHandler()
 
@@ -639,7 +640,6 @@ class OpcCli:
             except IOError:
                 self.opc_client.close()
                 exit()
-
 
             if self.repeat_pause is not None:
                 try:

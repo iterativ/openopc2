@@ -19,7 +19,8 @@ from multiprocessing import Queue
 import logging
 import Pyro4.core
 
-# OPC Constants
+
+from openopc120.config import open_opc_config
 from openopc120.opc_da_com import OpcCom
 from openopc120.exceptions import OPCError
 import openopc120.SystemHealth as SystemHealth
@@ -31,10 +32,6 @@ SOURCE_CACHE = 1
 SOURCE_DEVICE = 2
 OPC_STATUS = (0, 'Running', 'Failed', 'NoConfig', 'Suspended', 'Test')
 BROWSER_TYPE = (0, 'Hierarchical', 'Flat')
-
-OPC_CLASS = 'OPC.Automation'
-OPC_SERVER = 'Hci.TPNServer;HwHsc.OPCServer;OpenOpcGatewayServer.deltav.1;AIM.OPC.1;Yokogawa.ExaopcDAEXQ.1;OSI.DA.1;OPC.PHDServerDA.1;Aspen.Infoplus21_DA.1;National Instruments.OPCLabVIEW;RSLinx OPC Server;KEPware.KEPServerEx.V4;Matrikon.OPC.Simulation;Prosys.OPC.Simulation;CCOPC.XMLWrapper.1;OPC.SimaticHMI.CoRtHmiRTm.1'
-OPC_CLIENT = 'OpenOPC'
 
 __version__ = '2.0'
 
@@ -122,12 +119,12 @@ class GroupEvents:
 
 @Pyro4.expose  # needed for 4.55+
 class OpcDaClient:
-    def __init__(self, opc_class, client_name="OpenOPC2"):
+    def __init__(self, opc_class):
         """Instantiate OPC automation class"""
 
-        self.opc_server = None
-        self.opc_host = None
-        self.client_name = client_name
+        self.opc_server = open_opc_config.OPC_SERVER
+        self.opc_host = open_opc_config.OPC_HOST
+        self.client_name = open_opc_config.OPC_CLIENT
         self.connected = False
         self.client_id = uuid.uuid4()
         self._opc: OpcCom = OpcCom(opc_class)
@@ -139,8 +136,9 @@ class OpcDaClient:
         self._group_hooks = {}
         self._open_serv = None
         self._open_self = None
-        self._open_host = None
-        self._open_port = None
+        self._opc.client_name = open_opc_config.OPC_CLIENT
+        self._open_host = open_opc_config.OPC_GATEWAY_HOST
+        self._open_port = open_opc_config.OPC_GATEWAY_PORT
         self._open_guid = None
         self._prev_serv_time = None
         self._tx_id = 0
@@ -154,19 +152,8 @@ class OpcDaClient:
         if self._open_serv is None:
             self.trace = trace
 
-    def __get_opc_servers(self, opc_server):
-        if opc_server is None:
-            # Initial connect using environment vars
-            if self.opc_server is None:
-                if 'OPC_SERVER' in os.environ:
-                    opc_server = os.environ['OPC_SERVER']
-                else:
-                    opc_server = OPC_SERVER
-            # Reconnect using previous server name
-            else:
-                opc_server = self.opc_server
-                opc_host = self.opc_host
-        opc_server_list = opc_server.split(';')
+    def __get_opc_servers(self):
+        opc_server_list = open_opc_config.OPC_SERVER.split(';')
         return opc_server_list
 
     def connect(self, opc_server=None, opc_host='localhost'):
@@ -174,15 +161,12 @@ class OpcDaClient:
 
         logger.info(f"OPC DA OpcDaClient connecting to {opc_server} {opc_host}")
         self._opc.connect(opc_host, opc_server)
-        self._opc.client_name = self.client_name if self.client_name is None else os.environ.get('OPC_CLIENT',
-                                                                                                 OPC_CLIENT)
         self.connected = True
 
         # With some OPC servers, the next OPC call immediately after Connect()
         # will occationally fail.  Sleeping for 1/100 second seems to fix this.
         time.sleep(0.01)
 
-        self.opc_server = opc_server
         self.opc_host = socket.gethostname() if opc_host == 'localhost' else opc_host
 
         # On reconnect we need to remove the old group names from OpenOPC's internal

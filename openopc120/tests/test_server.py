@@ -1,6 +1,5 @@
 from unittest import TestCase
 
-
 from opc_server_config import connect_opc_client, USE_GATEWAY
 
 
@@ -16,16 +15,18 @@ class TestServerInfo(TestCase):
     def test_get_info(self):
         info = self.opc_client.info()
         if USE_GATEWAY:
-            self.assertEqual(info[0], ('Protocol', 'OpenOPC'))
-            self.assertEqual(info[1][0], 'Gateway Host')
-            self.assertEqual(info[2][0], 'Gateway Version')
-            self.assertEqual(info[3], ('Class', 'Matrikon.OPC.Automation'))
+            self.assertEqual(('Protocol', 'OpenOPC'), info[0])
+            self.assertEqual('Gateway Host', info[1][0])
+            self.assertEqual('Gateway Version', info[2][0])
+            self.assertEqual(('Class', 'Matrikon.OPC.Automation'), info[3] )
 
         else:
-            self.assertEqual(info[0], ('Protocol', 'DCOM'))
-            self.assertEqual(info[1], ('Class', 'OPC.Automation'))
-            self.assertEqual(info[2], ('Client Name', 'OpenOPC'))
-            self.assertEqual(info[3][0], 'OPC Host')
+            self.assertEqual(('Protocol', 'DCOM'), info[0])
+            self.assertEqual(('Client Name', ''), info[2])
+            self.assertEqual('OPC Host', info[3][0], )
+            self.assertEqual(('Class', 'OPC.Automation'), info[1])
+
+
     #
     # def test_close_connection(self):
     #     self.opc_client.close()

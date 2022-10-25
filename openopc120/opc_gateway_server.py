@@ -13,15 +13,12 @@ import os
 import Pyro4.core
 
 from openopc120.opc_da_client import OpcDaClient, __version__
-
-OPC_GATE_HOST = os.environ.get('OPC_GATE_HOST', 'localhost')
-OPC_GATE_PORT = os.environ.get('OPC_GATE_PORT', 7766)
-OPC_CLASS = os.environ.get('OPC_CLASS', "OPC.Automation")
+from openopc120.config import open_opc_config
 
 
 @Pyro4.expose
 class OpenOpcGatewayServer:
-    def __init__(self, host: str = 'localhost', port=OPC_GATE_PORT):
+    def __init__(self, host: str = open_opc_config.OPC_GATEWAY_HOST, port=open_opc_config.OPC_GATEWAY_PORT):
         self.host = str(host)
         self.port = int(port)
 
@@ -50,7 +47,7 @@ class OpenOpcGatewayServer:
             })
         return out_list
 
-    def create_client(self, opc_class: str = OPC_CLASS):
+    def create_client(self, opc_class: str = open_opc_config.OPC_CLASS):
         """Create a new OpenOPC instance in the Pyro server"""
         print(f"-" * 80)
 
@@ -90,9 +87,11 @@ class OpenOpcGatewayServer:
         """
         print(welcome_message)
 
+        open_opc_config.print_config()
+
 
 def main(host, port):
-    Pyro4.config.SERIALIZER = "pickle"
+    #Pyro4.config.SERIALIZER = "pickle"
     server = OpenOpcGatewayServer()
     pyro_daemon = Pyro4.core.Daemon(host=host, port=int(port))
     pyro_daemon.register(server, objectId="OpenOpcGatewayServer")
@@ -101,6 +100,6 @@ def main(host, port):
 
 
 if __name__ == '__main__':
-    pyro_daemon = main(OPC_GATE_HOST, OPC_GATE_PORT)
+    pyro_daemon = main(open_opc_config.OPC_GATEWAY_HOST, open_opc_config.OPC_GATEWAY_PORT)
     pyro_daemon.requestLoop()
 
