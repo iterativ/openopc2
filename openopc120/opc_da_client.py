@@ -119,7 +119,7 @@ class GroupEvents:
 
 @Pyro4.expose  # needed for 4.55+
 class OpcDaClient:
-    def __init__(self, opc_class):
+    def __init__(self, opc_class=open_opc_config.OPC_CLASS):
         """Instantiate OPC automation class"""
 
         self.opc_server = open_opc_config.OPC_SERVER

@@ -664,9 +664,9 @@ class OpcCli:
         Print comand line usage summary
         """
         print(
-            """
+            f"""
          
-            OpenOPC Command Line Client', OpenOPC.__version__
+            OpenOPC Command Line Client', OpenOPC 2
             Copyright (c) 2007-2015 Barry Barnreiter (barrybb@gmail.com)'
             
             Usage:  OpenOpcGatewayServer [OPTIONS] [ACTION] [ITEM|PATH...]'

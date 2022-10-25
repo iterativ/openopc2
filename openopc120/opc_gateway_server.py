@@ -52,11 +52,11 @@ class OpenOpcGatewayServer:
         print(f"-" * 80)
 
         opc_da_client = OpcDaClient(opc_class)
-        # uri = self.pyro_daemon.register(opc_da_client)
+        uri = self.pyro_daemon.register(opc_da_client)
 
         client_id = opc_da_client.client_id
         # TODO: This seems like a circular object tree...
-        opc_da_client._open_serv = self
+        opc_da_client._open_serv = None
         opc_da_client._open_host = self.host
         opc_da_client._open_port = self.port
         opc_da_client._open_guid = client_id
@@ -95,6 +95,7 @@ def main(host, port):
     server = OpenOpcGatewayServer()
     pyro_daemon = Pyro4.core.Daemon(host=host, port=int(port))
     pyro_daemon.register(server, objectId="OpenOpcGatewayServer")
+    pyro_daemon.register(OpcDaClient, objectId="OpcDaClient")
     print(f"server started {pyro_daemon}")
     return pyro_daemon
 

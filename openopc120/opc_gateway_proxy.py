@@ -19,8 +19,11 @@ class OpenOpcGatewayProxy:
     def __init__(self, host: str = 'localhost', port: int = 7766):
         self.host = host
         self.port = port
-        self.open_opc_gateway_server: OpcDaClient = self.get_proxy()
 
-    def get_proxy(self):
+    def get_server_proxy(self):
         with Pyro4.Proxy(f"PYRO:OpenOpcGatewayServer@{self.host}:{self.port}") as open_opc_gateway_server:
             return open_opc_gateway_server
+
+    def get_opc_da_client_proxy(self):
+        with Pyro4.Proxy(f"PYRO:OpcDaClient@{self.host}:{self.port}") as opc_da_client_proxy:
+            return opc_da_client_proxy
