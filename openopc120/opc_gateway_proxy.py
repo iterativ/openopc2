@@ -10,7 +10,7 @@
 import logging
 
 from openopc120.opc_da_client import OpcDaClient
-import Pyro4.core
+import Pyro5.client
 
 logger = logging.getLogger(__name__)
 
@@ -21,9 +21,9 @@ class OpenOpcGatewayProxy:
         self.port = port
 
     def get_server_proxy(self):
-        with Pyro4.Proxy(f"PYRO:OpenOpcGatewayServer@{self.host}:{self.port}") as open_opc_gateway_server:
+        with Pyro5.client.Proxy(f"PYRO:OpenOpcGatewayServer@{self.host}:{self.port}") as open_opc_gateway_server:
             return open_opc_gateway_server
 
     def get_opc_da_client_proxy(self):
-        with Pyro4.Proxy(f"PYRO:OpcDaClient@{self.host}:{self.port}") as opc_da_client_proxy:
+        with Pyro5.client.Proxy(f"PYRO:OpcDaClient@{self.host}:{self.port}") as opc_da_client_proxy:
             return opc_da_client_proxy

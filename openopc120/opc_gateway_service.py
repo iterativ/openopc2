@@ -22,7 +22,7 @@ import win32service
 import win32serviceutil
 import winerror
 
-import Pyro4.core
+import Pyro5.core
 
 from openopc120.opc_gateway_server import main
 from openopc120.config import open_opc_config
@@ -30,7 +30,7 @@ from openopc120.opc_da_client import __version__
 
 logger = logging.getLogger(__name__)
 
-Pyro4.config.SERVERTYPE = 'thread'
+Pyro5.config.SERVERTYPE = 'thread'
 
 
 

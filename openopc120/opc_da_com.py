@@ -8,7 +8,7 @@ from collections import namedtuple
 
 from openopc120.exceptions import OPCError
 from openopc120.pythoncom_datatypes import VtType
-import Pyro4.core
+import Pyro5.core
 
 logger = logging.getLogger(__name__)
 
@@ -100,7 +100,7 @@ class TagPropertyId(Enum):
         return [property_id.name for property_id in cls]
 
 
-@Pyro4.expose
+@Pyro5.api.expose
 class OpcCom:
     """
     This class handles the com interface of the OPC DA server.

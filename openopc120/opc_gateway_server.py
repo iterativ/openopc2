@@ -10,13 +10,13 @@
 import time
 import os
 
-import Pyro4.core
+import Pyro5.server
 
 from openopc120.opc_da_client import OpcDaClient, __version__
 from openopc120.config import open_opc_config
 
 
-@Pyro4.expose
+@Pyro5.api.expose
 class OpenOpcGatewayServer:
     def __init__(self, host: str = open_opc_config.OPC_GATEWAY_HOST, port=open_opc_config.OPC_GATEWAY_PORT):
         self.host = str(host)
@@ -90,9 +90,8 @@ class OpenOpcGatewayServer:
 
 
 def main(host, port):
-    #Pyro4.config.SERIALIZER = "pickle"
     server = OpenOpcGatewayServer()
-    pyro_daemon = Pyro4.core.Daemon(host=host, port=int(port))
+    pyro_daemon = Pyro5.server.Daemon(host=host, port=int(port))
     pyro_daemon.register(server, objectId="OpenOpcGatewayServer")
     pyro_daemon.register(OpcDaClient, objectId="OpcDaClient")
     print(f"server started {pyro_daemon}")

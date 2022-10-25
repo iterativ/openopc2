@@ -1,7 +1,7 @@
-import Pyro4.core
+import Pyro5.api
 
 
-@Pyro4.expose
+@Pyro5.api.expose
 class TimeoutError(Exception):
     def __init__(self, txt):
         Exception.__init__(self, txt)
@@ -9,7 +9,7 @@ class TimeoutError(Exception):
     __dict__ = None
 
 
-@Pyro4.expose
+@Pyro5.api.expose
 class OPCError(Exception):
     def __init__(self, txt):
         Exception.__init__(self, txt)

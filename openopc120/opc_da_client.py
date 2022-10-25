@@ -17,7 +17,7 @@ import time
 import uuid
 from multiprocessing import Queue
 import logging
-import Pyro4.core
+import Pyro5.core
 
 
 from openopc120.config import open_opc_config
@@ -119,7 +119,7 @@ class GroupEvents:
         self.client.callback_queue.put((TransactionID, ClientHandles, ItemValues, Qualities, TimeStamps))
 
 
-@Pyro4.expose  # needed for 4.55+
+@Pyro5.api.expose  # needed for 4.55+
 class OpcDaClient:
     def __init__(self, opc_class=open_opc_config.OPC_CLASS):
         """Instantiate OPC automation class"""

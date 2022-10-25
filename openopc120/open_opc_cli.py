@@ -19,7 +19,7 @@ import os
 import types
 import datetime
 import re, time, csv
-import Pyro4
+import Pyro5
 
 from openopc120.opc_gateway_proxy import OpenOpcGatewayProxy
 from openopc120.opc_da_client import OpcDaClient
@@ -627,7 +627,7 @@ class OpcCli:
                 print(error_msg)
                 com_connected = self.opc_client.ping()
 
-            except (Pyro4.errors.ConnectionClosedError, Pyro4.errors.ProtocolError) as error_msg:
+            except (Pyro5.errors.ConnectionClosedError, Pyro5.errors.ProtocolError) as error_msg:
                 print('Gateway Service: %s' % error_msg)
                 pyro_connected = False
 

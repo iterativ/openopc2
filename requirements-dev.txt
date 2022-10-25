@@ -1,2 +1,2 @@
 coverage==6.1.2
-pyinstaller==4.7
+pyinstaller==5.6
