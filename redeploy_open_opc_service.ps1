@@ -8,7 +8,8 @@ pyinstaller --onefile `
             --hidden-import=json `
             --hidden-import=win32timezone `
             --hidden-import=pythoncom  `
+            --name OpenOpcService `
             ./openopc120/opc_gateway_service.py
 
-./dist/opc_gateway_service.exe install
-./dist/opc_gateway_service.exe start debug
+./dist/OpenOpcService.exe install
+./dist/OpenOpcService.exe start debug
