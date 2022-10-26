@@ -24,14 +24,11 @@ import winerror
 
 import Pyro5.core
 
-from openopc120.opc_gateway_server import main
+from openopc120.opc_gateway_server import main as opc_gateway_server_main
 from openopc120.config import open_opc_config
 from openopc120.opc_da_client import __version__
 
 logger = logging.getLogger(__name__)
-
-Pyro5.config.SERVERTYPE = 'thread'
-
 
 
 class OpcService(win32serviceutil.ServiceFramework):
@@ -40,32 +37,33 @@ class OpcService(win32serviceutil.ServiceFramework):
 
     def __init__(self, args):
         win32serviceutil.ServiceFramework.__init__(self, args)
-        self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
-        self.print_config()
         self.host = open_opc_config.OPC_GATEWAY_HOST
         self.port = open_opc_config.OPC_GATEWAY_PORT
         self.opc_class = open_opc_config.OPC_CLASS
         self.print_config()
-        self.pyro_deamon = None
+        self.pyro_daemon = None
+        self.hWaitStop = win32event.CreateEvent(None, 0, 0, None)
 
     def SvcStop(self):
         servicemanager.LogInfoMsg('\nOpenOpcService Stopping service')
-        self.pyro_deamon.close()
+        self.pyro_daemon.close()
         self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
         win32event.SetEvent(self.hWaitStop)
 
     def SvcDoRun(self):
         servicemanager.LogInfoMsg(f'\nOpenOpcService Starting service on port {self.port}')
-        daemon = main(host=self.host, port=self.port)
+        daemon = opc_gateway_server_main(host=self.host, port=self.port)
         socks = daemon.sockets
-        self.pyro_deamon = daemon
+        self.pyro_daemon = daemon
+        self.ReportServiceStatus(win32service.SERVICE_RUNNING)
+        daemon.requestLoop()
 
-        while win32event.WaitForSingleObject(self.hWaitStop, 0) != win32event.WAIT_OBJECT_0:
-            ins, outs, exs = select.select(socks, [], [], 1)
-            if ins:
-                daemon.events(ins)
+        # while win32event.WaitForSingleObject(self.hWaitStop, 0) != win32event.WAIT_OBJECT_0:
+        #     ins, outs, exs = select.select(socks, [], [], 1)
+        #     if ins:
+        #         daemon.events(ins)
 
-        daemon.shutdown()
+        # daemon.shutdown()
 
     def print_config(self):
         welcome_message = f"""python
@@ -88,6 +86,7 @@ if __name__ == '__main__':
             servicemanager.Initialize('zzzOpenOPCService', evtsrc_dll)
             servicemanager.StartServiceCtrlDispatcher()
         except win32service.error as details:
+            print(details)
             logger.exception(details)
             if details.winerror == winerror.ERROR_FAILED_SERVICE_CONTROLLER_CONNECT:
                 win32serviceutil.usage()
@@ -97,7 +96,8 @@ if __name__ == '__main__':
         if sys.argv[1] == '--foreground':
             print('Starting OpenOPC Service in the foreground')
 
-            daemon = main(host=open_opc_config.OPC_GATEWAY_HOST, port=open_opc_config.OPC_GATEWAY_PORT)
+            daemon = opc_gateway_server_main(host=open_opc_config.OPC_GATEWAY_HOST,
+                                             port=open_opc_config.OPC_GATEWAY_PORT)
 
             while True:
                 ins, outs, exs = select.select(daemon.sockets, [], [], 1)
