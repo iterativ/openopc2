@@ -1,5 +1,6 @@
 import numbers
 from unittest import TestCase
+
 from colorama import Fore
 
 from opc_server_config import connect_opc_client
@@ -62,7 +63,6 @@ def print_write_result(write_result, tag, old, new):
         print(f"{color}{write_result[0]}: {tag:20} old: {old} new: {new}")
     else:
         print(f"{color}{write_result}")
-
 
 
 def create_new_value(old_value):

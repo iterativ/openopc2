@@ -8,12 +8,11 @@
 # Created on 2022-10-24
 # @author: lorenz.padberg@iterativ.ch
 import time
-import os
 
 import Pyro5.server
 
-from openopc.opc_da_client import OpcDaClient, __version__
 from openopc.config import open_opc_config
+from openopc.opc_da_client import OpcDaClient, __version__
 
 
 @Pyro5.api.expose
@@ -101,4 +100,3 @@ def main(host, port):
 if __name__ == '__main__':
     pyro_daemon = main(open_opc_config.OPC_GATEWAY_HOST, open_opc_config.OPC_GATEWAY_PORT)
     pyro_daemon.requestLoop()
-

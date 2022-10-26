@@ -8,7 +8,7 @@ class OpenOpcConfig:
         self.OPC_CLIENT: str = 'OpenOPC'
         self.OPC_GATEWAY_HOST: str = os.environ.get('OPC_GATE_HOST', 'localhost')
         self.OPC_GATEWAY_PORT: str = int(os.environ.get('OPC_GATE_PORT', 7766))
-        self.OPC_CLASS: str = "OPC.Automation" #os.environ.get('OPC_CLASS', "OPC.Automation")
+        self.OPC_CLASS: str = "OPC.Automation"  # os.environ.get('OPC_CLASS', "OPC.Automation")
         self.OPC_MODE: str = os.environ.get('OPC_CLIENT', "OpenOPC")
         self.OPC_TIMEOUT: int = os.environ.get('OPC_TIMEOUT', 1000)
 

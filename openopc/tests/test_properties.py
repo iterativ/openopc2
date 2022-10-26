@@ -1,4 +1,5 @@
 from unittest import TestCase
+
 from opc_server_config import connect_opc_client
 
 
@@ -25,8 +26,8 @@ class TestProperties(TestCase):
     def test_read_property_id(self):
         tag = self.no_system_tags[5]
         properties = self.opc_client.properties(tag, id=[1, 3])
-        self.assertEqual((1, 'Item Canonical DataType', 'VT_I2'), properties[0],)
-        self.assertEqual((3, 'Item Quality', 'Good'), properties[1],)
+        self.assertEqual((1, 'Item Canonical DataType', 'VT_I2'), properties[0], )
+        self.assertEqual((3, 'Item Quality', 'Good'), properties[1], )
 
     def test_read_properties(self):
         properties = self.opc_client.properties(self.no_system_tags[1:24])

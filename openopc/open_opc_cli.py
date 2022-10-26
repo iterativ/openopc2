@@ -9,22 +9,21 @@
 #
 ###########################################################################
 
-from sys import *
-from getopt import *
-from os import *
-import signal
-import json
-import sys
-import os
-import types
+import csv
 import datetime
-import re, time, csv
+import os
+import signal
+import sys
+import time
+from getopt import *
+from sys import *
+
 import Pyro5
 
-from openopc.opc_gateway_proxy import OpenOpcGatewayProxy
-from openopc.opc_da_client import OpcDaClient
-from openopc.config import open_opc_config
 from exceptions import TimeoutError, OPCError
+from openopc.config import open_opc_config
+from openopc.opc_da_client import OpcDaClient
+from openopc.opc_gateway_proxy import OpenOpcGatewayProxy
 
 
 class Style:
@@ -34,6 +33,8 @@ class Style:
     VALUES = 'values'
     PAIRS = 'pairs'
     UNDEFINED = ''
+
+
 # https://realpython.com/command-line-interfaces-python-argparse/
 
 
@@ -190,7 +191,6 @@ class SigHandler:
 class OpcCli:
     def __init__(self):
         # Common function aliases
-
 
         # Initialize default settings
 

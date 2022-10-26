@@ -9,7 +9,6 @@
 # @author: lorenz.padberg@iterativ.ch
 import logging
 
-from openopc.opc_da_client import OpcDaClient
 import Pyro5.client
 
 logger = logging.getLogger(__name__)

@@ -1,17 +1,16 @@
-import string
-
 import logging
 import os
+import string
+from collections import namedtuple
 from dataclasses import dataclass
 from enum import Enum
-from collections import namedtuple
+
+import Pyro5.core
 
 from openopc.exceptions import OPCError
 from openopc.pythoncom_datatypes import VtType
-import Pyro5.core
 
 logger = logging.getLogger(__name__)
-
 
 # Win32 only modules not needed for 'open' protocol mode
 if os.name == 'nt':
@@ -105,6 +104,7 @@ class OpcCom:
     """
     This class handles the com interface of the OPC DA server.
     """
+
     def __init__(self, opc_class: str):
         # TODO: Get browser type (hierarchical etc)
         self.server: string = None

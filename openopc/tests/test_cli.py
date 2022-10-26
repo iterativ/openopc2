@@ -1,8 +1,7 @@
-import os
 from unittest import TestCase
 
-from openopc.open_opc_cli import OpcCli
 from opc_server_config import OPC_SERVER, OPC_HOST
+from openopc.open_opc_cli import OpcCli
 
 
 class TestOpcCli(TestCase):
@@ -39,5 +38,3 @@ class TestOpcCli(TestCase):
 
     def test_write_tags(self):
         self.opc_cli.cli_write([('Bucket Brigade.Boolean', True)])
-
-

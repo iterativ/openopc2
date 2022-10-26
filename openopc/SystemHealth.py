@@ -3,8 +3,6 @@ import math
 import os
 import time
 
-
-
 __version__ = '1.0.1'
 
 try:
@@ -12,6 +10,7 @@ try:
     import pywintypes
     import win32pdh
     import win32process
+
     wmi_found = True
 except ImportError:
     wmi_found = False

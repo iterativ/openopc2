@@ -1,4 +1,5 @@
 from enum import IntEnum
+
 """
 The VT type can be generatated with the follwing code
 

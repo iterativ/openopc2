@@ -14,4 +14,3 @@ class TestConfig(TestCase):
         self.assertEqual(config.OPC_CLIENT, 'OpenOPC')
         config.OPC_CLIENT = 'Shubi'
         self.assertEqual(config.OPC_CLIENT, 'Shubi')
-

@@ -1,10 +1,13 @@
-import time
-from unittest import TestCase, skipIf
-from opc_server_config import OPC_HOST, OPC_CLASS, OPC_SERVER
+from unittest import TestCase
+from opc_server_config import OPC_SERVER
+from openopc.opc_gateway_server import OpenOpcGatewayServer
+from unittest import TestCase
+
+from opc_server_config import OPC_SERVER
 from openopc.opc_gateway_server import OpenOpcGatewayServer
 
-
 new_client = "OPC.Automation"
+
 
 class TestOpcGatewayServer(TestCase):
     def test_init(self):
@@ -27,4 +30,3 @@ class TestOpcGatewayServer(TestCase):
         server.create_client(new_client)
         server.create_client(new_client)
         server.print_clients()
-

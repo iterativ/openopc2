@@ -18,14 +18,13 @@ class TestServerInfo(TestCase):
             self.assertEqual(('Protocol', 'OpenOPC'), info[0])
             self.assertEqual('Gateway Host', info[1][0])
             self.assertEqual('Gateway Version', info[2][0])
-            self.assertEqual(('Class', 'Matrikon.OPC.Automation'), info[3] )
+            self.assertEqual(('Class', 'Matrikon.OPC.Automation'), info[3])
 
         else:
             self.assertEqual(('Protocol', 'DCOM'), info[0])
             self.assertEqual(('Client Name', ''), info[2])
             self.assertEqual('OPC Host', info[3][0], )
             self.assertEqual(('Class', 'OPC.Automation'), info[1])
-
 
     #
     # def test_close_connection(self):

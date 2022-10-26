@@ -8,6 +8,7 @@
 #
 ###########################################################################
 
+import logging
 import os
 import re
 import socket
@@ -16,15 +17,13 @@ import sys
 import time
 import uuid
 from multiprocessing import Queue
-import logging
+
 import Pyro5.core
 
-
-from openopc.config import open_opc_config
-from openopc.opc_da_com import OpcCom
-from openopc.exceptions import OPCError
 import openopc.SystemHealth as SystemHealth
-
+from openopc.config import open_opc_config
+from openopc.exceptions import OPCError
+from openopc.opc_da_com import OpcCom
 
 logger = logging.getLogger(__name__)
 
@@ -822,7 +821,7 @@ class OpcDaClient:
             error_msg = 'remove: %s' % self._get_error_str(err)
             raise OPCError(error_msg)
 
-    def iproperties(self, tags, property_ids: list=[]):
+    def iproperties(self, tags, property_ids: list = []):
         """Iterable version of properties()"""
 
         try:
@@ -998,7 +997,8 @@ class OpcDaClient:
             info_list += [('OPC Host', self.opc_host)]
             info_list += [('OPC Server', self._opc.server_name)]
             info_list += [('State', OPC_STATUS[self._opc.server_state])]
-            info_list += [('Version', f'{self._opc.major_version}.{self._opc.minor_version} (Build{self._opc.build_number})')]
+            info_list += [
+                ('Version', f'{self._opc.major_version}.{self._opc.minor_version} (Build{self._opc.build_number})')]
 
             browser = self._opc.create_browser()
             browser_type = BROWSER_TYPE.get(browser.Organization, 'Not Supported')

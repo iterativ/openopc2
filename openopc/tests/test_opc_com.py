@@ -1,8 +1,8 @@
 import time
 from unittest import TestCase, skipIf
 
-from openopc.opc_da_com import OpcCom
 from opc_server_config import OPC_HOST, OPC_SERVER, USE_GATEWAY, OPC_CLASS
+from openopc.opc_da_com import OpcCom
 
 TAG = 'Bucket Brigade.Int1'
 
@@ -53,5 +53,3 @@ class TestOpenOpcCom(TestCase):
             print(TAG)
             properties = self.opccom.get_tag_properties(TAG)
         print(f"all {time.time() - start}")
-
-
