@@ -21,9 +21,9 @@ import datetime
 import re, time, csv
 import Pyro5
 
-from openopc120.opc_gateway_proxy import OpenOpcGatewayProxy
-from openopc120.opc_da_client import OpcDaClient
-from openopc120.config import open_opc_config
+from openopc.opc_gateway_proxy import OpenOpcGatewayProxy
+from openopc.opc_da_client import OpcDaClient
+from openopc.config import open_opc_config
 from exceptions import TimeoutError, OPCError
 
 

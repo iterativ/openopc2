@@ -1,4 +1,4 @@
-from openopc120.opc_da_client import OpcDaClient
+from openopc.opc_da_client import OpcDaClient
 from opc_gateway_proxy import OpenOpcGatewayProxy
 
 OPC_SERVER = "Matrikon.OPC.Simulation.1"

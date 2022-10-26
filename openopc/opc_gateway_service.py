@@ -24,9 +24,9 @@ import winerror
 
 import Pyro5.core
 
-from openopc120.opc_gateway_server import main as opc_gateway_server_main
-from openopc120.config import open_opc_config
-from openopc120.opc_da_client import __version__
+from openopc.opc_gateway_server import main as opc_gateway_server_main
+from openopc.config import open_opc_config
+from openopc.opc_da_client import __version__
 
 logger = logging.getLogger(__name__)
 

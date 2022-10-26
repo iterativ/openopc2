@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from enum import Enum
 from collections import namedtuple
 
-from openopc120.exceptions import OPCError
-from openopc120.pythoncom_datatypes import VtType
+from openopc.exceptions import OPCError
+from openopc.pythoncom_datatypes import VtType
 import Pyro5.core
 
 logger = logging.getLogger(__name__)

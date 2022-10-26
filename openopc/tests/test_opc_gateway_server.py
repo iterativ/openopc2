@@ -1,7 +1,7 @@
 import time
 from unittest import TestCase, skipIf
 from opc_server_config import OPC_HOST, OPC_CLASS, OPC_SERVER
-from openopc120.opc_gateway_server import OpenOpcGatewayServer
+from openopc.opc_gateway_server import OpenOpcGatewayServer
 
 
 new_client = "OPC.Automation"

@@ -12,8 +12,8 @@ import os
 
 import Pyro5.server
 
-from openopc120.opc_da_client import OpcDaClient, __version__
-from openopc120.config import open_opc_config
+from openopc.opc_da_client import OpcDaClient, __version__
+from openopc.config import open_opc_config
 
 
 @Pyro5.api.expose

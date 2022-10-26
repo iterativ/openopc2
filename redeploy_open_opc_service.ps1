@@ -10,5 +10,5 @@ pyinstaller --onefile `
             --hidden-import=pythoncom  `
             ./openopc120/opc_gateway_service.py
 
-./dist/opc_gateway_service/opc_gateway_service.exe install
-./dist/opc_gateway_service/opc_gateway_service.exe start debug
+./dist/opc_gateway_service.exe install
+./dist/opc_gateway_service.exe start debug

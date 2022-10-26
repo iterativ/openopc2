@@ -20,10 +20,10 @@ import logging
 import Pyro5.core
 
 
-from openopc120.config import open_opc_config
-from openopc120.opc_da_com import OpcCom
-from openopc120.exceptions import OPCError
-import openopc120.SystemHealth as SystemHealth
+from openopc.config import open_opc_config
+from openopc.opc_da_com import OpcCom
+from openopc.exceptions import OPCError
+import openopc.SystemHealth as SystemHealth
 
 
 logger = logging.getLogger(__name__)
