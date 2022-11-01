@@ -10,3 +10,6 @@ dist
 
 # Poetry
 poetry.lock
+
+# Other
+.DS_Store
