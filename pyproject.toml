@@ -2,13 +2,20 @@
 name = "openopc2"
 version = "2.0.0"
 description = "OpenOPC for Python is a free, open source and easy to use OPC (OLE for Process Control) library designed to be used with the popular Python programming language. The project also includes a Windows gateway service that enable non-Windows clients to also access OPC-DA calls."
+license = "GPL-2.0-or-later"
+readme = "README.md"
 authors = [
     "Lorenz Padberg <lorenz.padberg@iterativ.ch>",
     "Elia Bieri <elia.bieri@iterativ.ch>",
 ]
-license = "LICENSE.txt"
-readme = "README.md"
+repository = "https://github.com/iterativ/openopc2"
 keywords = ["opc", "openopc", "opc-da", "opc classic"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator",
+    "Intended Audience :: Manufacturing",
+]
 
 [tool.poetry.dependencies]
 python = "<3.12,>=3.7"
