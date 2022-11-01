@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "openopc2"
+version = "2.0.0"
+description = "OpenOPC for Python is a free, open source and easy to use OPC (OLE for Process Control) library designed to be used with the popular Python programming language. The project also includes a Windows gateway service that enable non-Windows clients to also access OPC-DA calls."
+authors = [
+    "Lorenz Padberg <lorenz.padberg@iterativ.ch>",
+    "Elia Bieri <elia.bieri@iterativ.ch>",
+]
+license = "LICENSE.txt"
+readme = "README.md"
+keywords = ["opc", "openopc", "opc-da", "opc classic"]
+
+[tool.poetry.dependencies]
+python = "<3.12,>=3.7"
+rich = "^12.6.0"
+pyro5 = "^5.14"
+WMI = { version = "^1.5.1", markers = "sys_platform == 'win32'" }
+pywin32 = { version = "304", markers = "sys_platform == 'win32'" }
+
+[tool.poetry.group.dev.dependencies]
+coverage = "^6.5.0"
+pyinstaller = "^5.6.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

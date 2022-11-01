@@ -1,5 +1,9 @@
-*.pyc
+# IDEs
 .idea
-.direnv
+.vscode
+
+# Python
 build
+**/__pycache__
 *.spec
+dist
