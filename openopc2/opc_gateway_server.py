@@ -11,8 +11,8 @@ import time
 
 import Pyro5.server
 
-from openopc.config import open_opc_config
-from openopc.opc_da_client import OpcDaClient, __version__
+from openopc2.config import open_opc_config
+from openopc2.opc_da_client import OpcDaClient, __version__
 
 
 @Pyro5.api.expose

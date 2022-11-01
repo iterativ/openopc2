@@ -21,9 +21,9 @@ from sys import *
 import Pyro5
 
 from exceptions import TimeoutError, OPCError
-from openopc.config import open_opc_config
-from openopc.opc_da_client import OpcDaClient
-from openopc.opc_gateway_proxy import OpenOpcGatewayProxy
+from config import open_opc_config
+from opc_da_client import OpcDaClient
+from opc_gateway_proxy import OpenOpcGatewayProxy
 
 
 class Style:
@@ -665,13 +665,13 @@ class OpcCli:
         """
         print(
             f"""
-         
+
             OpenOPC Command Line Client', OpenOPC 2
             Copyright (c) 2007-2015 Barry Barnreiter (barrybb@gmail.com)'
-            
+
             Usage:  OpenOpcGatewayServer [OPTIONS] [ACTION] [ITEM|PATH...]'
-         
-            
+
+
             Actions:'
               -r, --read                 Read ITEM values (default action)
               -w, --write                Write values to ITEMs (use ITEM=VALUE)'
@@ -681,7 +681,7 @@ class OpcCli:
               -i, --info                 Display OPC server information'
               -q, --servers              Query list of available OPC servers'
               -S, --sessions             List sessions in OpenOPC Gateway Service'
-            
+
             Options:'
               -m MODE, --mode=MODE       Protocol MODE (dcom, open) (default: OPC_MODE)
               -C CLASS,--class=CLASS     OPC Automation CLASS (default: OPC_CLASS)
@@ -690,14 +690,14 @@ class OpcCli:
               -s SERV, --server=SERVER   DCOM OPC SERVER (default: OPC_SERVER)'
               -H HOST, --gate-host=HOST  OpenOPC Gateway HOST (default: OPC_GATE_HOST)'
               -P PORT, --gate-port=PORT  OpenOPC Gateway PORT (default: OPC_GATE_PORT)'
-            
+
               -F FUNC, --function=FUNC   Read FUNCTION to use (sync, async)'
               -c SRC,  --source=SOURCE   Set data SOURCE for reads (cache, device, hybrid)'
               -g SIZE, --size=SIZE       Group tags into SIZE items per transaction'
               -z MSEC, --pause=MSEC      Sleep MSEC milliseconds between transactions'
               -u MSEC, --update=MSEC     Set update rate for group to MSEC milliseconds'
               -t MSEC, --timeout=MSEC    Set read timeout to MSEC mulliseconds'
-            
+
               -o FMT,  --output=FORMAT   Output FORMAT (table, values, pairs, csv, html)'
               -L SEC,  --repeat=SEC      Loop ACTION every SEC seconds until stopped'
               -y ID,   --id=ID,...       Retrieve only specific Property IDs'

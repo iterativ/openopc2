@@ -20,10 +20,10 @@ from multiprocessing import Queue
 
 import Pyro5.core
 
-import openopc.SystemHealth as SystemHealth
-from openopc.config import open_opc_config
-from openopc.exceptions import OPCError
-from openopc.opc_da_com import OpcCom
+import openopc2.SystemHealth as SystemHealth
+from openopc2.config import open_opc_config
+from openopc2.exceptions import OPCError
+from openopc2.opc_da_com import OpcCom
 
 logger = logging.getLogger(__name__)
 

@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from openopc.config import open_opc_config
+from openopc2.config import open_opc_config
 
 
 class TestConfig(TestCase):

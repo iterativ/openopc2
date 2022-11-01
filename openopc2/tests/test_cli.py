@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from opc_server_config import OPC_SERVER, OPC_HOST
-from openopc.open_opc_cli import OpcCli
+from openopc2.open_opc_cli import OpcCli
 
 
 class TestOpcCli(TestCase):

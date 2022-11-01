@@ -7,8 +7,8 @@ from enum import Enum
 
 import Pyro5.core
 
-from openopc.exceptions import OPCError
-from openopc.pythoncom_datatypes import VtType
+from openopc2.exceptions import OPCError
+from openopc2.pythoncom_datatypes import VtType
 
 logger = logging.getLogger(__name__)
 
