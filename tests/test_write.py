@@ -1,9 +1,7 @@
 import numbers
 from unittest import TestCase
 
-from colorama import Fore
-
-from opc_server_config import connect_opc_client
+from .opc_server_config import connect_opc_client
 
 
 class TestWriteTags(TestCase):
@@ -58,11 +56,10 @@ def print_write_result(write_result, tag, old, new):
     if type(write_result) == list:
         write_result = write_result[0]
     success = write_result[0] == 'Success'
-    color = Fore.GREEN if success else Fore.RED
     if success:
-        print(f"{color}{write_result[0]}: {tag:20} old: {old} new: {new}")
+        print(f"{write_result[0]}: {tag:20} old: {old} new: {new}")
     else:
-        print(f"{color}{write_result}")
+        print(write_result)
 
 
 def create_new_value(old_value):

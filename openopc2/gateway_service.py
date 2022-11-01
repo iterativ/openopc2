@@ -22,8 +22,8 @@ import win32serviceutil
 import winerror
 
 from openopc2.config import open_opc_config
-from openopc2.opc_da_client import __version__
-from openopc2.opc_gateway_server import main as opc_gateway_server_main
+from openopc2.da_client import __version__
+from openopc2.gateway_server import main as opc_gateway_server_main
 
 logger = logging.getLogger(__name__)
 

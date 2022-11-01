@@ -20,10 +20,10 @@ from multiprocessing import Queue
 
 import Pyro5.core
 
-import openopc2.SystemHealth as SystemHealth
+from openopc2 import system_health
 from openopc2.config import open_opc_config
 from openopc2.exceptions import OPCError
-from openopc2.opc_da_com import OpcCom
+from openopc2.da_com import OpcCom
 
 logger = logging.getLogger(__name__)
 
@@ -565,23 +565,23 @@ class OpcDaClient:
 
         for t in tags:
             if t == '@MemFree':
-                value = SystemHealth.mem_free()
+                value = system_health.mem_free()
             elif t == '@MemUsed':
-                value = SystemHealth.mem_used()
+                value = system_health.mem_used()
             elif t == '@MemTotal':
-                value = SystemHealth.mem_total()
+                value = system_health.mem_total()
             elif t == '@MemPercent':
-                value = SystemHealth.mem_percent()
+                value = system_health.mem_percent()
             elif t == '@DiskFree':
-                value = SystemHealth.disk_free()
+                value = system_health.disk_free()
             elif t == '@SineWave':
-                value = SystemHealth.sine_wave()
+                value = system_health.sine_wave()
             elif t == '@SawWave':
-                value = SystemHealth.saw_wave()
+                value = system_health.saw_wave()
 
             elif t == '@CpuUsage':
                 if self.cpu is None:
-                    self.cpu = SystemHealth.CPU()
+                    self.cpu = system_health.CPU()
                     time.sleep(0.1)
                 value = self.cpu.get_usage()
 
@@ -591,17 +591,17 @@ class OpcDaClient:
                 m = re.match('@TaskMem\((.*?)\)', t)
                 if m:
                     image_name = m.group(1)
-                    value = SystemHealth.task_mem(image_name)
+                    value = system_health.task_mem(image_name)
 
                 m = re.match('@TaskCpu\((.*?)\)', t)
                 if m:
                     image_name = m.group(1)
-                    value = SystemHealth.task_cpu(image_name)
+                    value = system_health.task_cpu(image_name)
 
                 m = re.match('@TaskExists\((.*?)\)', t)
                 if m:
                     image_name = m.group(1)
-                    value = SystemHealth.task_exists(image_name)
+                    value = system_health.task_exists(image_name)
 
             if value is None:
                 quality = 'Error'

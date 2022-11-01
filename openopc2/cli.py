@@ -20,10 +20,9 @@ from sys import *
 
 import Pyro5
 
-from exceptions import TimeoutError, OPCError
-from config import open_opc_config
-from opc_da_client import OpcDaClient
-from opc_gateway_proxy import OpenOpcGatewayProxy
+from openopc2.config import open_opc_config
+from openopc2.da_client import OpcDaClient
+from openopc2.gateway_proxy import OpenOpcGatewayProxy
 
 
 class Style:

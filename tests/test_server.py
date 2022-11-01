@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from opc_server_config import connect_opc_client, USE_GATEWAY
+from .opc_server_config import connect_opc_client, USE_GATEWAY
 
 
 class TestServerInfo(TestCase):

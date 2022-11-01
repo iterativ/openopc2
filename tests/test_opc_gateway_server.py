@@ -1,10 +1,7 @@
 from unittest import TestCase
-from opc_server_config import OPC_SERVER
-from openopc2.opc_gateway_server import OpenOpcGatewayServer
-from unittest import TestCase
+from openopc2.gateway_server import OpenOpcGatewayServer
+from .opc_server_config import OPC_SERVER
 
-from opc_server_config import OPC_SERVER
-from openopc2.opc_gateway_server import OpenOpcGatewayServer
 
 new_client = "OPC.Automation"
 

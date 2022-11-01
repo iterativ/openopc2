@@ -1,5 +1,5 @@
-from opc_gateway_proxy import OpenOpcGatewayProxy
-from openopc2.opc_da_client import OpcDaClient
+from openopc2.gateway_proxy import OpenOpcGatewayProxy
+from openopc2.da_client import OpcDaClient
 
 OPC_SERVER = "Matrikon.OPC.Simulation.1"
 OPC_HOST = "192.168.0.115"

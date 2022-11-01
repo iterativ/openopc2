@@ -1,7 +1,7 @@
 from unittest import TestCase, skipIf
 
-from opc_gateway_proxy import OpenOpcGatewayProxy
-from opc_server_config import OPC_HOST, USE_GATEWAY, OPC_CLASS
+from openopc2.gateway_proxy import OpenOpcGatewayProxy
+from .opc_server_config import OPC_HOST, USE_GATEWAY, OPC_CLASS
 
 
 @skipIf(not USE_GATEWAY, "USE_GATEWAY is disabled")
