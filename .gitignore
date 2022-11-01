@@ -7,3 +7,6 @@ build
 **/__pycache__
 *.spec
 dist
+
+# Poetry
+poetry.lock
