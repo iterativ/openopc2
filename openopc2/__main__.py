@@ -1,6 +1,4 @@
-from openopc2.cli import OpcCli
+import openopc2.cli as cli
 
 if __name__ == '__main__':
-    opc_cli = OpcCli()
-    print("*" * 100)
-    opc_cli.parse_arguments()
+    cli.cli()

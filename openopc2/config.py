@@ -7,7 +7,7 @@ class OpenOpcConfig:
         self.OPC_HOST: str = 'localhost'
         self.OPC_SERVER: str = 'Hci.TPNServer;HwHsc.OPCServer;OpenOpcGatewayServer.deltav.1;AIM.OPC.1;Yokogawa.ExaopcDAEXQ.1;OSI.DA.1;OPC.PHDServerDA.1;Aspen.Infoplus21_DA.1;National Instruments.OPCLabVIEW;RSLinx OPC Server;KEPware.KEPServerEx.V4;Matrikon.OPC.Simulation;Prosys.OPC.Simulation;CCOPC.XMLWrapper.1;OPC.SimaticHMI.CoRtHmiRTm.1'
         self.OPC_CLIENT: str = 'OpenOPC'
-        self.OPC_GATEWAY_HOST: str = os.environ.get('OPC_GATE_HOST', 'localhost')
+        self.OPC_GATEWAY_HOST: str = os.environ.get('OPC_GATE_HOST', '192.168.0.115')
         self.OPC_GATEWAY_PORT: int = int(os.environ.get('OPC_GATE_PORT', 7766))
         self.OPC_CLASS: str = "OPC.Automation"  # os.environ.get('OPC_CLASS', "OPC.Automation")
         self.OPC_MODE: Literal["GATEWAY", "COM"] = os.environ.get('OPC_MODE', "gateway")

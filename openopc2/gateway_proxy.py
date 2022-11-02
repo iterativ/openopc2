@@ -7,10 +7,7 @@
 #
 # Created on 2022-10-24
 # @author: lorenz.padberg@iterativ.ch
-import logging
 import Pyro5.client
-
-logger = logging.getLogger(__name__)
 
 
 class OpenOpcGatewayProxy:

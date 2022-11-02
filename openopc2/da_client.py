@@ -25,7 +25,7 @@ from openopc2.config import OpenOpcConfig
 from openopc2.exceptions import OPCError
 from openopc2.da_com import OpcCom
 
-logger = logging.getLogger(__name__)
+from openopc2.logger import log
 
 SOURCE_CACHE = 1
 SOURCE_DEVICE = 2
@@ -57,7 +57,7 @@ if os.name == 'nt':
 
     # So we can work on Windows in "open" protocol mode without the need for the win32com modules
     except ImportError as e:
-        print(e)
+        log.exception(e)
         win32com_found = False
     else:
         win32com_found = True
@@ -153,7 +153,7 @@ class OpcDaClient:
     def connect(self, opc_server=None, opc_host='localhost'):
         """Connect to the specified OPC server"""
 
-        logger.info(f"OPC DA OpcDaClient connecting to {opc_server} {opc_host}")
+        log.info(f"OPC DA OpcDaClient connecting to {opc_server} {opc_host}")
         self._opc.connect(opc_host, opc_server)
         self.connected = True
 
@@ -212,7 +212,7 @@ class OpcDaClient:
             try:
                 errors = opc_items.Validate(len(names) - 1, names)
             except:
-                logger.exception("Validation error", errors)
+                log.exception("Validation error", errors)
                 pass
 
             valid_tags = []
@@ -250,7 +250,7 @@ class OpcDaClient:
             try:
                 server_handles, errors = opc_items.AddItems(len(client_handles) - 1, valid_tags, client_handles)
             except Exception as e:
-                logger.exception("Error adding items to Group", exc_info=True)
+                log.exception("Error adding items to Group", exc_info=True)
                 pass
 
             valid_tags_tmp = []
@@ -673,7 +673,7 @@ class OpcDaClient:
                 try:
                     errors = opc_items.Validate(len(names) - 1, names)
                 except:
-                    print(errors)
+                    log.exception(errors)
                     pass
 
                 n = 1
@@ -851,7 +851,7 @@ class OpcDaClient:
 
             # For OPC servers that don't support browsing
             except:
-                print("This Server does not support Browsing")
+                log.exception("This Server does not support Browsing")
                 return
 
             paths, single, valid = type_check(paths)

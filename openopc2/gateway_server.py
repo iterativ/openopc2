@@ -6,6 +6,10 @@ import Pyro5.server
 from openopc2.config import OpenOpcConfig
 from openopc2.da_client import OpcDaClient, __version__
 
+from openopc2.logger import log
+
+from rich import print
+
 
 @Pyro5.api.expose
 class OpenOpcGatewayServer:
@@ -20,7 +24,7 @@ class OpenOpcGatewayServer:
         self.tx_times = {}
         self.pyro_daemon = None
         self.uri = None
-        print(f'Initialized OpenOPC gateway Server uri: {self.uri}')
+        log.info(f'Initialized OpenOPC gateway Server uri: {self.uri}')
 
     def print_clients(self):
         for client in self.get_clients():
@@ -38,11 +42,11 @@ class OpenOpcGatewayServer:
             })
         return out_list
 
-    def create_client(self, opc_class: str = open_opc_config.OPC_CLASS):
+    def create_client(self, open_opc_config: OpenOpcConfig = OpenOpcConfig().OPC_CLASS):
         """Create a new OpenOPC instance in the Pyro server"""
         print(f"-" * 80)
 
-        opc_da_client = OpcDaClient(opc_class)
+        opc_da_client = OpcDaClient(open_opc_config)
 
         client_id = opc_da_client.client_id
         # TODO: This seems like a circular object tree...
@@ -77,7 +81,7 @@ class OpenOpcGatewayServer:
         """
         print(welcome_message)
 
-        open_opc_config.print_config()
+        OpenOpcConfig().print_config()
 
 
 def main(host, port):
@@ -90,5 +94,5 @@ def main(host, port):
 
 
 if __name__ == '__main__':
-    pyro_daemon = main(open_opc_config.OPC_GATEWAY_HOST, open_opc_config.OPC_GATEWAY_PORT)
+    pyro_daemon = main(OpenOpcConfig().OPC_GATEWAY_HOST, OpenOpcConfig().OPC_GATEWAY_PORT)
     pyro_daemon.requestLoop()
