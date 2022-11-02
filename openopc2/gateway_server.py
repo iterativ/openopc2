@@ -14,6 +14,10 @@ import Pyro5.server
 from openopc2.config import open_opc_config
 from openopc2.da_client import OpcDaClient, __version__
 
+from openopc2.logger import log
+
+from rich import print
+
 
 @Pyro5.api.expose
 class OpenOpcGatewayServer:
@@ -28,7 +32,7 @@ class OpenOpcGatewayServer:
         self.tx_times = {}
         self.pyro_daemon = None
         self.uri = None
-        print(f'Initialized OpenOPC gateway Server uri: {self.uri}')
+        log.info(f'Initialized OpenOPC gateway Server uri: {self.uri}')
 
     def print_clients(self):
         for client in self.get_clients():

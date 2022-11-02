@@ -1,4 +1,3 @@
-import logging
 import os
 import string
 from collections import namedtuple
@@ -9,8 +8,7 @@ import Pyro5.core
 
 from openopc2.exceptions import OPCError
 from openopc2.pythoncom_datatypes import VtType
-
-logger = logging.getLogger(__name__)
+from openopc2.logger import log
 
 # Win32 only modules not needed for 'open' protocol mode
 if os.name == 'nt':
@@ -20,8 +18,6 @@ if os.name == 'nt':
         import pywintypes
         import win32com.client
         import win32com.server.util
-        import win32event
-        import SystemHealth as SystemHealth
 
         # Win32 variant types
         pywintypes.datetime = pywintypes.TimeType
@@ -35,7 +31,7 @@ if os.name == 'nt':
 
     # So we can work on Windows in "open" protocol mode without the need for the win32com modules
     except ImportError as e:
-        print(e)
+        log.exception(e)
         win32com_found = False
     else:
         win32com_found = True
@@ -125,13 +121,12 @@ class OpcCom:
 
     def initialize_client(self, opc_class):
         try:
-            print(f"Initialize OPC DA OpcDaClient: '{opc_class}'")
+            log.info(f"Initialize OPC DA OpcDaClient: '{opc_class}'")
             pythoncom.CoInitialize()
             self.opc_client = win32com.client.gencache.EnsureDispatch(opc_class, 0)
         except pythoncom.com_error as err:
             # TODO: potential memory leak, destroy pythoncom
-            logger.exception(exc_info=True)
-            logger.exception('Error in initialize OpcDaClient')
+            log.exception('Error in initialize OpcDaClient')
             pythoncom.CoUninitialize()
             raise OPCError(f'Dispatch: {err}')
 
@@ -139,12 +134,12 @@ class OpcCom:
         self.server = server
         self.host = "localhost"
         try:
-            print(f"Connectiong OPC Client Com interface: '{self.server}', '{self.host}'")
+            log.info(f"Connectiong OPC Client Com interface: '{self.server}', '{self.host}'")
             self.opc_client.Connect(self.server, self.host)
         except Exception as e:
-            print(f"Error Connecting OPC Client Com interface: '{self.server}', '{self.host}'")
+            log.error(f"Error Connecting OPC Client Com interface: '{self.server}', '{self.host}'")
 
-            logger.exception('Error connecting OPC Client', exc_info=True)
+            log.exception('Error connecting OPC Client', exc_info=True)
             pass
         self.groups = self.opc_client.OPCGroups
         self.client_name = self.opc_client.ClientName
