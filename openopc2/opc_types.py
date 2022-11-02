@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class ProtocolMode(str, Enum):
     """
     Protocol mode
@@ -7,13 +8,15 @@ class ProtocolMode(str, Enum):
     COM = "com"
     GATEWAY = "gateway"
 
+
 class DataSource(str, Enum):
     """
     Data source for read
     """
-    CACHE= "cache"
+    CACHE = "cache"
     DEVICE = "device"
     HYBRID = "hybrid"
+
 
 class LogLevel(str, Enum):
     """

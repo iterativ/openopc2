@@ -1,11 +1,12 @@
 from unittest import TestCase
 
-from .opc_server_config import connect_opc_client
+from test_config import test_config
+from utils import get_opc_da_client
 
 
 class TestListTags(TestCase):
     def setUp(self) -> None:
-        self.opc_client = connect_opc_client()
+        self.opc_client = get_opc_da_client(test_config())
 
     def test_list_flat_return_tags(self):
         tags = self.opc_client.list(recursive=False, include_type=False, flat=True)

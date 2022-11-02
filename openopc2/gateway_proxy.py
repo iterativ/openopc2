@@ -22,3 +22,5 @@ class OpenOpcGatewayProxy:
     def get_opc_da_client_proxy(self):
         with Pyro5.client.Proxy(f"PYRO:OpcDaClient@{self.host}:{self.port}") as opc_da_client_proxy:
             return opc_da_client_proxy
+
+
