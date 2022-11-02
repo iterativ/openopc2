@@ -1,4 +1,0 @@
-Pyro5==5.14
-pywin32==304
-WMI==1.5.1
-colorama==0.4.4
