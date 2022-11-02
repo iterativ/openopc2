@@ -4,9 +4,9 @@
 
 **OpenOPC 2**  is a Python Library for OPC DA. It is Open source and free for everyone. It allows you to use
 [OPC Classic](https://opcfoundation.org/about/opc-technologies/opc-classic/) (OPC Data Access) in 
-modern Python environents. OPC Classic is a pure Windows technology by design, but ths library includes a Gateway Server
+modern Python environments. OPC Classic is a pure Windows technology by design, but this library includes a Gateway Server
 that lets you use OPC Classic on any architecture (Linux, MacOS, Windows, Docker). So this Library creates a gateway 
-between 2022 and the late 90ties. Like cruising into the sunset with Marty McFly in Tesla. 
+between 2022 and the late 90ties. Like cruising into the sunset with Marty McFly in a Tesla. 
 
 OpenOpc 2 is based on the OpenOpc Library that was initially created by Barry Barnleitner an hosted on Source Forge, but
 It was completely refactorerd and migrated to Python 3.8+
@@ -17,18 +17,16 @@ It was completely refactorerd and migrated to Python 3.8+
 
 * An OpenOPC Gateway Service (a Windows service providing remote access 
 to the OpenOPC library, which is useful to avoid DCOM issues).
-* * Command Line Interface (CLI)
+* Command Line Interface (CLI)
 * Enables you to use OPC Classic with any Platform
-* CLI and Gateway are independen Executables that do not require Python
-* An OpenOPC for Python library module (used to connect to an OPC server 
-from both Windows and Linux).
-* A system check module (allows you to check the health of your system for performance).
+* CLI and Gateway are independent Executables that do not require Python
+* A system check module (allows you to check the health of your system)
 * A free OPC automation wrapper (required DLL file).
 * General documentation with updated procedures (this file).
 
 
 
-## Localhost only, Windows Environment Setup
+##  Windows local environment Setup
 
 Use this setup requires a 32bit Python installation! because the OpcDLLs are 32bit. If you prefere working with a
 64bit Python version you can simply use the With OpenOPC Gateway. 
@@ -46,15 +44,6 @@ openopc2 --install`
 
 `pip install openopc2
 openopc2 --install`
-
-
-## With DCOM
-
-Theoretically it would be possibe to work with DCOM, but this is a pain in the neck and therefore not recommende or documented. 
-
-
-## Installation
-
 
 
 
@@ -105,10 +94,7 @@ Pyro4:    required
 
 * For easy testing, make sure an OPC server is installed in your Windows 
 box (i.e. Matrikon OPC Simulation Server).
-* In order to get the most from the OpenOPC package, Windows developers 
-are encouraged to install both Pywin32 and Pyro4. Using Pyro4 to talk to 
-the Gateway Service provides a quick and easy method for bypassing the 
-DCOM security nightmares which are all too common when using OPC.
+
 * The work environment for testing these changes was a remote Debian 
 Jessie box with a local Windows 7 Ultimate Service Pack 1 32-bit machine 
 (where the Matrikon OPC Simulation Server was installed).
@@ -130,14 +116,14 @@ work directory (i.e. `C:\OpenOPC37`).
 in the command line:
 
 ```
-C:\OpenOPC37\lib>regsvr32 gbda_aut.dll
+C:\openopc2\lib>regsvr32 gbda_aut.dll
 ```
 
 * If, for any reason, you want to uninstall this file and remove it from 
 your system registry later, type this in the command line:
 
 ```
-C:\OpenOPC37\lib>regsvr32 gbda_aut.dll -u
+C:\openopc2\lib>regsvr32 gbda_aut.dll -u
 ```
 
 ### Install the OpenOPC Gateway Service
@@ -147,13 +133,12 @@ the Python interpreter and the "install" argument (remember to do it as
 administrator):
 
 * In the command prompt window, go to your work directory 
-(i.e. `C:\OpenOPC37`).
-* Change to the `src` folder.
+(i.e. `C:\openopc2`).
 * Install the OpenOPC Gateway Service by typing this in the command 
 line:
 
 ```
-C:\OpenOPC37\src>python OpenOPCService.py install
+C:\openopc2\src>python OpenOPCService.py install
 ```
 
 * Wait while the following message is shown on the screen:
@@ -177,14 +162,14 @@ Administrative Tools).
 * By running the `net start SERVICE` command like this:
 
 ```
-C:\OpenOPC37\bin>net start zzzOpenOPCService
+C:\openopc2\bin> zzzOpenOPCService
 ```
 
 * If you have problems starting the service, you can also try to start 
 this in "debug" mode:
 
 ```
-C:\OpenOPC37\src>python OpenOPCService.py debug
+C:\openopc2\src>python OpenOPCService.py debug
 ```
 
 ### Stop the OpenOPC Gateway Service
@@ -212,19 +197,7 @@ configure it to start in "automatic" mode. To do this:
 buttons.
 * Start the service (if not already started).
 
-### Implement the OpenOPC library module
 
-Go [here](http://openopc.sourceforge.net/) for the basic implementation 
-of the library. But, if you want updated procedures using Python 3.4+, 
-see the wiki pages.
-
-
-## Documentation
-
-A PDF manual for OpenOPC is included in this repository inside the `doc` 
-folder, written by the original author. Users are encouraged to also 
-look at the [OpenOPC web site](http://openopc.sourceforge.net/) for 
-additional usage examples that may not be contained in the manual.
 
 
 ## Credits
@@ -236,16 +209,11 @@ The authors of this package are:
 Copyright (c) 2008-2012 by Barry Barnreiter (barry_b@users.sourceforge.net)
 Copyright (c) 2014 by Anton D. Kachalov (mouse@yandex.ru)
 Copyright (c) 2017 by José A. Maita (jose.a.maita@gmail.com)
+Copyright (c) 2022 by Lorenz Padberg (github: renzop)
+Copyright (c) 2022 by Elia Biery (github: eliabieri)
+
 
 ```
-
-
-## Contact
-
-If you need technical assistance to implement this in a larger project, go 
-to the main site [here](https://joseamaita.com/en/) or 
-[here](https://joseamaita.com/en/contact-me/) for more detailed information.
-
 
 ## License
 
