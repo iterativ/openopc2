@@ -8,7 +8,7 @@ modern Python environments. OPC Classic is a pure Windows technology by design, 
 that lets you use OPC Classic on any architecture (Linux, MacOS, Windows, Docker). So this Library creates a gateway 
 between 2022 and the late 90ties. Like cruising into the sunset with Marty McFly in a Tesla. 
 
-OpenOpc 2 is based on the OpenOpc Library that was initially created by Barry Barnleitner an hosted on Source Forge, but
+OpenOpc 2 is based on the OpenOpc Library that was initially created by Barry Barnleitner and hosted on Source Forge, but
 It was completely refactorerd and migrated to Python 3.8+
 
 
@@ -74,23 +74,6 @@ completely.
 * Keep in mind this scheme if you're still have questions about which 
 packages are required and which ones are optional for you to work 
 without issues (remember that Python is necessary on all platforms):
-
-```
-1. Win32 platform, using the OpenOPC Gateway Service
-
-Pywin32:  optional
-Pyro4:    required
-
-2. Win32 platform, talking to OPC Servers directly using COM/DCOM
-
-Pywin32:  required
-Pyro4:    optional
-
-3. Non-Windows platform (use of Gateway Service is mandatory)
-
-Pywin32:  not applicable
-Pyro4:    required
-```
 
 * For easy testing, make sure an OPC server is installed in your Windows 
 box (i.e. Matrikon OPC Simulation Server).
