@@ -1,4 +1,6 @@
+<p align="center">
 <img src="./doc/assets/open-opc.png" alt="LinuxSetup" width="700"/>
+</p>
 
 **OpenOPC 2**  is a Python Library for OPC DA. It is Open source and free for everyone. It allows you to use
 [OPC Classic](https://opcfoundation.org/about/opc-technologies/opc-classic/) (OPC Data Access) in 
