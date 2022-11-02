@@ -1,6 +1,7 @@
 from unittest import TestCase
 from openopc2.gateway_server import OpenOpcGatewayServer
-from .opc_server_config import OPC_SERVER
+from test_config import test_config
+
 
 
 new_client = "OPC.Automation"
@@ -13,7 +14,7 @@ class TestOpcGatewayServer(TestCase):
     def test_create_client(self):
         server = OpenOpcGatewayServer()
         opc_client = server.create_client(new_client)
-        opc_client.connect(OPC_SERVER)
+        opc_client.connect(test_config().OPC_SERVER)
         tags = opc_client.list()
         self.assertEqual(['Simulation Items', 'Configured Aliases'], tags)
 

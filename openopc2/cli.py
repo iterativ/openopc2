@@ -21,8 +21,9 @@ from sys import *
 import Pyro5
 
 from openopc2.config import open_opc_config
-from openopc2.da_client import OpcDaClient
+from openopc2.da_client import OpcDaClient, OPCError
 from openopc2.gateway_proxy import OpenOpcGatewayProxy
+from utils import get_opc_da_client
 
 
 class Style:
@@ -193,9 +194,8 @@ class OpcCli:
 
         # Initialize default settings
 
-        opc_mode = 'dcom' if os.name == 'nt' else 'open'
         self.opc = None
-        self.opc_client = OpcDaClient(open_opc_config.OPC_CLASS)
+        self.opc_client = get_opc_da_client()
         self.action = None
         self.style = Style.TABLE
         self.append = ''

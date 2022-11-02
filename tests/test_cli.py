@@ -1,14 +1,11 @@
 from unittest import TestCase
-
+import test_config
 from openopc2.cli import OpcCli
-from .opc_server_config import OPC_SERVER, OPC_HOST
 
-
+print(test_config)
 class TestOpcCli(TestCase):
     def setUp(self) -> None:
         self.opc_cli = OpcCli()
-        self.opc_cli.opc_host = OPC_HOST
-        self.opc_cli.opc_server = OPC_SERVER
         self.opc_cli.cli_connect()
 
     def test_help(self):

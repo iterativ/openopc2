@@ -1,62 +1,60 @@
-# OpenOPC for Python
+# OpenOpc 2
+
+**OpenOPC 2**  is a Python Library for OPC DA. It is Open source and free for everyone. It allows you to use
+[OPC Classic](https://opcfoundation.org/about/opc-technologies/opc-classic/) (OPC Data Access) in 
+modern Python environents. OPC Classic is a pure Windows technology by design, but ths library includes a Gateway Server
+that lets you use OPC Classic on any architecture (Linux, MacOS, Windows, Docker). So this Library creates a gateway 
+between 2022 and the late 90ties. Like cruising into the sunset with Marty McFly in Tesla. 
+
+OpenOpc 2 is based on the OpenOpc Library that was initially created by Barry Barnleitner an hosted on Source Forge, but
+It was completely refactorerd and migrated to Python 3.8+
 
 
-## Project Description
 
-**OpenOPC for Python** is a free, open source and easy to use OPC (OLE 
-for Process Control) library designed to be used with the popular Python 
-programming language. The project also includes a Windows gateway 
-service that enable non-Windows clients to also access OPC-DA calls.
-
-The files within this 
-[repository](https://github.com/joseamaita/openopc120) allow us to work 
-with recent versions of Python (v3.7+) and Pyro4 (v4.80+).
-
-If you are interested in the original version from Barry Barnreiter, you 
-can go [here](http://openopc.sourceforge.net/). However, if you want to 
-try a different fork that also works with Python 3.4+ (if you make some 
-minor changes to the Python source code that affects Pyro4), go to the 
-GitHub version of Anton D. Kachalov by clicking 
-[here](https://github.com/ya-mouse/openopc).
-
-
-## Contents
-
-This repository offers the following files:
+## Features
 
 * An OpenOPC Gateway Service (a Windows service providing remote access 
 to the OpenOPC library, which is useful to avoid DCOM issues).
+* * Command Line Interface (CLI)
+* Enables you to use OPC Classic with any Platform
+* CLI and Gateway are independen Executables that do not require Python
 * An OpenOPC for Python library module (used to connect to an OPC server 
 from both Windows and Linux).
-* A system check module (allows you to check the health of your system 
-for performance, free memory, tasks list, among others).
+* A system check module (allows you to check the health of your system for performance).
 * A free OPC automation wrapper (required DLL file).
 * General documentation with updated procedures (this file).
-* Documentation from the original author.
 
 
-## Prerequisites and Considerations
 
-Follow these steps to prepare your work environment:
+## Localhost only, Windows Environment Setup
 
-* Make sure to download and install a recent Python version (v3.7+) in 
-both your remote (i.e. Debian Jessie) and local (i.e. Windows 7) nodes. 
-To do this, go [here](https://www.python.org/downloads/).
-* Make sure to download and install Python for Windows Extensions 
-(pywin32) for a recent Python version (i.e. pywin32-228.win32-py3.7.exe) 
-in your Windows box. To do this, 
-go [here](https://github.com/mhammond/pywin32/releases).
-* Make sure to download and install a recent Pyro4 version (v4.80+) in 
-both your remote (i.e. Debian Jessie) and local (i.e. Windows 7) nodes 
-by typing:
+Use this setup requires a 32bit Python installation! because the OpcDLLs are 32bit. If you prefere working with a
+64bit Python version you can simply use the With OpenOPC Gateway. 
 
-```
-pip install Pyro4 
+<img src="./doc/assets/WindowsSetup.png" alt="WindowsSetup" width="400"/>
 
-or
 
-pip install Pyro4==4.80
-```
+`pip install openopc2
+openopc2 --install`
+
+## With OpenOpcGateway
+<img src="./doc/assets/LinuxSetup.png" alt="LinuxSetup" width="700"/>
+
+
+
+`pip install openopc2
+openopc2 --install`
+
+
+## With DCOM
+
+Theoretically it would be possibe to work with DCOM, but this is a pain in the neck and therefore not recommende or documented. 
+
+
+## Installation
+
+
+
 
 * Make sure these environment variables in your Windows box are set as 
 shown:

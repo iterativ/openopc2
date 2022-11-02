@@ -1,23 +1,15 @@
-# -*- coding: utf-8 -*-
-#
-# Iterativ GmbH
-# http://www.iterativ.ch/
-#
-# Copyright (c) 2015 Iterativ GmbH. All rights reserved.
-#
-# Created on 2022-10-24
-# @author: lorenz.padberg@iterativ.ch
+
 import time
 
 import Pyro5.server
 
-from openopc2.config import open_opc_config
+from openopc2.config import OpenOpcConfig
 from openopc2.da_client import OpcDaClient, __version__
 
 
 @Pyro5.api.expose
 class OpenOpcGatewayServer:
-    def __init__(self, host: str = open_opc_config.OPC_GATEWAY_HOST, port=open_opc_config.OPC_GATEWAY_PORT):
+    def __init__(self, host, port):
         self.host = str(host)
         self.port = int(port)
 

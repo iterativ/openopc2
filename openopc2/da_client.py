@@ -21,7 +21,7 @@ from multiprocessing import Queue
 import Pyro5.core
 
 from openopc2 import system_health
-from openopc2.config import open_opc_config
+from openopc2.config import OpenOpcConfig
 from openopc2.exceptions import OPCError
 from openopc2.da_com import OpcCom
 
@@ -53,8 +53,6 @@ if os.name == 'nt':
 
         # Allow gencache to create the cached wrapper objects
         win32com.client.gencache.is_readonly = False
-        # Under p2exe the call in gencache to __init__() does not happen
-        # so we use Rebuild() to force the creation of the gen_py folder
         win32com.client.gencache.Rebuild(verbose=0)
 
     # So we can work on Windows in "open" protocol mode without the need for the win32com modules
@@ -90,6 +88,7 @@ def tags2trace(tags):
     return arg_str
 
 
+
 def exceptional(func, alt_return=None, alt_exceptions=(Exception,), final=None, catch=None):
     """Turns exceptions into an alternative return value"""
 
@@ -120,7 +119,7 @@ class GroupEvents:
 
 @Pyro5.api.expose  # needed for 4.55+
 class OpcDaClient:
-    def __init__(self, opc_class=open_opc_config.OPC_CLASS):
+    def __init__(self, open_opc_config: OpenOpcConfig = OpenOpcConfig()):
         """Instantiate OPC automation class"""
 
         self.opc_server = open_opc_config.OPC_SERVER
@@ -128,7 +127,8 @@ class OpcDaClient:
         self.client_name = open_opc_config.OPC_CLIENT
         self.connected = False
         self.client_id = uuid.uuid4()
-        self._opc: OpcCom = OpcCom(opc_class)
+        self.config = open_opc_config
+        self._opc: OpcCom = OpcCom(open_opc_config.OPC_CLASS)
         self._groups = {}
         self._group_tags = {}
         self._group_valid_tags = {}
@@ -137,9 +137,6 @@ class OpcDaClient:
         self._group_hooks = {}
         self._open_serv = None
         self._open_self = None
-        self._opc.client_name = open_opc_config.OPC_CLIENT
-        self._open_host = open_opc_config.OPC_GATEWAY_HOST
-        self._open_port = open_opc_config.OPC_GATEWAY_PORT
         self._open_guid = None
         self._prev_serv_time = None
         self._tx_id = 0
@@ -152,10 +149,6 @@ class OpcDaClient:
     def set_trace(self, trace):
         if self._open_serv is None:
             self.trace = trace
-
-    def __get_opc_servers(self):
-        opc_server_list = open_opc_config.OPC_SERVER.split(';')
-        return opc_server_list
 
     def connect(self, opc_server=None, opc_host='localhost'):
         """Connect to the specified OPC server"""
