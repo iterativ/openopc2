@@ -2,7 +2,7 @@ name: Release package
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - "*.*.*"
 jobs:
