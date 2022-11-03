@@ -1,11 +1,12 @@
 from unittest import TestCase
 
-from .opc_server_config import connect_opc_client, USE_GATEWAY
+from test_config import test_config
+from utils import get_opc_da_client
 
 
 class TestServerInfo(TestCase):
     def setUp(self) -> None:
-        self.opc_client = connect_opc_client()
+        self.opc_client = get_opc_da_client(test_config())
 
     def test_get_server(self):
         available_servers = self.opc_client.servers()
@@ -14,7 +15,7 @@ class TestServerInfo(TestCase):
 
     def test_get_info(self):
         info = self.opc_client.info()
-        if USE_GATEWAY:
+        if test_config().OPC_MODE == 'gateway':
             self.assertEqual(('Protocol', 'OpenOPC'), info[0])
             self.assertEqual('Gateway Host', info[1][0])
             self.assertEqual('Gateway Version', info[2][0])

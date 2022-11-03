@@ -7,11 +7,7 @@
 #
 # Created on 2022-10-24
 # @author: lorenz.padberg@iterativ.ch
-import logging
-
 import Pyro5.client
-
-logger = logging.getLogger(__name__)
 
 
 class OpenOpcGatewayProxy:
@@ -26,3 +22,5 @@ class OpenOpcGatewayProxy:
     def get_opc_da_client_proxy(self):
         with Pyro5.client.Proxy(f"PYRO:OpcDaClient@{self.host}:{self.port}") as opc_da_client_proxy:
             return opc_da_client_proxy
+
+

@@ -2,23 +2,22 @@ import time
 from unittest import TestCase, skipIf
 
 from openopc2.da_com import OpcCom
-from .opc_server_config import OPC_HOST, OPC_SERVER, USE_GATEWAY, OPC_CLASS
-
+from test_config import test_config
 TAG = 'Bucket Brigade.Int1'
 
 
-@skipIf(USE_GATEWAY, "COM interface tests ony if USE Gateway is disabled")
+@skipIf(test_config().OPC_MODE != 'com', "COM interface tests ony if OPC_MODE is com is disabled")
 class TestOpenOpcCom(TestCase):
     def setUp(self):
-        self.opccom = OpcCom(OPC_CLASS)
-        self.opccom.connect(OPC_HOST, OPC_SERVER)
+        self.opccom = OpcCom(test_config().OPC_CLASS)
+        self.opccom.connect(test_config().OPC_HOST, test_config().OPC_SERVER)
 
     def test_init(self):
-        opc_com = OpcCom(OPC_CLASS)
+        opc_com = OpcCom(test_config().OPC_CLASS)
 
     def test_connect(self):
-        opc_com = OpcCom(OPC_CLASS)
-        opc_com.connect(OPC_HOST, OPC_SERVER)
+        opc_com = OpcCom(test_config().OPC_CLASS)
+        opc_com.connect(test_config().OPC_HOST, test_config().OPC_SERVER)
 
     def test_create_browser(self):
         browser = self.opccom.create_browser()
@@ -30,8 +29,8 @@ class TestOpenOpcCom(TestCase):
         server_name = self.opccom.server_name
 
     def test_get_opc_servers(self):
-        opc_servers = self.opccom.get_opc_servers(OPC_HOST)
-        self.assertTrue(OPC_SERVER in opc_servers)
+        opc_servers = self.opccom.get_opc_servers(test_config().OPC_HOST)
+        self.assertTrue(test_config().OPC_SERVER in opc_servers)
         print(opc_servers)
 
     def test_get_available_properties(self):
