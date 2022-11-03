@@ -137,7 +137,6 @@ def read(
         table.add_row(*(str(val) for val in response))
     Console().print(table)
 
-
 @app.command()
 def write(
         tag_value_pairs: list[str] = TagValuePairsArgument,
@@ -215,6 +214,7 @@ def list_clients(log_level: LogLevel = LogLevelOption) -> None:
             table.add_row(client['client_id'], client['tx_time'], client['init_time'])
     console.print(table)
 
+
 @app.command()
 def list_tags(
     protocol_mode: ProtocolMode = ProtocolModeOption,
@@ -284,6 +284,7 @@ def properties(
     Console().print(table)
 
 
+
 @app.command()
 def server_info(
     protocol_mode: ProtocolMode = ProtocolModeOption,
@@ -311,6 +312,7 @@ def server_info(
     for value in response:
         table.add_row(value[0], value[1])
     Console().print(table)
+
 
 
 def cli() -> None:
