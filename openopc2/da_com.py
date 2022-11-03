@@ -134,10 +134,10 @@ class OpcCom:
         self.server = server
         self.host = "localhost"
         try:
-            log.info(f"Connectiong OPC Client Com interface: '{self.server}', '{self.host}'")
+            log.info(f"Connecting OPC Client Com interface: '{self.server}', '{self.host}'")
             self.opc_client.Connect(self.server, self.host)
-        except Exception as e:
-            log.error(f"Error Connecting OPC Client Com interface: '{self.server}', '{self.host}'")
+        except Exception as error:
+            log.error(f"Error Connecting OPC Client Com interface: Server: '{self.server}', Host: '{self.host}', Error: '{error}'")
 
             log.exception('Error connecting OPC Client', exc_info=True)
             pass
