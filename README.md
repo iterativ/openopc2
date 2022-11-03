@@ -228,7 +228,7 @@ buttons.
 ## 🙏 Credits
 
 OpenOPC 2 is based on the OpenOPC python library that was originally created by Barry Barnleitner and its many Forks on
-Github. Without the great work of all the contributors 
+Github. Without the great work of all the contributors, this would not be possible. Contribution is open for everyone. 
 
 The authors of the var package are:
 
