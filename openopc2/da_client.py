@@ -765,9 +765,8 @@ class OpcDaClient:
 
     def write(self, tag_value_pairs, size=None, pause=0, include_error=False):
         """Write list of (tag, value) pair(s) to the server"""
-        single = type(tag_value_pairs) in (list, tuple) and type(tag_value_pairs[0]) in (list, tuple)
         status = list(self.iwrite(tag_value_pairs, size, pause, include_error))
-        return status[0] if single else status
+        return status
 
     def groups(self):
         """Return a list of active tag groups"""
