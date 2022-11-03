@@ -163,6 +163,8 @@ C:\openopc2\lib>regsvr32 gbda_aut.dll -u
 The CLI (Command Line Interface) lets you use OpenOPC2 in the shell and offers you a quick way to explore your opc server
 and the OpenOPC DA client without the need of writing Python code.
 
+The documentation of the CLI can be found [here](CLI.md)
+
 <p>
 <img src="https://github.com/iterativ/openopc2/raw/develop/doc/assets/cli_server-info.png" alt="WindowsSetup" width="400"/>
 </p>
