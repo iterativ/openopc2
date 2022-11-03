@@ -8,12 +8,11 @@ modern Python environments. OPC Classic is a pure Windows technology by design, 
 that lets you use OPC Classic on any architecture (Linux, MacOS, Windows, Docker). So this Library creates a gateway 
 between 2022 and the late 90ties. Like cruising into the sunset with Marty McFly in a Tesla. 
 
-OpenOpc 2 is based on the OpenOpc Library that was initially created by Barry Barnleitner and hosted on Source Forge, but
+OpenOPC 2 is based on the OpenOPC Library that was initially created by Barry Barnleitner and hosted on Source Forge, but
 It was completely refactorerd and migrated to Python 3.8+
 
 
-
-## Features
+# 🔥 Features
 
 * An OpenOPC Gateway Service (a Windows service providing remote access 
 to the OpenOPC library, which is useful to avoid DCOM issues).
@@ -24,31 +23,91 @@ to the OpenOPC library, which is useful to avoid DCOM issues).
 * A free OPC automation wrapper (required DLL file).
 * General documentation with updated procedures (this file).
 
+# 🐍 OpenOPC vs OpenOPC 2
+
+Open OPC 2 is based on OpenOPC and should be seen as a successor. If you already have an application that is based on 
+OpenOPC, you can migrate with a minimal effort. Our main motivation to build this new version was to improve the developer
+experience and create a base for other developers that is easier to maintain, test and work with...
+
+* Simpler installation
+* Mostly the same api (but we take the freedom to not be compatible)
+* No memory leak in the OpenOpcService 🎉
+* Python 3.8+ (tested with 3.10)
+* Typings 
+* Pyro5, increased security
+* We added tests 😎
+* Refactoring for increased readablity
+* Nicer CLI
+* Pipy Package 
 
 
-##  Windows local environment Setup
 
-Use this setup requires a 32bit Python installation! because the OpcDLLs are 32bit. If you prefere working with a
-64bit Python version you can simply use the With OpenOPC Gateway. 
+# 🚀 Getting started
+##  Windows local installation
+
+The quickest way to start is the cli application. Start your OPC server and use the openopc2.exe cli application for test (no python
+installation required). 
+
+
+
+
+
+Now you know that your OPC server is talking to OpenOPC 2. Then lets get started with python. If you use OpenOPC 2 with 
+Python in windows directly you are **limited to a 32bit Python** installattion. This is because the ddls of OPC are 32bit.
+If you prefere working with a 64bit Python version you can simply use the With OpenOPC Gateway. 
 
 <img src="./doc/assets/WindowsSetup.png" alt="WindowsSetup" width="400"/>
 
 
-`pip install openopc2
-openopc2 --install`
+```console
+pip install openopc2
+openopc2 --install
+python -m openopc2 servers
+```
 
-## With OpenOpcGateway
+
+
+## Multi plattform installation
+One of the main benefits of OpenOPC 2 ist the OpenOPC gateway. This enables you to use any modern platform for 
+developting your application. Start the OpenOPC service in the Windows environment where the OPC server is running. 
+The Service starts a server (Pyro5) that lets you use the OpenOPC2 OpcDaClient on another machine. Due to the magic of
+Pyro (Python Remote Objects) the developer experience and usage of the Library remains the same as if you worke int the 
+local Windows setup. 
+
+
+
 <img src="./doc/assets/LinuxSetup.png" alt="LinuxSetup" width="700"/>
 
+On the Windows Machine open the console as administator. 
 
+```shell
+openopc --install
+openopcservice install
+openopcservice start
+```
 
-`pip install openopc2
+On your Linux machine
+```
+pip install openopc2
 openopc2 --install`
+```
+
+python
+```python
+from openopc2.da_client import OpcDaClient
 
 
 
-* Make sure these environment variables in your Windows box are set as 
-shown:
+```
+
+# ⚙️ Configuration 
+
+The configuration of the OpenOpc 2 libray and the OpenOpcGateway is done via environment variables. To initiate them,
+simply run:
+
+```shell
+OpenOPC install 
+```
 
 ```
 OPC_CLASS=Matrikon.OPC.Automation;Graybox.OPC.DAWrapper;HSCOPC.Automation;RSI.OPCAutomation;OPC.Automation
@@ -71,70 +130,54 @@ C:\>set OPC_GATE_HOST=172.16.4.22    # this is an example
 * Make sure the firewall is allowed to keep the port 7766 open. If in 
 doubt, and you're doing a quick test, just turn off your firewall 
 completely.
-* Keep in mind this scheme if you're still have questions about which 
-packages are required and which ones are optional for you to work 
-without issues (remember that Python is necessary on all platforms):
 
 * For easy testing, make sure an OPC server is installed in your Windows 
 box (i.e. Matrikon OPC Simulation Server).
 
-* The work environment for testing these changes was a remote Debian 
-Jessie box with a local Windows 7 Ultimate Service Pack 1 32-bit machine 
-(where the Matrikon OPC Simulation Server was installed).
+* The work environment for testing these changes was a remote MacOs with Window10 64bit host and the Matrikon simulation
+server. 
 
-
-## Installation
-
-### Getting Started
-
-Begin to work with this project by doing this:
-
-* Clone or download the repository as a `.zip` file.
-* Extract the compressed file to a folder in your Windows box 
-(i.e. `C:\OpenOPC37`).
-* Open a command prompt window (run it as administrator) and go to your 
-work directory (i.e. `C:\OpenOPC37`).
-* Change to the `lib` folder.
 * Register the OPC automation wrapper ( `gbda_aut.dll` ) by typing this 
 in the command line:
 
-```
+```shell
 C:\openopc2\lib>regsvr32 gbda_aut.dll
 ```
 
 * If, for any reason, you want to uninstall this file and remove it from 
 your system registry later, type this in the command line:
 
-```
+```shell
 C:\openopc2\lib>regsvr32 gbda_aut.dll -u
 ```
 
-### Install the OpenOPC Gateway Service
 
-This goal can be achieved by running the "OpenOPCService.py" script with 
-the Python interpreter and the "install" argument (remember to do it as 
-administrator):
+# CLI
 
-* In the command prompt window, go to your work directory 
-(i.e. `C:\openopc2`).
-* Install the OpenOPC Gateway Service by typing this in the command 
-line:
+The CLI (Command Line Interface) lets you use OpenOPC2 in the shell and offers you a quick way to explore your opc server
+and the OpenOPC DA client without the need of writing Python code.
 
-```
-C:\openopc2\src>python OpenOPCService.py install
-```
+<p>
+<img src="./doc/assets/cli_server-info.png" alt="WindowsSetup" width="400"/>
+</p>
 
-* Wait while the following message is shown on the screen:
-
-```
-Installing service zzzOpenOPCService
-Service installed
-```
+<p>
+<img src="./doc/assets/cli_read.png" alt="WindowsSetup" width="400"/>
+</p>
 
 
-## Usage
+<p>
+<img src="./doc/assets/cli_write.png" alt="WindowsSetup" width="400"/>
+</p>
 
-### Start the OpenOPC Gateway Service
+
+<p>
+<img src="./doc/assets/cli_properties.png" alt="WindowsSetup" width="400"/>
+</p>
+
+
+
+# OpenOPC Gateway
 
 This task can be completed from one of two ways (make sure to have it 
 installed first):
@@ -144,28 +187,21 @@ installed first):
 Administrative Tools).
 * By running the `net start SERVICE` command like this:
 
-```
+```shell
 C:\openopc2\bin> zzzOpenOPCService
 ```
 
 * If you have problems starting the service, you can also try to start 
 this in "debug" mode:
 
-```
+```shell
 C:\openopc2\src>python OpenOPCService.py debug
 ```
 
-### Stop the OpenOPC Gateway Service
 
-This task can be completed from one of two ways:
 
-* By clicking the `Stop` link on the "OpenOPC Gateway Service" from the 
-"Services" window (Stop -> Control Panel -> System and Security -> 
-Administrative Tools).
-* By running the `net stop SERVICE` command like this:
-
-```
-C:\OpenOPC37\bin>net stop zzzOpenOPCService
+```shell
+C:\openopc2\>net stop zzzOpenOPCService
 ```
 
 ### Configure the way the OpenOPC Gateway Service starts
@@ -183,22 +219,26 @@ buttons.
 
 
 
-## Credits
+## 🙏 Credits
 
-The authors of this package are:
+OpenOPC 2 is based on the OpenOPC python library that was originally created by Barry Barnleitner and its many Forks on
+Github. Without the great work of all the contributors 
 
-
-```
-Copyright (c) 2008-2012 by Barry Barnreiter (barry_b@users.sourceforge.net)
-Copyright (c) 2014 by Anton D. Kachalov (mouse@yandex.ru)
-Copyright (c) 2017 by José A. Maita (jose.a.maita@gmail.com)
-Copyright (c) 2022 by Lorenz Padberg (github: renzop)
-Copyright (c) 2022 by Elia Biery (github: eliabieri)
+The authors of the var package are:
 
 
-```
+| Years     |      | Name                | User |
+|-----------|------|---------------------|------|
+| 2008-2012 | 🇺🇸 | Barry Barnreiter    | barry_b@users.sourceforge.net |
+| 2014      | 🇷🇺 | Anton D. Kachalov   | barry_b@users.sourceforge.net |
+| 2017      | 🇻🇪 | José A. Maita       | jose.a.maita@gmail.com|
+| 2022      | 🇨🇭 | Lorenz Padberg      | renzop |
+| 2022      | 🇨🇭 | Elia Bieri          | eliabieri |
 
-## License
+
+
+
+## 📜 License
 
 This software is licensed under the terms of the GNU GPL v2 license plus 
 a special linking exception for portions of the package. This license is 
