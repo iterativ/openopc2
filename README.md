@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/iterativ/openopc2/blob/develop/doc/assets/open-opc.png" alt="LinuxSetup" width="700"/>
+<img src="https://github.com/iterativ/openopc2/raw/develop/doc/assets/open-opc.png" alt="LinuxSetup" width="700"/>
 </p>
 
 **OpenOPC 2**  is a Python Library for OPC DA. It is Open source and free for everyone. It allows you to use
@@ -56,7 +56,7 @@ Now you know that your OPC server is talking to OpenOPC 2. Then lets get started
 Python in windows directly you are **limited to a 32bit Python** installattion. This is because the ddls of OPC are 32bit.
 If you prefere working with a 64bit Python version you can simply use the With OpenOPC Gateway. 
 
-<img src="https://github.com/iterativ/openopc2/blob/develop/doc/assets/WindowsSetup.png" alt="WindowsSetup" width="400"/>
+<img src="https://github.com/iterativ/openopc2/raw/develop/doc/assets/WindowsSetup.png" alt="WindowsSetup" width="400"/>
 
 
 ```console
@@ -76,7 +76,7 @@ local Windows setup.
 
 
 
-<img src="https://github.com/iterativ/openopc2/blob/develop/doc/assets/LinuxSetup.png" alt="LinuxSetup" width="700"/>
+<img src="https://github.com/iterativ/openopc2/raw/develop/doc/assets/LinuxSetup.png" alt="LinuxSetup" width="700"/>
 
 On the Windows Machine open the console as administator. 
 
@@ -158,21 +158,21 @@ The CLI (Command Line Interface) lets you use OpenOPC2 in the shell and offers y
 and the OpenOPC DA client without the need of writing Python code.
 
 <p>
-<img src="https://github.com/iterativ/openopc2/blob/develop/doc/assets/cli_server-info.png" alt="WindowsSetup" width="400"/>
+<img src="https://github.com/iterativ/openopc2/raw/develop/doc/assets/cli_server-info.png" alt="WindowsSetup" width="400"/>
 </p>
 
 <p>
-<img src="https://github.com/iterativ/openopc2/blob/develop/doc/assets/cli_read.png" alt="WindowsSetup" width="400"/>
-</p>
-
-
-<p>
-<img src="https://github.com/iterativ/openopc2/blob/develop/doc/assets/cli_write.png" alt="WindowsSetup" width="400"/>
+<img src="https://github.com/iterativ/openopc2/raw/develop/doc/assets/cli_read.png" alt="WindowsSetup" width="400"/>
 </p>
 
 
 <p>
-<img src="https://github.com/iterativ/openopc2/blob/develop/doc/assets/cli_properties.png" alt="WindowsSetup" width="400"/>
+<img src="https://github.com/iterativ/openopc2/raw/develop/doc/assets/cli_write.png" alt="WindowsSetup" width="400"/>
+</p>
+
+
+<p>
+<img src="https://github.com/iterativ/openopc2/raw/develop/doc/assets/cli_properties.png" alt="WindowsSetup" width="400"/>
 </p>
 
 
