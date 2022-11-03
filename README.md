@@ -2,6 +2,12 @@
 <img src="https://github.com/iterativ/openopc2/raw/develop/doc/assets/open-opc.png" alt="LinuxSetup" width="700"/>
 </p>
 
+
+[![PyPI version](https://badge.fury.io/py/openopc2.svg)](https://badge.fury.io/py/openopc2)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/openopc2)
+
+
+
 **OpenOPC 2**  is a Python Library for OPC DA. It is Open source and free for everyone. It allows you to use
 [OPC Classic](https://opcfoundation.org/about/opc-technologies/opc-classic/) (OPC Data Access) in 
 modern Python environments. OPC Classic is a pure Windows technology by design, but this library includes a Gateway Server
