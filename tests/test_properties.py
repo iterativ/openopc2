@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from utils import get_opc_da_client
+from openopc2.utils import get_opc_da_client
 from test_config import test_config
 
 
