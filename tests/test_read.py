@@ -118,7 +118,6 @@ class TestReadTags(TestCase):
 
         system_values = self.opc_client.read(task_info_tags)
         print_values(system_values)
-
         self.assertTrue(system_values[0][1] > 1000)
 
 

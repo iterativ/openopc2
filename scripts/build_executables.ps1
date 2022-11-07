@@ -2,9 +2,9 @@ pyinstaller --onefile `
             --clean `
             --noconfirm `
             --paths ./venv/Lib/site-packages `
-            --paths ./openopc120 `
+            --paths ./openopc2 `
             --hidden-import=json `
             --hidden-import=win32timezone `
             --hidden-import=pythoncom  `
             --name OpenOpcService `
-            ./openopc120/opc_gateway_service.py
+            ../openopc2/gateway_service.py

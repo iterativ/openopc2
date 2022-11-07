@@ -1,12 +1,10 @@
 import os
 import string
-from collections import namedtuple
-from dataclasses import dataclass
-from enum import Enum
 
 import Pyro5.core
 
 from openopc2.exceptions import OPCError
+from openopc2.opc_types import ACCESS_RIGHTS, OPC_QUALITY, TagPropertyItem, TagProperties
 from openopc2.pythoncom_datatypes import VtType
 from openopc2.logger import log
 
@@ -24,12 +22,9 @@ if os.name == 'nt':
 
         # Allow gencache to create the cached wrapper objects
         win32com.client.gencache.is_readonly = False
-
-        # Under p2exe the call in gencache to __init__() does not happen
-        # so we use Rebuild() to force the creation of the gen_py folder
         win32com.client.gencache.Rebuild(verbose=0)
 
-    # So we can work on Windows in "open" protocol mode without the need for the win32com modules
+    # So we can work on Windows in "gateway" protocol mode without the need for the win32com modules
     except ImportError as e:
         log.exception(e)
         win32com_found = False
@@ -37,62 +32,6 @@ if os.name == 'nt':
         win32com_found = True
 else:
     win32com_found = False
-
-ACCESS_RIGHTS = (0, 'Read', 'Write', 'Read/Write')
-OPC_QUALITY = ('Bad', 'Uncertain', 'Unknown', 'Good')
-
-
-@dataclass
-class TagPropertyItem:
-    data_type = None
-    value = None
-    description = None
-    property_id = None
-
-    def get_default_tuple(self):
-        return self.property_id, self.description, self.value
-
-
-@dataclass
-class TagProperty:
-    data_type = None
-    value = None
-    quality = None
-    timestamp = None
-    access_rights = None
-    server_scan_rate = None
-    eu_type = None
-    eu_info = None
-    description = None
-
-    def get_default_tuple(self):
-        return self.property_id, self.description, self.value
-
-
-tag_property_fields = [
-    'DataType', 'Value', 'Quality', 'Timestamp', 'AccessRights', 'ServerScanRate', 'ItemEUType', 'ItemEUInfo',
-    'Description']
-TagPropertyNames = namedtuple('TagProperty', tag_property_fields, defaults=[None] * len(tag_property_fields))
-
-
-class TagPropertyId(Enum):
-    ItemCanonicalDatatype = 1
-    ItemValue = 2
-    ItemQuality = 3
-    ItemTimeStamp = 4
-    ItemAccessRights = 5
-    ServerScanRate = 6
-    ItemEUType = 7
-    ItemEUInfo = 8
-    ItemDescription = 101
-
-    @classmethod
-    def all_ids(cls):
-        return [property_id.value for property_id in cls]
-
-    @classmethod
-    def all_names(cls):
-        return [property_id.name for property_id in cls]
 
 
 @Pyro5.api.expose
@@ -233,7 +172,8 @@ class OpcCom:
 
             properties_by_description[tag_property_item.description] = tag_property_item
 
-        return [tag_property.get_default_tuple() for tag_property in properties_by_description.values()], errors
+        tag_properties = TagProperties().from_tag_property_items_by_name(tag, properties_by_description)
+        return tag_properties, errors
 
     def get_error_string(self, error_id: int):
         return self.opc_client.GetErrorString(error_id)

@@ -11,24 +11,13 @@ class TestProperties(TestCase):
         self.no_system_tags = [tag for tag in self.tags if "@" not in tag]
 
     def test_read_property(self):
-        properties = self.opc_client.properties(self.no_system_tags[1])
-        self.assertEqual(properties[0], (0, 'Item ID (virtual property)', 'Bucket Brigade.ArrayOfReal8'))
-        self.assertEqual(properties[1][0], 1)
-        self.assertEqual(properties[1][1], 'Item Canonical DataType')
-        self.assertEqual(properties[2], (2, 'Item Value', ()))
-        self.assertEqual(properties[3], (3, 'Item Quality', 'Good'))
-        self.assertEqual(properties[4][1], 'Item Timestamp')
-        self.assertEqual(properties[5], (5, 'Item Access Rights', 'Read/Write'))
-        self.assertEqual(properties[6], (6, 'Server Scan Rate', 100.0))
-        self.assertEqual(properties[7], (7, 'Item EU Type', 0))
-        self.assertEqual(properties[8], (8, 'Item EUInfo', None))
-        self.assertEqual(properties[9], (101, 'Item Description', 'Bucket brigade item.'))
+        properties = self.opc_client.properties('Bucket Brigade.int1')
+        prop = properties[0]
+       # self.assertEqual(prop.name, 'Bucket Brigade.int1')
+        self.assertEqual(prop.data_type, 'VT_EMPTY')
+        self.assertEqual(prop.quality, 'Good')
+        self.assertEqual(prop.server_scan_rate, 100.0)
 
-    def test_read_property_id(self):
-        tag = self.no_system_tags[5]
-        properties = self.opc_client.properties(tag, id=[1, 3])
-        self.assertEqual((1, 'Item Canonical DataType', 'VT_I2'), properties[0], )
-        self.assertEqual((3, 'Item Quality', 'Good'), properties[1], )
 
     def test_read_properties(self):
         properties = self.opc_client.properties(self.no_system_tags[1:24])

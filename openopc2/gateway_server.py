@@ -2,13 +2,16 @@
 import time
 
 import Pyro5.server
+from Pyro5.api import register_class_to_dict, register_dict_to_class
 
 from openopc2.config import OpenOpcConfig
 from openopc2.da_client import OpcDaClient, __version__
+from openopc2.opc_types import TagProperties
 
 from openopc2.logger import log
 
-from rich import print
+# Do not import Rich print in this context, it will fail while running as a service, really hard to debug!
+
 
 
 @Pyro5.api.expose
@@ -24,6 +27,11 @@ class OpenOpcGatewayServer:
         self.tx_times = {}
         self.pyro_daemon = None
         self.uri = None
+
+        # Register custom serializers
+        register_class_to_dict(TagProperties, TagProperties.class_to_dict)
+        register_dict_to_class(TagProperties, TagProperties.dict_to_class)
+
         log.info(f'Initialized OpenOPC gateway Server uri: {self.uri}')
 
     def print_clients(self):
@@ -85,11 +93,12 @@ class OpenOpcGatewayServer:
 
 
 def main(host, port):
-    server = OpenOpcGatewayServer()
+    OpenOpcConfig().print_config()
+    server = OpenOpcGatewayServer(host, port)
     pyro_daemon = Pyro5.server.Daemon(host=host, port=int(port))
     pyro_daemon.register(server, objectId="OpenOpcGatewayServer")
     pyro_daemon.register(OpcDaClient, objectId="OpcDaClient")
-    print(f"server started {pyro_daemon}")
+    print(f"Open OPC server started {pyro_daemon}")
     return pyro_daemon
 
 
