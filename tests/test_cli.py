@@ -17,31 +17,33 @@ class TestOpcCli(TestCase):
         assert "--install-completion" in result.stdout
 
     def test_list(self):
-        result = self.runner.invoke(app, ["list", "*"])
+        result = self.runner.invoke(app, ["list-tags"])
         assert result.exit_code == 0
 
     def test_list_recursive(self):
-        result = self.runner.invoke(app, ["list", "*", "-f"])
+        result = self.runner.invoke(app, ["list-tags", "--recursive"])
+        assert result.exit_code == 0
 
     def test_read_tag(self):
         result = self.runner.invoke(app, ["read", 'Bucket Brigade.Int1'])
         assert result.exit_code == 0
 
     def test_read_tags(self):
-        result = self.runner.invoke(app, ["read", 'Bucket Brigade.Int1',  'Bucket Brigade.Int2'])
+        result = self.runner.invoke(app, ["read", 'Bucket Brigade.Int1', 'Bucket Brigade.Int2'])
         assert result.exit_code == 0
 
-    def test_info(self):
-        result = self.runner.invoke(app, ["info"])
+    def test_server_info(self):
+        result = self.runner.invoke(app, ["server-info"])
         assert result.exit_code == 0
 
-    def test_servers(self):
-        result = self.runner.invoke(app, ["servers"])
+    def test_list_servers(self):
+        result = self.runner.invoke(app, ["list-servers"])
+        assert result.exit_code == 0
 
     def test_properties(self):
         result = self.runner.invoke(app, ["properties", 'Bucket Brigade.Int1'])
         assert result.exit_code == 0
 
     def test_write_tags(self):
-        result = self.runner.invoke(app, 'Bucket Brigade.Boolean', "True")
+        result = self.runner.invoke(app, ["write", "Bucket Brigade.Int1=3"])
         assert result.exit_code == 0

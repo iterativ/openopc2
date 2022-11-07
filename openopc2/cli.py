@@ -23,7 +23,7 @@ open_opc_config = OpenOpcConfig()
 
 TagsArgument = typer.Argument(..., help='Tags to read')
 TagValuePairsArgument = typer.Argument(...,
-                                       help='Tag value pairs to write (use ITEM,VALUE)'
+                                       help='Tag value pairs to write (use ITEM=VALUE)'
                                        )
 OpcServerOption = typer.Option(open_opc_config.OPC_SERVER, help='OPC Server to connect to')
 OpcHostOption = typer.Option(open_opc_config.OPC_HOST, help='OPC Host to connect to')
@@ -62,12 +62,13 @@ RecursiveOption = typer.Option(False, help="Recursively read sub-tags")
 
 app = typer.Typer()
 
+
 def get_connected_da_client(
-    protocol_mode: ProtocolMode,
-    opc_server: str,
-    opc_host: str,
-    gateway_host: str,
-    gateway_port: int
+        protocol_mode: ProtocolMode,
+        opc_server: str,
+        opc_host: str,
+        gateway_host: str,
+        gateway_port: int
 ) -> OpcDaClient:
     """
     Returns a OPC DA Client based on the given protocol mode
@@ -76,9 +77,8 @@ def get_connected_da_client(
     if ProtocolMode.COM == protocol_mode:
         client = OpcDaClient(open_opc_config)
 
-
     if ProtocolMode.GATEWAY == protocol_mode:
-        client =  cast(OpcDaClient, OpenOpcGatewayProxy(gateway_host, gateway_port).get_opc_da_client_proxy())
+        client = cast(OpcDaClient, OpenOpcGatewayProxy(gateway_host, gateway_port).get_opc_da_client_proxy())
     if client is not None:
         client.connect(opc_server, opc_host)
         return client
@@ -114,15 +114,15 @@ def read(
         gateway_port
     )
     responses: list[str] = client.read(tags,
-                                    group='test',
-                                    size=group_size,
-                                    pause=pause,
-                                    source=source,
-                                    update=update_rate,
-                                    timeout=timeout,
-                                    sync=True,
-                                    include_error=include_error_messages
-                                    )
+                                       group='test',
+                                       size=group_size,
+                                       pause=pause,
+                                       source=source,
+                                       update=update_rate,
+                                       timeout=timeout,
+                                       sync=True,
+                                       include_error=include_error_messages
+                                       )
     if output_csv:
         for response in responses:
             print(','.join(str(val) for val in response))
@@ -136,6 +136,7 @@ def read(
     for response in responses:
         table.add_row(*(str(val) for val in response))
     Console().print(table)
+
 
 @app.command()
 def write(
@@ -167,11 +168,11 @@ def write(
     try:
         print(f"Writing {len(tag_values)} value(s)...")
         responses: list[Tuple[str, str]] = get_connected_da_client(
-                protocol_mode,
-                opc_server,
-                opc_host,
-                gateway_host,
-                gateway_port
+            protocol_mode,
+            opc_server,
+            opc_host,
+            gateway_host,
+            gateway_port
         ).write(
             tag_value_pairs=tag_values,
             size=group_size,
@@ -180,9 +181,9 @@ def write(
         )
         console = Console()
         failed = list(filter(lambda response: response[1] != "Success",
-            # Ugly hack to handle dynamic return value of write()
-            [responses] if isinstance(responses, Tuple) else responses
-        ))
+                             # Ugly hack to handle dynamic return value of write()
+                             [responses] if isinstance(responses, Tuple) else responses
+                             ))
         if failed:
             failed_tag_names = map(lambda response: response[0], failed)
             console.print(f"Failed to write {', '.join(failed_tag_names)}", style="bold red")
@@ -217,14 +218,14 @@ def list_clients(log_level: LogLevel = LogLevelOption) -> None:
 
 @app.command()
 def list_tags(
-    protocol_mode: ProtocolMode = ProtocolModeOption,
-    opc_server: str = OpcServerOption,
-    opc_host: str = OpcHostOption,
-    gateway_host: str = GatewayHostOption,
-    gateway_port: int = GatewayPortOption,
-    recursive: bool = RecursiveOption,
-    output_csv: bool = OutputCsvOption,
-    log_level: LogLevel = LogLevelOption,
+        protocol_mode: ProtocolMode = ProtocolModeOption,
+        opc_server: str = OpcServerOption,
+        opc_host: str = OpcHostOption,
+        gateway_host: str = GatewayHostOption,
+        gateway_port: int = GatewayPortOption,
+        recursive: bool = RecursiveOption,
+        output_csv: bool = OutputCsvOption,
+        log_level: LogLevel = LogLevelOption,
 ) -> None:
     """
     List tags (items) of OPC server
@@ -234,19 +235,20 @@ def list_tags(
     tags: List[str]
     with console.status("Getting tags..."):
         tags = get_connected_da_client(
-                protocol_mode,
-                opc_server,
-                opc_host,
-                gateway_host,
-                gateway_port
+            protocol_mode,
+            opc_server,
+            opc_host,
+            gateway_host,
+            gateway_port
         ).list(recursive=recursive)
     if output_csv:
         print(','.join(tags))
         return
     table = Table(title="Tags", style="green")
+    table.add_column("#")
     table.add_column("Tag name")
-    for tag in tags:
-        table.add_row(tag)
+    for i, tag in enumerate(tags):
+        table.add_row(str(i), tag)
     Console().print(table)
 
 
@@ -284,15 +286,43 @@ def properties(
     Console().print(table)
 
 
+@app.command()
+def list_servers(
+        protocol_mode: ProtocolMode = ProtocolModeOption,
+        opc_server: str = OpcServerOption,
+        opc_host: str = OpcHostOption,
+        gateway_host: str = GatewayHostOption,
+        gateway_port: int = GatewayPortOption,
+        log_level: LogLevel = LogLevelOption,
+) -> None:
+    """
+    List all OPC DA servers
+    """
+    log.setLevel(log_level.upper())
+    servers = get_connected_da_client(
+        protocol_mode,
+        opc_server,
+        opc_host,
+        gateway_host,
+        gateway_port
+    ).servers()
+    table = Table(title="Available OPC DA servers")
+    table.add_column("#", style="green")
+    table.add_column("Server Name", style="green")
+
+    for i, value in enumerate(servers):
+        table.add_row(str(i), value)
+    Console().print(table)
+
 
 @app.command()
 def server_info(
-    protocol_mode: ProtocolMode = ProtocolModeOption,
-    opc_server: str = OpcServerOption,
-    opc_host: str = OpcHostOption,
-    gateway_host: str = GatewayHostOption,
-    gateway_port: int = GatewayPortOption,
-    log_level: LogLevel = LogLevelOption,
+        protocol_mode: ProtocolMode = ProtocolModeOption,
+        opc_server: str = OpcServerOption,
+        opc_host: str = OpcHostOption,
+        gateway_host: str = GatewayHostOption,
+        gateway_port: int = GatewayPortOption,
+        log_level: LogLevel = LogLevelOption,
 ) -> None:
     """
     Display OPC server information
@@ -312,7 +342,6 @@ def server_info(
     for value in response:
         table.add_row(value[0], value[1])
     Console().print(table)
-
 
 
 def cli() -> None:

@@ -1,6 +1,6 @@
-from config import OpenOpcConfig
-from da_client import OpcDaClient
-from gateway_proxy import OpenOpcGatewayProxy
+from openopc2.config import OpenOpcConfig
+from openopc2.da_client import OpcDaClient
+from openopc2.gateway_proxy import OpenOpcGatewayProxy
 
 
 def get_opc_da_client(config: OpenOpcConfig = OpenOpcConfig()) -> OpcDaClient:
