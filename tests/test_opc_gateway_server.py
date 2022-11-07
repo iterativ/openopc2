@@ -1,8 +1,9 @@
-from unittest import TestCase
+from unittest import TestCase, skip
 from openopc2.gateway_server import OpenOpcGatewayServer
 from test_config import test_config
 
 
+@skip("Try not to interfere with the running services")
 class TestOpcGatewayServer(TestCase):
     def test_init(self):
         server = OpenOpcGatewayServer(test_config().OPC_GATEWAY_HOST, test_config().OPC_GATEWAY_PORT)

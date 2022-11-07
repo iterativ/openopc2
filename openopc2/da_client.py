@@ -825,8 +825,7 @@ class OpcDaClient:
 
             for tag in tags:
                 tag_properties, errors = self._opc.get_tag_properties(tag, property_ids)
-                for p in tag_properties:
-                    yield p
+                yield tag_properties
 
         except pythoncom.com_error as err:
             error_msg = 'properties: %s' % self._get_error_str(err)
