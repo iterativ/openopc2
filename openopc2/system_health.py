@@ -8,8 +8,8 @@ __version__ = '1.0.1'
 try:
     import wmi
     import pywintypes
-    import win32pdh
-    import win32process
+    from win32 import win32pdh
+    from win32 import win32process
 
     wmi_found = True
 except ImportError:

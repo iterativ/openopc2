@@ -63,7 +63,7 @@ class TagProperties:
     eu_info: str = None
     description: str = None
 
-    def from_tag_property_items_by_name(self, tag, tag_property_items_by_name: Dict[str, TagPropertyItem]):
+    def from_tag_property_items_by_name(self, tag, tag_property_items_by_name):
         default_property_item = TagPropertyItem()
         self.tag_name = tag
         self.data_type = tag_property_items_by_name.get('Item Canonical DataType', default_property_item).value

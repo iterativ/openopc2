@@ -27,32 +27,12 @@ TagValuePairsArgument = typer.Argument(...,
                                        )
 OpcServerOption = typer.Option(open_opc_config.OPC_SERVER, help='OPC Server to connect to')
 OpcHostOption = typer.Option(open_opc_config.OPC_HOST, help='OPC Host to connect to')
-GatewayHostOption = typer.Option(
-    open_opc_config.OPC_GATEWAY_HOST,
-    help='OPC Gateway Host to connect to'
-)
-GatewayPortOption = typer.Option(
-    open_opc_config.OPC_GATEWAY_PORT,
-    help='OPC Gateway Port to connect to'
-)
-ProtocolModeOption = typer.Option(
-    ProtocolMode.GATEWAY,
-    help='Protocol mode',
-    case_sensitive=False
-)
-GroupSizeOption = typer.Option(
-    None,
-    help='Group tags into group_size tags per transaction'
-)
-DataSourceOption = typer.Option(
-    DataSource.HYBRID,
-    help='Data SOURCE for reads (cache, device, hybrid)',
-    case_sensitive=False
-)
-IncludeErrorMessagesOption = typer.Option(
-    False,
-    help='Include descriptive error message strings'
-)
+GatewayHostOption = typer.Option(open_opc_config.OPC_GATEWAY_HOST, help='OPC Gateway Host to connect to')
+GatewayPortOption = typer.Option(open_opc_config.OPC_GATEWAY_PORT,help='OPC Gateway Port to connect to')
+ProtocolModeOption = typer.Option(ProtocolMode.GATEWAY,help='Protocol mode', case_sensitive=False)
+GroupSizeOption = typer.Option(None, help='Group tags into group_size tags per transaction')
+DataSourceOption = typer.Option(DataSource.HYBRID,help='Data SOURCE for reads (cache, device, hybrid)', case_sensitive=False)
+IncludeErrorMessagesOption = typer.Option(False,help='Include descriptive error message strings')
 PauseOption = typer.Option(0, help='Sleep time between transactionsin milliseconds')
 UpdateRateOption = typer.Option(0, help='Update rate for group in milliseconds')
 TimeoutOption = typer.Option(10000, help='Read timeout in milliseconds')
@@ -342,6 +322,14 @@ def server_info(
     for value in response:
         table.add_row(value[0], value[1])
     Console().print(table)
+
+@app.command()
+def list_config(
+) -> None:
+    """
+    Write values
+    """
+    OpenOpcConfig().print_config()
 
 
 def cli() -> None:
