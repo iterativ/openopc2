@@ -76,7 +76,6 @@ def mem_used():
 
     instance = None
     inum = -1
-    format = win32pdh.PDH_FMT_DOUBLE
     machine = None
 
     path = win32pdh.MakeCounterPath((machine, object, instance, None, inum, counter))
@@ -85,7 +84,7 @@ def mem_used():
         hc = win32pdh.AddCounter(hq, path)
         try:
             win32pdh.CollectQueryData(hq)
-            type_name, val = win32pdh.GetFormattedCounterValue(hc, format)
+            type_name, val = win32pdh.GetFormattedCounterValue(hc, win32pdh.PDH_FMT_DOUBLE)
             return int(val / 1024)
         except pywintypes.error:
             return 0
@@ -162,13 +161,12 @@ def task_cpu(image_name):
     if image_name[-4:] == '.exe':
         image_name = image_name[:-4]
 
-    c = wmi.WMI()
+    wmi_adapter = wmi.WMI()
     process_info = {}
     pct_cpu_time = 0.0
 
     for i in range(2):
-
-        for p in c.Win32_PerfRawData_PerfProc_Process(name=image_name):
+        for p in wmi_adapter.Win32_PerfRawData_PerfProc_Process(name=image_name):
             id = int(p.IDProcess)
             n1, d1 = int(p.PercentProcessorTime), int(p.Timestamp_Sys100NS)
             n0, d0, so_far = process_info.get(id, (0, 0, []))
@@ -190,14 +188,14 @@ def task_cpu(image_name):
 
 
 def sine_wave():
-    min = float(time.localtime()[4])
+    min_time = float(time.localtime()[4])
     sec = float(time.localtime()[5])
-    T = (min + (sec / 60.0)) % 10.0
-    return math.sin(2.0 * math.pi * T / 10.0) * 100.0
+    t = (min_time + (sec / 60.0)) % 10.0
+    return math.sin(2.0 * math.pi * t / 10.0) * 100.0
 
 
 def saw_wave():
-    min = float(time.localtime()[4])
+    min_time = float(time.localtime()[4])
     sec = float(time.localtime()[5])
-    T = (min + (sec / 60.0)) % 10.0
-    return (T / 10.0) * 100.0
+    t = (min_time + (sec / 60.0)) % 10.0
+    return (t / 10.0) * 100.0

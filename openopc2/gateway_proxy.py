@@ -11,6 +11,7 @@ import Pyro5.client
 from Pyro5.api import register_class_to_dict, register_dict_to_class
 
 from openopc2.opc_types import TagProperties
+from openopc2.exceptions import OPCError
 
 
 class OpenOpcGatewayProxy:
@@ -21,7 +22,8 @@ class OpenOpcGatewayProxy:
         # Register custom serializers
         register_class_to_dict(TagProperties, TagProperties.class_to_dict)
         register_dict_to_class("opc_types.TagProperties", TagProperties.dict_to_class)
-
+        register_class_to_dict(OPCError, OPCError.class_to_dict)
+        register_dict_to_class("exceptions.OPCError", OPCError.dict_to_class)
 
     def get_server_proxy(self):
         with Pyro5.client.Proxy(f"PYRO:OpenOpcGatewayServer@{self.host}:{self.port}") as open_opc_gateway_server:
@@ -30,5 +32,3 @@ class OpenOpcGatewayProxy:
     def get_opc_da_client_proxy(self):
         with Pyro5.client.Proxy(f"PYRO:OpcDaClient@{self.host}:{self.port}") as opc_da_client_proxy:
             return opc_da_client_proxy
-
-

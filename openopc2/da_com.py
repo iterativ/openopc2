@@ -67,7 +67,7 @@ class OpcCom:
             # TODO: potential memory leak, destroy pythoncom
             log.exception('Error in initialize OpcDaClient')
             pythoncom.CoUninitialize()
-            raise OPCError(f'Dispatch: {err}')
+            raise OPCError(f'Dispatch: {err} opc_class:"{opc_class}"')
 
     def connect(self, host: str, server: str):
         self.server = server
