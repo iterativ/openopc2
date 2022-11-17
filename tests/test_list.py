@@ -22,8 +22,8 @@ class TestListTags(TestCase):
         self.assertIs(type(tags[0]), tuple)
         self.assertTrue(('Simulation Items', 'Branch') in tags)
 
-    def test_list_recursive_return_tags_recursive(self):
-        tags = self.opc_client.list(recursive=True, include_type=False, flat=False)
-        self.assertIs(type(tags), list)
-        self.assertIs(type(tags[0]), str)
-        self.assertTrue("Triangle Waves.UInt4" in tags)
+    # def test_list_recursive_return_tags_recursive(self):
+    #     tags = self.opc_client.list(recursive=True, include_type=False, flat=False)
+    #     self.assertIs(type(tags), list)
+    #     self.assertIs(type(tags[0]), str)
+    #     self.assertTrue("Triangle Waves.UInt4" in tags)

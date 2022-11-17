@@ -657,7 +657,8 @@ class OpcDaClient:
             status = []
 
             for gid in range(num_groups):
-                if gid > 0 and pause > 0: time.sleep(pause / 1000.0)
+                if gid > 0 and pause > 0:
+                    time.sleep(pause / 1000.0)
 
                 opc_groups = self._opc.groups
                 opc_group = opc_groups.Add()
@@ -690,7 +691,8 @@ class OpcDaClient:
                         error_msgs[tag] = ''
                         n += 1
                     elif include_error:
-                        error_msgs[tag] = self._opc.GetErrorString(errors[i])
+                        error_msgs[tag] = self._opc.get_error_string(errors[i])
+                        pass
 
                 client_handles.insert(0, 0)
                 valid_tags.insert(0, 0)

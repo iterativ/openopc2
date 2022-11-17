@@ -17,15 +17,15 @@ class TestServerInfo(TestCase):
         info = self.opc_client.info()
         if test_config().OPC_MODE == 'gateway':
             self.assertEqual(('Protocol', 'DCOM'), info[0])
-            self.assertEqual(('Class', 'OPC.Automation'), info[1])
+            self.assertEqual(('Class', "Graybox.OPC.DAWrapper"), info[1])
             self.assertEqual('Client Name', info[2][0])
-            self.assertEqual(('OPC Server', 'Matrikon.OPC.Simulation.1'), info[4])
+            self.assertEqual(('OPC Server', 'Matrikon.OPC.Simulation'), info[4])
 
         else:
-            self.assertEqual(('Protocol', 'DCOM'), info[0])
+            self.assertEqual(('Protocol', 'com'), info[0])
             self.assertEqual(('Client Name', ''), info[2])
             self.assertEqual('OPC Host', info[3][0], )
-            self.assertEqual(('Class', 'OPC.Automation'), info[1])
+            self.assertEqual(('Class', "Graybox.OPC.DAWrapper"), info[1])
 
     def test_ping(self):
         ping = self.opc_client.ping()
