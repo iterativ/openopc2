@@ -133,41 +133,22 @@ class OpcCom:
             available_properies_by_id[result[0]] = {
                 'property_id': result[0],
                 'description': result[1],
-                'data_type': result[2]
+                'data_type': VtType(result[2]).name
             }
 
         property_ids_cleaned = [p for p in property_ids if p > 0]
         if property_ids_filter:
             property_ids_cleaned = [p for p in property_ids if p in property_ids_filter]
-            # I assume this is nevessary due to 1 indexed arrays in windows
-            property_ids_cleaned.insert(0, 0)
 
-        item_properties_values, errors = self.opc_client.GetItemProperties(tag, len(property_ids_cleaned) - 1,
+        item_properties_values, errors = self.opc_client.GetItemProperties(tag, len(property_ids_cleaned),
                                                                            property_ids_cleaned)
-
-        if property_ids_filter:
-            property_ids_cleaned.remove(0)
-
-        # Create tag property item in a readable form. One item is one propeterty, there are many properties for one tag
         properties_by_description = {}
-
-        if not property_ids_filter:
-            # Add first property for compatibility
-            tag_property_item = TagPropertyItem()
-            tag_property_item.property_id = 0
-            tag_property_item.description = 'Item ID (virtual property)'
-            tag_property_item.value = tag
-
-            properties_by_description[tag_property_item.description] = tag_property_item
-            item_properties_values = list(item_properties_values)
-            item_properties_values.insert(0, 0)
-
         for property_result in zip(property_ids_cleaned, item_properties_values):
             tag_property_item = TagPropertyItem()
-            property = available_properies_by_id[property_result[0]]
-            tag_property_item.data_type = VtType(property['data_type']).name
-            tag_property_item.property_id = property['property_id']
-            tag_property_item.description = property['description']
+            property_dict = available_properies_by_id[property_result[0]]
+            tag_property_item.data_type = property_dict['data_type']
+            tag_property_item.property_id = property_dict['property_id']
+            tag_property_item.description = property_dict['description']
             tag_property_item.value = self._property_value_conversion(tag_property_item.description, property_result[1])
 
             properties_by_description[tag_property_item.description] = tag_property_item

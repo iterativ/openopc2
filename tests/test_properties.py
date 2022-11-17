@@ -11,10 +11,9 @@ class TestProperties(TestCase):
         self.no_system_tags = [tag for tag in self.tags if "@" not in tag]
 
     def test_read_property(self):
-        properties = self.opc_client.properties('Bucket Brigade.int1')
+        properties = self.opc_client.properties('Bucket Brigade.Int1')
         prop = properties[0]
-        # self.assertEqual(prop.name, 'Bucket Brigade.int1')
-        self.assertEqual(prop.data_type, 'VT_EMPTY')
+        self.assertEqual(prop.data_type, 'VT_I1')
         self.assertEqual(prop.quality, 'Good')
         self.assertEqual(prop.server_scan_rate, 100.0)
 
