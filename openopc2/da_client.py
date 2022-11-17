@@ -212,7 +212,7 @@ class OpcDaClient:
             try:
                 errors = opc_items.Validate(len(names) - 1, names)
             except:
-                log.exception("Validation error", errors)
+                log.exception(f"Validation error {errors}")
                 pass
 
             valid_tags = []
@@ -524,7 +524,7 @@ class OpcDaClient:
                         raise OPCError(error_msg)
 
         except pythoncom.com_error as err:
-            error_msg = 'read: %s' % self._get_error_str(err)
+            error_msg = f'read: {self._get_error_str(err)}'
             raise OPCError(error_msg)
 
     def read(self, tags=None, group=None, size=None, pause=0, source='hybrid', update=-1, timeout=5000, sync=False,
