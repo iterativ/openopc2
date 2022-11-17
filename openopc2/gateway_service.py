@@ -22,7 +22,6 @@ import win32serviceutil
 import winerror
 
 from openopc2.config import OpenOpcConfig
-from openopc2.da_client import __version__
 from openopc2.gateway_server import main as opc_gateway_server_main
 
 logger = logging.getLogger(__name__)
@@ -67,7 +66,7 @@ class OpcService(win32serviceutil.ServiceFramework):
         welcome_message = f"""python
 
         Started OpenOpcService
-        Version:    {__version__}
+        Version:    
 
         OPC_GATE_HOST:  {self.host}
         OPC_GATE_PORT:  {self.port}
