@@ -63,18 +63,21 @@ class TagProperties:
     eu_info: str = None
     description: str = None
 
-    def from_tag_property_items_by_name(self, tag, tag_property_items_by_name):
+    def from_tag_property_items_by_id(self, tag, tag_property_items_by_name):
+        """
+        Convert by id since the description varies from server to server
+        """
         default_property_item = TagPropertyItem()
         self.tag_name = tag
-        self.data_type = tag_property_items_by_name.get('Item Canonical DataType', default_property_item).value
-        self.value = tag_property_items_by_name.get('Item Value', default_property_item).value
-        self.quality = tag_property_items_by_name.get('Item Quality', default_property_item).value
-        self.timestamp = tag_property_items_by_name.get('Item Timestamp', default_property_item).value
-        self.access_rights = tag_property_items_by_name.get('Item Access Rights', default_property_item).value
-        self.server_scan_rate = tag_property_items_by_name.get('Server Scan Rate', default_property_item).value
-        self.eu_type = tag_property_items_by_name.get('Item EU Type', default_property_item).value
-        self.eu_info = tag_property_items_by_name.get('Item EUINfo', default_property_item).value
-        self.description = tag_property_items_by_name.get('Item Description', default_property_item).value
+        self.data_type = tag_property_items_by_name.get(1, default_property_item).value
+        self.value = tag_property_items_by_name.get(2, default_property_item).value
+        self.quality = tag_property_items_by_name.get(3, default_property_item).value
+        self.timestamp = tag_property_items_by_name.get(4, default_property_item).value
+        self.access_rights = tag_property_items_by_name.get(5, default_property_item).value
+        self.server_scan_rate = tag_property_items_by_name.get(6, default_property_item).value
+        self.eu_type = tag_property_items_by_name.get(7, default_property_item).value
+        self.eu_info = tag_property_items_by_name.get(8, default_property_item).value
+        self.description = tag_property_items_by_name.get(9, default_property_item).value
         return self
 
     def class_to_dict(self):
