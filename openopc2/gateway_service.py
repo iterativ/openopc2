@@ -79,12 +79,13 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
         try:
             servicemanager.LogInfoMsg("Starting OpenOPC Gateway Service")
+            OpenOpcConfig().print_config()
             evtsrc_dll = os.path.abspath(servicemanager.__file__)
             servicemanager.PrepareToHostSingle(OpcService)
             servicemanager.Initialize('zzzOpenOPCService', evtsrc_dll)
             servicemanager.StartServiceCtrlDispatcher()
         except win32service.error as details:
-            servicemanager.LogErrorMsg("Error Starting OpenOPC Gateway Service", details)
+            servicemanager.LogErrorMsg(f"Error Starting OpenOPC Gateway Service {details}")
             logger.exception(details)
             if details.winerror == winerror.ERROR_FAILED_SERVICE_CONTROLLER_CONNECT:
                 win32serviceutil.usage()

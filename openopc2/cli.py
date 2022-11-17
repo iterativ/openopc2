@@ -27,32 +27,12 @@ TagValuePairsArgument = typer.Argument(...,
                                        )
 OpcServerOption = typer.Option(open_opc_config.OPC_SERVER, help='OPC Server to connect to')
 OpcHostOption = typer.Option(open_opc_config.OPC_HOST, help='OPC Host to connect to')
-GatewayHostOption = typer.Option(
-    open_opc_config.OPC_GATEWAY_HOST,
-    help='OPC Gateway Host to connect to'
-)
-GatewayPortOption = typer.Option(
-    open_opc_config.OPC_GATEWAY_PORT,
-    help='OPC Gateway Port to connect to'
-)
-ProtocolModeOption = typer.Option(
-    ProtocolMode.GATEWAY,
-    help='Protocol mode',
-    case_sensitive=False
-)
-GroupSizeOption = typer.Option(
-    None,
-    help='Group tags into group_size tags per transaction'
-)
-DataSourceOption = typer.Option(
-    DataSource.HYBRID,
-    help='Data SOURCE for reads (cache, device, hybrid)',
-    case_sensitive=False
-)
-IncludeErrorMessagesOption = typer.Option(
-    False,
-    help='Include descriptive error message strings'
-)
+GatewayHostOption = typer.Option(open_opc_config.OPC_GATEWAY_HOST, help='OPC Gateway Host to connect to')
+GatewayPortOption = typer.Option(open_opc_config.OPC_GATEWAY_PORT,help='OPC Gateway Port to connect to')
+ProtocolModeOption = typer.Option(ProtocolMode.GATEWAY,help='Protocol mode', case_sensitive=False)
+GroupSizeOption = typer.Option(None, help='Group tags into group_size tags per transaction')
+DataSourceOption = typer.Option(DataSource.HYBRID,help='Data SOURCE for reads (cache, device, hybrid)', case_sensitive=False)
+IncludeErrorMessagesOption = typer.Option(False,help='Include descriptive error message strings')
 PauseOption = typer.Option(0, help='Sleep time between transactionsin milliseconds')
 UpdateRateOption = typer.Option(0, help='Update rate for group in milliseconds')
 TimeoutOption = typer.Option(10000, help='Read timeout in milliseconds')
@@ -87,7 +67,7 @@ def get_connected_da_client(
 
 @app.command()
 def read(
-        tags: list[str] = TagsArgument,
+        tags: List[str] = TagsArgument,
         protocol_mode: ProtocolMode = ProtocolModeOption,
         opc_server: str = OpcServerOption,
         opc_host: str = OpcHostOption,
@@ -113,7 +93,7 @@ def read(
         gateway_host,
         gateway_port
     )
-    responses: list[str] = client.read(tags,
+    responses: List[str] = client.read(tags,
                                        group='test',
                                        size=group_size,
                                        pause=pause,
@@ -140,7 +120,7 @@ def read(
 
 @app.command()
 def write(
-        tag_value_pairs: list[str] = TagValuePairsArgument,
+        tag_value_pairs: List[str] = TagValuePairsArgument,
         protocol_mode: ProtocolMode = ProtocolModeOption,
         opc_server: str = OpcServerOption,
         opc_host: str = OpcHostOption,
@@ -157,7 +137,7 @@ def write(
     log.setLevel(log_level.upper())
 
     # Validate and transform tag value pairs
-    tag_values: list[Tuple[str, str]] = []
+    tag_values: List[Tuple[str, str]] = []
     try:
         for tag in tag_value_pairs:
             tag_values.append(tuple(tag.split('=')))
@@ -167,7 +147,7 @@ def write(
 
     try:
         print(f"Writing {len(tag_values)} value(s)...")
-        responses: list[Tuple[str, str]] = get_connected_da_client(
+        responses: List[Tuple[str, str]] = get_connected_da_client(
             protocol_mode,
             opc_server,
             opc_host,
@@ -254,7 +234,7 @@ def list_tags(
 
 @app.command()
 def properties(
-        tags: list[str] = TagsArgument,
+        tags: List[str] = TagsArgument,
         protocol_mode: ProtocolMode = ProtocolModeOption,
         opc_server: str = OpcServerOption,
         opc_host: str = OpcHostOption,
@@ -266,7 +246,7 @@ def properties(
     Show properties of given tags
     """
     log.setLevel(log_level.upper())
-    properties: list[Tuple[int, str, Any]] = get_connected_da_client(
+    properties: List[Tuple[int, str, Any]] = get_connected_da_client(
         protocol_mode,
         opc_server,
         opc_host,
@@ -342,6 +322,14 @@ def server_info(
     for value in response:
         table.add_row(value[0], value[1])
     Console().print(table)
+
+@app.command()
+def list_config(
+) -> None:
+    """
+    Write values
+    """
+    OpenOpcConfig().print_config()
 
 
 def cli() -> None:

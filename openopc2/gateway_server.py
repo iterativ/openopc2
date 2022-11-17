@@ -7,6 +7,7 @@ from Pyro5.api import register_class_to_dict, register_dict_to_class
 from openopc2.config import OpenOpcConfig
 from openopc2.da_client import OpcDaClient, __version__
 from openopc2.opc_types import TagProperties
+from openopc2.exceptions import OPCError
 
 from openopc2.logger import log
 
@@ -31,6 +32,8 @@ class OpenOpcGatewayServer:
         # Register custom serializers
         register_class_to_dict(TagProperties, TagProperties.class_to_dict)
         register_dict_to_class(TagProperties, TagProperties.dict_to_class)
+        register_class_to_dict(OPCError, OPCError.class_to_dict)
+        register_dict_to_class(OPCError, OPCError.dict_to_class)
 
         log.info(f'Initialized OpenOPC gateway Server uri: {self.uri}')
 
