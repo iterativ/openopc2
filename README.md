@@ -59,15 +59,16 @@ installation required).
 
 
 Now you know that your OPC server is talking to OpenOPC 2. Then lets get started with python. If you use OpenOPC 2 with 
-Python in windows directly you are **limited to a 32bit Python** installattion. This is because the ddls of OPC are 32bit.
+Python in windows directly you are **limited to a 32bit Python** installation. This is because the dlls of OPC are 32bit.
 If you prefere working with a 64bit Python version you can simply use the With OpenOPC Gateway. 
 
 <img src="https://github.com/iterativ/openopc2/raw/develop/doc/assets/WindowsSetup.png" alt="WindowsSetup" width="400"/>
 
+You must install the gbda_aut.dll (in /lib) which is the GrayboxOpcDa wrapper. 
+
+http://gray-box.net/daawrapper.php?lang=en
 
 ```console
-pip install openopc2
-openopc2 --install
 python -m openopc2 servers
 ```
 
@@ -84,10 +85,9 @@ local Windows setup.
 
 <img src="https://github.com/iterativ/openopc2/raw/develop/doc/assets/LinuxSetup.png" alt="LinuxSetup" width="700"/>
 
-On the Windows Machine open the console as administator. 
+On the Windows Machine open the console as administrator. 
 
 ```shell
-openopc --install
 openopcservice install
 openopcservice start
 ```
