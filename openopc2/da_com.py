@@ -57,7 +57,6 @@ class OpcCom:
         self.vendor_info = None
         self.opc_client = None
         self.initialize_client(opc_class)
-        self.available_properties_cache = None
 
     def initialize_client(self, opc_class):
         try:
@@ -108,19 +107,15 @@ class OpcCom:
         """
         Return the available properites of that specific server. Be aware that the properties names are different between
         different servers, there is no consistency here . It seems that at least the property ids are consistent.
-        The response of this is chched in since this request takes a long time and some servers have trouble when it is
-        executed frequently
         """
-        if self.available_properties_cache is None:
-            try:
-                (count, property_id, descriptions, datatypes) = list(self.opc_client.QueryAvailableProperties(tag))
-                self.available_properties_cache = (count, property_id, descriptions, datatypes)
-                return count, property_id, descriptions, datatypes
-            except pythoncom.com_error as err:
-                error_msg = err#'properties: %s' % self._get_error_str(err)
-                raise OPCError(error_msg)
-        else:
-            return self.available_properties_cache
+
+        try:
+            (count, property_id, descriptions, datatypes) = list(self.opc_client.QueryAvailableProperties(tag))
+            self.available_properties_cache = (count, property_id, descriptions, datatypes)
+            return count, property_id, descriptions, datatypes
+        except pythoncom.com_error as err:
+            error_msg = err#'properties: %s' % self._get_error_str(err)
+            raise OPCError(error_msg)
 
 
     def _property_value_conversion(self, description, input_value):
@@ -142,21 +137,29 @@ class OpcCom:
 
         return value
 
-    def get_tag_properties(self, tag, property_ids=[]):
-        # TODO: Find out if it makes any difference to request selected properties (so far there is no benefit)
+    def get_tag_properties(self, tag, property_ids=[]) -> TagProperties:
+        """
+        This method returns the Properties of a tag. If you want to read many tags from a server it is
+        recommended to only read the property ids that are required. Testing has shown, that this method is
+        quite slow and leads to crashes on some servers.
+
+        """
         property_ids_filter = property_ids
+        properties_by_id = TagProperties().get_default_tag_properies_by_id()
 
-        count, property_ids, descriptions, datatypes = self.get_available_properties(tag)
+        if not property_ids:
+            count, property_ids, descriptions, datatypes = self.get_available_properties(tag)
 
-        available_properies_by_id = {}
-        for result in zip(property_ids, descriptions, datatypes):
-            available_properies_by_id[result[0]] = {
-                'property_id': result[0],
-                'description': result[1],
-                'data_type': VtType(result[2]).name
-            }
+            for result in zip(property_ids, descriptions, datatypes):
+                property_item = properties_by_id.get(result[0], TagPropertyItem())
+                property_item.property_id = result[0]
+                property_item.description = result[1]
+                property_item.available = True
+                property_item.data_type = VtType(result[2]).name
+                properties_by_id[result[0]] = property_item
 
-        property_ids_cleaned = [p for p in property_ids if p > 0]
+            property_ids_cleaned = [p for p in property_ids if p > 0]
+
         if property_ids_filter:
             property_ids_cleaned = [p for p in property_ids if p in property_ids_filter]
         try:
@@ -166,16 +169,9 @@ class OpcCom:
             error_msg = err#'properties: %s' % self._get_error_str(err)
             raise OPCError(error_msg)
 
-        properties_by_id = {}
-        for property_result in zip(property_ids_cleaned, item_properties_values):
-            tag_property_item = TagPropertyItem()
-            property_dict = available_properies_by_id[property_result[0]]
-            tag_property_item.data_type = property_dict['data_type']
-            tag_property_item.property_id = property_dict['property_id']
-            tag_property_item.description = property_dict['description']
-            tag_property_item.value = self._property_value_conversion(tag_property_item.description, property_result[1])
-
-            properties_by_id[tag_property_item.property_id] = tag_property_item
+        for (property_id, property_value) in zip(property_ids_cleaned, item_properties_values):
+            property_item = properties_by_id[property_id]
+            property_item.value = self._property_value_conversion(property_item.description, property_value)
 
         tag_properties = TagProperties().from_tag_property_items_by_id(tag, properties_by_id)
         return tag_properties, errors

@@ -13,8 +13,8 @@ class TestProperties(TestCase):
     def test_read_property(self):
         properties = self.opc_client.properties('Bucket Brigade.Int1')
         prop = properties[0]
-        self.assertEqual(prop.data_type, 'VT_I1')
-        self.assertEqual(prop.quality, 'Good')
+        self.assertEqual('VT_I1', prop.data_type)
+        self.assertEqual('Good', prop.quality)
         self.assertEqual(prop.server_scan_rate, 100.0)
 
     def test_read_properties(self):
