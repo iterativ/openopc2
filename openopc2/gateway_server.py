@@ -5,7 +5,7 @@ import Pyro5.server
 from Pyro5.api import register_class_to_dict, register_dict_to_class
 
 from openopc2.config import OpenOpcConfig
-from openopc2.da_client import OpcDaClient, __version__
+from openopc2.da_client import OpcDaClient
 from openopc2.opc_types import TagProperties
 from openopc2.exceptions import OPCError
 
@@ -84,7 +84,7 @@ class OpenOpcGatewayServer:
     def print_config(self):
         welcome_message = f"""
         Open Opc Gateway server
-        Version:    {__version__}
+        Version:    
 
         OPC_GATE_HOST:  {self.host}
         OPC_GATE_PORT:  {self.port}

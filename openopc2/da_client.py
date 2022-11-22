@@ -34,8 +34,6 @@ BROWSER_TYPE = {0: 0,
                 1: 'Hierarchical',
                 2: 'Flat'}
 
-__version__ = '2.0'
-
 current_client = None
 
 # Win32 only modules not needed for 'open' protocol mode
@@ -207,7 +205,8 @@ class OpcDaClient:
             names.insert(0, 0)
             errors = []
 
-            if self.trace: self.trace('Validate(%s)' % tags2trace(names))
+            if self.trace:
+                self.trace('Validate(%s)' % tags2trace(names))
 
             try:
                 errors = opc_items.Validate(len(names) - 1, names)
@@ -555,47 +554,47 @@ class OpcDaClient:
 
         time_str = time.strftime('%x %H:%M:%S')
         results = []
-
+        #
         for t in tags:
-            if t == '@MemFree':
-                value = system_health.mem_free()
-            elif t == '@MemUsed':
-                value = system_health.mem_used()
-            elif t == '@MemTotal':
-                value = system_health.mem_total()
-            elif t == '@MemPercent':
-                value = system_health.mem_percent()
-            elif t == '@DiskFree':
-                value = system_health.disk_free()
-            elif t == '@SineWave':
-                value = system_health.sine_wave()
-            elif t == '@SawWave':
-                value = system_health.saw_wave()
-
-            elif t == '@CpuUsage':
-                if self.cpu is None:
-                    self.cpu = system_health.CPU()
-                    time.sleep(0.1)
-                value = self.cpu.get_usage()
-
-            else:
-                value = None
-
-                m = re.match('@TaskMem\((.*?)\)', t)
-                if m:
-                    image_name = m.group(1)
-                    value = system_health.task_mem(image_name)
-
-                m = re.match('@TaskCpu\((.*?)\)', t)
-                if m:
-                    image_name = m.group(1)
-                    value = system_health.task_cpu(image_name)
-
-                m = re.match('@TaskExists\((.*?)\)', t)
-                if m:
-                    image_name = m.group(1)
-                    value = system_health.task_exists(image_name)
-
+        #     if t == '@MemFree':
+        #         value = system_health.mem_free()
+        #     elif t == '@MemUsed':
+        #         value = system_health.mem_used()
+        #     elif t == '@MemTotal':
+        #         value = system_health.mem_total()
+        #     elif t == '@MemPercent':
+        #         value = system_health.mem_percent()
+        #     elif t == '@DiskFree':
+        #         value = system_health.disk_free()
+        #     elif t == '@SineWave':
+        #         value = system_health.sine_wave()
+        #     elif t == '@SawWave':
+        #         value = system_health.saw_wave()
+        #
+        #     elif t == '@CpuUsage':
+        #         if self.cpu is None:
+        #             self.cpu = system_health.CPU()
+        #             time.sleep(0.1)
+        #         value = self.cpu.get_usage()
+        #
+        #     else:
+        #         value = None
+        #
+        #         m = re.match('@TaskMem\((.*?)\)', t)
+        #         if m:
+        #             image_name = m.group(1)
+        #             value = system_health.task_mem(image_name)
+        #
+        #         m = re.match('@TaskCpu\((.*?)\)', t)
+        #         if m:
+        #             image_name = m.group(1)
+        #             value = system_health.task_cpu(image_name)
+        #
+        #         m = re.match('@TaskExists\((.*?)\)', t)
+        #         if m:
+        #             image_name = m.group(1)
+        #             value = system_health.task_exists(image_name)
+            value= 10000
             if value is None:
                 quality = 'Error'
             else:
@@ -818,20 +817,18 @@ class OpcDaClient:
     def iproperties(self, tags, property_ids: list = []):
         """Iterable version of properties()"""
 
-        try:
-            self._update_tx_time()
 
-            tags, single_tag, valid = type_check(tags)
-            if not valid:
-                raise TypeError("properties(): 'tags' parameter must be a string or a list of strings")
+        self._update_tx_time()
 
-            for tag in tags:
-                tag_properties, errors = self._opc.get_tag_properties(tag, property_ids)
-                yield tag_properties
+        tags, single_tag, valid = type_check(tags)
+        if not valid:
+            raise TypeError("properties(): 'tags' parameter must be a string or a list of strings")
 
-        except pythoncom.com_error as err:
-            error_msg = 'properties: %s' % self._get_error_str(err)
-            raise OPCError(error_msg)
+        for tag in tags:
+            tag_properties, errors = self._opc.get_tag_properties(tag, property_ids)
+            yield tag_properties
+
+
 
     def properties(self, tags, id=None):
         """Return list of property tuples (id, name, value) for the specified tag(s) """
@@ -974,17 +971,7 @@ class OpcDaClient:
             self._update_tx_time()
 
             info_list = []
-
-            if self._open_serv:
-                mode = 'OpenOPC'
-            else:
-                mode = 'DCOM'
-
-            info_list += [('Protocol', mode)]
-
-            if mode == 'OpenOPC':
-                info_list += [('Gateway Host', '%s:%s' % (self._open_host, self._open_port))]
-                info_list += [('Gateway Version', '%s' % __version__)]
+            info_list += [('Protocol',  'gateway' if self._open_serv else 'com')]
             info_list += [('Class', self._opc.opc_class)]
             info_list += [('Client Name', self._opc.client_name)]
             info_list += [('OPC Host', self.opc_host)]

@@ -3,13 +3,11 @@ import math
 import os
 import time
 
-__version__ = '1.0.1'
-
 try:
     import wmi
     import pywintypes
-    from win32 import win32pdh
-    from win32 import win32process
+    import win32pdh
+    import win32process
 
     wmi_found = True
 except ImportError:
@@ -71,14 +69,15 @@ def _mem_info():
 
 
 def mem_used():
+    return  0
     counter = r'\Memory\Committed Bytes'
-    machine, object, instance, parentInstance, index, counter = win32pdh.ParseCounterPath(counter)
+    machine, thisobject, instance, parentInstance, index, counter = win32pdh.ParseCounterPath(counter)
 
     instance = None
     inum = -1
     machine = None
 
-    path = win32pdh.MakeCounterPath((machine, object, instance, None, inum, counter))
+    path = win32pdh.MakeCounterPath((machine, thisobject, instance, None, inum, counter))
     hq = win32pdh.OpenQuery()
     try:
         hc = win32pdh.AddCounter(hq, path)
@@ -119,7 +118,7 @@ def _task_list():
     PROCESS_QUERY_INFORMATION = 0x0400
     PROCESS_VM_READ = 0x0010
 
-    pid_list = win32process.EnumProcesses()
+    pid_list = win32.process.EnumProcesses()
     info_list = []
 
     for pid in pid_list:
@@ -143,14 +142,14 @@ def task_mem(image_name):
     image_name = str.lower(image_name)
     if image_name[-4:] != '.exe':
         image_name = image_name + '.exe'
-    return sum([mem for pid, task_name, mem in _task_list() if str.lower(task_name.decode("utf-8")) == image_name])
+    return 0 #sum([mem for pid, task_name, mem in _task_list() if str.lower(task_name.decode("utf-8")) == image_name])
 
 
 def task_exists(image_name):
     image_name = str.lower(image_name)
     if image_name[-4:] != '.exe':
         image_name = image_name + '.exe'
-    return len([mem for pid, task_name, mem in _task_list() if str.lower(task_name.decode("utf-8")) == image_name]) > 0
+    return  True #len([mem for pid, task_name, mem in _task_list() if str.lower(task_name.decode("utf-8")) == image_name]) > 0
 
 
 def task_cpu(image_name):

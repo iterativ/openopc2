@@ -104,63 +104,119 @@ class OpcCom:
         return self.opc_client.GetOPCServers(opc_host)
 
     def get_available_properties(self, tag):
-        (count, property_id, descriptions, datatypes) = list(self.opc_client.QueryAvailableProperties(tag))
-        return count, property_id, descriptions, datatypes
+        """
+        Return the available properites of that specific server. Be aware that the properties names are different between
+        different servers, there is no consistency here . It seems that at least the property ids are consistent.
+        """
+
+        try:
+            (count, property_id, descriptions, datatypes) = list(self.opc_client.QueryAvailableProperties(tag))
+            self.available_properties_cache = (count, property_id, descriptions, datatypes)
+            return count, property_id, descriptions, datatypes
+        except pythoncom.com_error as err:
+            error_msg = err#'properties: %s' % self._get_error_str(err)
+            raise OPCError(error_msg)
+
 
     def _property_value_conversion(self, description, input_value):
         value = input_value
-
-        if description == 'Item Canonical DataType':
+        # Different servers have different writings
+        if description in {'Item Canonical DataType', 'Item Canonical Data Type'}:
             value = VtType(value).name
-        if description == 'Item Timestamp':
+        elif description in {'Item Timestamp', 'Item TimeStamp'}:
             value = str(value)
-        if description == 'Item Access Rights':
+        elif description == 'Item Access Rights':
             value = ACCESS_RIGHTS[value]
-        if description == 'Item Quality':
+        elif description == 'Item Quality':
             if value > 3:
                 value = 3
             value = OPC_QUALITY[value]
+        else:
+            pass
+            #print(f'Error: Could not find description "{description}"  and value {input_value}')
 
         return value
 
-    def get_tag_properties(self, tag, property_ids=[]):
-        # TODO: Find out if it makes any difference to request selected properties (so far there is no benefit)
+    def get_tag_properties(self, tag, property_ids=[]) -> TagProperties:
+        """
+        This method returns the Properties of a tag. If you want to read many tags from a server it is
+        recommended to only read the property ids that are required. Testing has shown, that this method is
+        quite slow and leads to crashes on some servers.
+
+        """
         property_ids_filter = property_ids
+        properties_by_id = TagProperties().get_default_tag_properies_by_id()
 
-        count, property_ids, descriptions, datatypes = self.get_available_properties(tag)
-        available_properies_by_id = {}
-        for result in zip(property_ids, descriptions, datatypes):
-            available_properies_by_id[result[0]] = {
-                'property_id': result[0],
-                'description': result[1],
-                'data_type': VtType(result[2]).name
-            }
+        if not property_ids:
+            count, property_ids, descriptions, datatypes = self.get_available_properties(tag)
 
-        property_ids_cleaned = [p for p in property_ids if p > 0]
+            for result in zip(property_ids, descriptions, datatypes):
+                property_item = properties_by_id.get(result[0], TagPropertyItem())
+                property_item.property_id = result[0]
+                property_item.description = result[1]
+                property_item.available = True
+                property_item.data_type = VtType(result[2]).name
+                properties_by_id[result[0]] = property_item
+
+            property_ids_cleaned = [p for p in property_ids if p > 0]
+
         if property_ids_filter:
             property_ids_cleaned = [p for p in property_ids if p in property_ids_filter]
+        try:
+            item_properties_values, errors = self.opc_client.GetItemProperties(tag, len(property_ids_cleaned),
+                                                                               property_ids_cleaned)
+        except pythoncom.com_error as err:
+            error_msg = err#'properties: %s' % self._get_error_str(err)
+            raise OPCError(error_msg)
 
-        item_properties_values, errors = self.opc_client.GetItemProperties(tag, len(property_ids_cleaned),
-                                                                           property_ids_cleaned)
-        properties_by_description = {}
-        for property_result in zip(property_ids_cleaned, item_properties_values):
-            tag_property_item = TagPropertyItem()
-            property_dict = available_properies_by_id[property_result[0]]
-            tag_property_item.data_type = property_dict['data_type']
-            tag_property_item.property_id = property_dict['property_id']
-            tag_property_item.description = property_dict['description']
-            tag_property_item.value = self._property_value_conversion(tag_property_item.description, property_result[1])
+        for (property_id, property_value) in zip(property_ids_cleaned, item_properties_values):
+            property_item = properties_by_id[property_id]
+            property_item.value = self._property_value_conversion(property_item.description, property_value)
 
-            properties_by_description[tag_property_item.description] = tag_property_item
-
-        tag_properties = TagProperties().from_tag_property_items_by_name(tag, properties_by_description)
+        tag_properties = TagProperties().from_tag_property_items_by_id(tag, properties_by_id)
         return tag_properties, errors
 
     def get_error_string(self, error_id: int):
         return self.opc_client.GetErrorString(error_id)
 
+    def _get_error_str(self, err):
+        """Return the error string for a OPC or COM error code"""
+
+        hr, msg, exc, arg = err.args
+
+        if exc == None:
+            error_str = str(msg)
+        else:
+            scode = exc[5]
+
+            try:
+                opc_err_str = self._opc.GetErrorString(scode).strip('\r\n')
+            except:
+                opc_err_str = None
+
+            try:
+                com_err_str = pythoncom.GetScodeString(scode).strip('\r\n')
+            except:
+                com_err_str = None
+
+            # OPC error codes and COM error codes are overlapping concepts,
+            # so we combine them together into a single error message.
+
+            if opc_err_str is None and com_err_str is None:
+                error_str = str(scode)
+            elif opc_err_str is com_err_str:
+                error_str = opc_err_str
+            elif opc_err_str is None:
+                error_str = com_err_str
+            elif com_err_str is None:
+                error_str = opc_err_str
+            else:
+                error_str = '%s (%s)' % (opc_err_str, com_err_str)
+
+        return error_str
+
     def __str__(self):
-        return f"OPCCom Object: {self.host} {self.server} {self.minor_version}.{self.major_version}"
+        return f"OPCCom Object: {self.host} {self.server} {self.major_version}.{self.minor_version}"
 
     @staticmethod
     def get_quality_string(quality_bits):
