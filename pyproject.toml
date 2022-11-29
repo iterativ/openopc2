@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "openopc2"
-version = "0.1.8"
+version = "0.1.9"
 description = "OPC library with a Windows gateway enabling non-Windows clients to access OPC-DA calls."
 license = "GPL-2.0-or-later"
 readme = "README.md"
