@@ -1,5 +1,5 @@
 
-pyinstaller --onefile `
+poetry run python -m pyinstaller --onefile `
             --clean `
             --noconfirm `
             --paths ./openopc2 `
@@ -10,7 +10,7 @@ pyinstaller --onefile `
             ../openopc2/gateway_service.py
 
 
-pyinstaller --onefile `
+poetry run python -m pyinstaller --onefile `
             --clean `
             --noconfirm `
             --paths ./openopc2 `
@@ -20,7 +20,7 @@ pyinstaller --onefile `
             --name OpenOpcCli `
             ../openopc2/cli.py
 
-pyinstaller --onefile `
+poetry run python -m pyinstaller --onefile `
             --clean `
             --noconfirm `
             --paths ./openopc2 `
