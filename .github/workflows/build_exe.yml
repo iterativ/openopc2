@@ -21,7 +21,7 @@ jobs:
       - name: Build EXE
         run: scripts/build_executables.ps1
       - name: list files
-        run: ls -alhs
+        run: tree
       # - uses: ncipollo/release-action@v1
       #   with:
       #     artifacts: "release.tar.gz,foo/*.txt"
