@@ -20,8 +20,15 @@ jobs:
         run: poetry install
       - name: Build EXE
         run: scripts/build_executables.ps1
-      - name: list files
-        run: tree
+      - name: Upload binaries as artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: binaries
+          path: |
+            build/OpenOpcCli
+            build/OpenOpcServer
+            build/OpenOpcService
+
       # - uses: ncipollo/release-action@v1
       #   with:
       #     artifacts: "release.tar.gz,foo/*.txt"
