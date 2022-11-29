@@ -1,10 +1,10 @@
 name: Build EXE
-on: [pull_request]
-  # push:
-  #   branches:
-  #     - main
-  #   tags:
-  #     - "*.*.*"
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*.*.*"
 jobs:
   build:
     runs-on: windows-latest
@@ -25,11 +25,13 @@ jobs:
         with:
           name: binaries
           path: |
-            build/OpenOpcCli
-            build/OpenOpcServer
-            build/OpenOpcService
+            dist/OpenOpcCli.exe
+            dist/OpenOpcServer.exe
+            dist/OpenOpcService.exe
 
       # - uses: ncipollo/release-action@v1
       #   with:
-      #     artifacts: "release.tar.gz,foo/*.txt"
-      #     bodyFile: "body.md"
+      #     artifacts: |
+      #       dist/OpenOpcCli.exe
+      #       dist/OpenOpcServer.exe
+      #       dist/OpenOpcService.exe
