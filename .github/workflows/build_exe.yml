@@ -1,10 +1,13 @@
 name: Build EXE
 on:
-  push:
+  pull_request:
     branches:
-      - main
-    tags:
-      - "*.*.*"
+      - develop
+  # push:
+  #   branches:
+  #     - main
+  #   tags:
+  #     - "*.*.*"
 jobs:
   build:
     runs-on: windows-latest
