@@ -7,7 +7,7 @@ poetry run pyinstaller --onefile `
             --hidden-import=win32timezone `
             --hidden-import=pythoncom  `
             --name OpenOpcService `
-            ../openopc2/gateway_service.py
+            openopc2/gateway_service.py
 
 
 poetry run pyinstaller --onefile `
@@ -18,7 +18,7 @@ poetry run pyinstaller --onefile `
             --hidden-import=win32timezone `
             --hidden-import=pythoncom  `
             --name OpenOpcCli `
-            ../openopc2/cli.py
+            openopc2/cli.py
 
 poetry run pyinstaller --onefile `
             --clean `
@@ -28,4 +28,4 @@ poetry run pyinstaller --onefile `
             --hidden-import=win32timezone `
             --hidden-import=pythoncom  `
             --name OpenOpcServer `
-            ../openopc2/gateway_server.py
+            openopc2/gateway_server.py
