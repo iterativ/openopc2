@@ -1,8 +1,5 @@
 name: Build EXE
-on:
-  pull_request:
-    branches:
-      - develop
+on: [pull_request]
   # push:
   #   branches:
   #     - main
