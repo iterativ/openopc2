@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "openopc2"
-version = "0.1.7"
+version = "0.1.8"
 description = "OPC library with a Windows gateway enabling non-Windows clients to access OPC-DA calls."
 license = "GPL-2.0-or-later"
 readme = "README.md"
@@ -13,9 +13,9 @@ keywords = ["opc", "openopc", "opc-da", "opc classic"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
-    "Topic :: Scientific/Engineering :: Human Machine Interfaces",
+    "Topic :: Scientific/Engineering :: Human Machine Interfacesr",
     "Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator",
-    "Intended Audience :: Manufacturing"
+    "Intended Audience :: Manufacturing",
 ]
 
 [tool.poetry.dependencies]
