@@ -95,7 +95,6 @@ openopcservice start
 On your Linux machine
 ```
 pip install openopc2
-openopc2 --install`
 ```
 
 python
@@ -108,21 +107,16 @@ from openopc2.da_client import OpcDaClient
 
 # ⚙️ Configuration 
 
-The configuration of the OpenOpc 2 libray and the OpenOpcGateway is done via environment variables. To initiate them,
-simply run:
-
-```shell
-OpenOPC install 
-```
+The configuration of the OpenOpc 2 libray and the OpenOpcGateway is done via environment variables. 
 
 ```
-OPC_CLASS=Matrikon.OPC.Automation;Graybox.OPC.DAWrapper;HSCOPC.Automation;RSI.OPCAutomation;OPC.Automation
+OPC_CLASS=OPC.Automation
 OPC_CLIENT=OpenOPC
 OPC_GATE_HOST=192.168.1.96    # IMPORTANT: Replace with your IP address
 OPC_GATE_PORT=7766
 OPC_HOST=localhost
 OPC_MODE=dcom
-OPC_SERVER=Hci.TPNServer;HwHsc.OPCServer;opc.deltav.1;AIM.OPC.1;Yokogawa.ExaopcDAEXQ.1;OSI.DA.1;OPC.PHDServerDA.1;Aspen.Infoplus21_DA.1;National Instruments.OPCLabVIEW;RSLinx OPC Server;KEPware.KEPServerEx.V4;Matrikon.OPC.Simulation;Prosys.OPC.Simulation
+OPC_SERVER=Matrikon.OPC.Simulation
 ```
 
 * If they are not set, open a command prompt window to do that by 
@@ -238,10 +232,10 @@ The authors of the var package are:
 | Years     |      | Name                | User |
 |-----------|------|---------------------|------|
 | 2008-2012 | 🇺🇸 | Barry Barnreiter    | barry_b@users.sourceforge.net |
-| 2014      | 🇷🇺 | Anton D. Kachalov   | barry_b@users.sourceforge.net |
-| 2017      | 🇻🇪 | José A. Maita       | jose.a.maita@gmail.com|
-| 2022      | 🇨🇭 | Lorenz Padberg      | renzop |
-| 2022      | 🇨🇭 | Elia Bieri          | eliabieri |
+| 2014      | 🇷🇺 | Anton D. Kachalov   | https://github.com/ya-mouse |
+| 2017      | 🇻🇪 | José A. Maita       | https://github.com/joseamaita|
+| 2022      | 🇨🇭 | Lorenz Padberg      | https://github.com/renzop |
+| 2022      | 🇨🇭 | Elia Bieri          | https://github.com/eliabieri |
 
 
 
