@@ -51,7 +51,7 @@ installation required).
 
 Now you know that your OPC server is talking to OpenOPC 2. Then lets get started with python. If you use OpenOPC 2 with
 Python in windows directly you are **limited to a 32bit Python** installation. This is because the dlls of OPC are 32bit.
-If you prefere working with a 64bit Python version you can simply use the With OpenOPC Gateway.
+If you prefer working with a 64bit Python version you can simply use the With OpenOPC Gateway.
 
 <img src="https://github.com/iterativ/openopc2/raw/develop/doc/assets/WindowsSetup.png" alt="WindowsSetup" width="400"/>
 
@@ -63,12 +63,12 @@ http://gray-box.net/daawrapper.php?lang=en
 python -m openopc2 servers
 ```
 
-## Multi plattform installation
+## Multi platform installation
 
-One of the main benefits of OpenOPC 2 ist the OpenOPC gateway. This enables you to use any modern platform for
-developting your application. Start the OpenOPC service in the Windows environment where the OPC server is running.
+One of the main benefits of OpenOPC 2 is the OpenOPC gateway. This enables you to use any modern platform for
+developing your application. Start the OpenOPC service in the Windows environment where the OPC server is running.
 The Service starts a server (Pyro5) that lets you use the OpenOPC2 OpcDaClient on another machine. Due to the magic of
-Pyro (Python Remote Objects) the developer experience and usage of the Library remains the same as if you worke int the
+Pyro (Python Remote Objects) the developer experience and usage of the Library remains the same as if you work in the
 local Windows setup.
 
 <img src="https://github.com/iterativ/openopc2/raw/develop/doc/assets/LinuxSetup.png" alt="LinuxSetup" width="700"/>
@@ -94,7 +94,7 @@ from openopc2.da_client import OpcDaClient
 
 # ⚙️ Configuration
 
-The configuration of the OpenOpc 2 libray and the OpenOpcGateway is done via environment variables.
+The configuration of the OpenOpc 2 library and the OpenOpcGateway is done via environment variables.
 
 ```
 OPC_CLASS=OPC.Automation
