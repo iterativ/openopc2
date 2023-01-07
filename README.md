@@ -60,7 +60,7 @@ You must install the gbda_aut.dll (in /lib) which is the GrayboxOpcDa wrapper.
 http://gray-box.net/daawrapper.php?lang=en
 
 ```console
-python -m openopc2 servers
+python -m openopc2 list-servers
 ```
 
 ## Multi platform installation
@@ -82,7 +82,7 @@ openopcservice start
 
 On your Linux machine
 
-```
+```shell
 pip install openopc2
 ```
 
@@ -106,13 +106,16 @@ OPC_MODE=dcom
 OPC_SERVER=Matrikon.OPC.Simulation
 ```
 
-- If they are not set, open a command prompt window to do that by
-  typing:
+- If they are not set, open a command prompt window (`cmd`) and type:
 
 ```
 C:\>set ENV_VAR=VALUE
 C:\>set OPC_GATE_HOST=172.16.4.22    # this is an example
 ```
+
+- Alternately, Windows OS system or user environment variables work.
+  Note that user environment variables take precedent over system environment
+  variables.
 
 - Make sure the firewall is allowed to keep the port 7766 open. If in
   doubt, and you're doing a quick test, just turn off your firewall
