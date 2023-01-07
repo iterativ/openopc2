@@ -1,5 +1,3 @@
+Start the OpenOPC Gateway locally
 
-
-Start the OpenOPC Gateway locally 
-
-python .\OpenOPCService.py  --foreground
+python .\\OpenOPCService.py  --foreground
