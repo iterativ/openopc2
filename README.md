@@ -71,6 +71,9 @@ The Service starts a server (Pyro5) that lets you use the OpenOPC2 OpcDaClient o
 Pyro (Python Remote Objects) the developer experience and usage of the Library remains the same as if you work in the
 local Windows setup.
 
+([Download the executables here](https://github.com/iterativ/openopc2/releases/latest))
+
+
 <img src="https://github.com/iterativ/openopc2/raw/develop/doc/assets/LinuxSetup.png" alt="LinuxSetup" width="700"/>
 
 On the Windows Machine open the console as administrator.
