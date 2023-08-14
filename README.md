@@ -100,7 +100,7 @@ from openopc2.da_client import OpcDaClient
 The configuration of the OpenOpc 2 library and the OpenOpcGateway is done via environment variables.
 
 ```
-OPC_CLASS=OPC.Automation
+OPC_CLASS=Graybox.OPC.DAWrapper
 OPC_CLIENT=OpenOPC
 OPC_GATE_HOST=192.168.1.96    # IMPORTANT: Replace with your IP address
 OPC_GATE_PORT=7766
