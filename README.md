@@ -134,14 +134,14 @@ C:\>set OPC_GATE_HOST=172.16.4.22    # this is an example
   in the command line:
 
 ```shell
-C:\openopc2\lib>regsvr32 gbda_aut.dll
+openopc2\lib>regsvr32 gbda_aut.dll
 ```
 
 - If, for any reason, you want to uninstall this file and remove it from
   your system registry later, type this in the command line:
 
 ```shell
-C:\openopc2\lib>regsvr32 gbda_aut.dll -u
+openopc2\lib>regsvr32 gbda_aut.dll -u
 ```
 
 # CLI
