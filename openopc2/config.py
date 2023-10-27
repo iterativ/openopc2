@@ -8,7 +8,7 @@ class OpenOpcConfig:
         opc_host: str = "localhost",
         opc_server: str = os.environ.get("OPC_SERVER", "Matrikon.OPC.Simulation"),
         opc_client: str = "OpenOPC",
-        opc_gateway_host: str = os.environ.get("OPC_GATE_HOST", "192.168.0.115"),
+        opc_gateway_host: str = os.environ.get("OPC_GATE_HOST", "localhost"),
         opc_gateway_port: int = int(os.environ.get("OPC_GATE_PORT", 7766)),
         opc_class: str = os.environ.get("OPC_CLASS", "Graybox.OPC.DAWrapper"),
         opc_mode: Literal["GATEWAY", "COM"] = os.environ.get("OPC_MODE", "gateway"),
