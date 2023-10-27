@@ -35,6 +35,7 @@ experience and create a base for other developers that is easier to maintain, te
 - Mostly the same api (but we take the freedom to not be compatible)
 - No memory leak in the OpenOpcService 🎉
 - Python 3.8+ (tested with 3.10)
+- Made for 64bit Python
 - Typings
 - Pyro5, increased security
 - We added tests 😎
@@ -55,7 +56,7 @@ If you prefer working with a 64bit Python version you can simply use the With Op
 
 <img src="https://github.com/iterativ/openopc2/raw/develop/doc/assets/WindowsSetup.png" alt="WindowsSetup" width="400"/>
 
-You must install the gbda_aut.dll (in /lib) which is the GrayboxOpcDa wrapper.
+You must install the gbda_aut.dll (in graybox-automation-wrapper/x64/gbda_aut.dll) which is the GrayboxOpcDa wrapper.
 
 http://gray-box.net/daawrapper.php?lang=en
 
@@ -134,14 +135,14 @@ C:\>set OPC_GATE_HOST=172.16.4.22    # this is an example
   in the command line:
 
 ```shell
-openopc2\lib>regsvr32 gbda_aut.dll
+openopc2\graybox-automation-wrapper\x64\gbda_aut.dll>regsvr32 gbda_aut.dll
 ```
 
 - If, for any reason, you want to uninstall this file and remove it from
   your system registry later, type this in the command line:
 
 ```shell
-openopc2\lib>regsvr32 gbda_aut.dll -u
+openopc2\graybox-automation-wrapper\x64\gbda_aut.dll>regsvr32 gbda_aut.dll -u
 ```
 
 # CLI
