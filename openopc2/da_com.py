@@ -117,8 +117,8 @@ class OpcCom:
             error_msg = err#'properties: %s' % self._get_error_str(err)
             raise OPCError(error_msg)
 
-
-    def _property_value_conversion(self, description, input_value):
+    @staticmethod
+    def _property_value_conversion(description, input_value):
         value = input_value
         # Different servers have different writings
         if description in {'Item Canonical DataType', 'Item Canonical Data Type'}:
@@ -136,6 +136,21 @@ class OpcCom:
             #print(f'Error: Could not find description "{description}"  and value {input_value}')
 
         return value
+    @staticmethod
+    def _create_tag_property_from_response(response):
+        tag_properties_by_id = {}
+
+        count, property_ids, descriptions, datatypes = response
+        for property_id, description, datatype in zip(property_ids, descriptions, datatypes):
+            property_item = TagPropertyItem()
+            property_item.property_id = property_id
+            property_item.description = description
+            property_item.available = True
+            property_item.data_type = VtType(datatype).name
+
+            tag_properties_by_id[property_id] = property_item
+        return tag_properties_by_id
+
 
     def get_tag_properties(self, tag, property_ids=[]) -> TagProperties:
         """
@@ -145,35 +160,35 @@ class OpcCom:
 
         """
         property_ids_filter = property_ids
-        properties_by_id = TagProperties().get_default_tag_properies_by_id()
-
-        if not property_ids:
-            count, property_ids, descriptions, datatypes = self.get_available_properties(tag)
-
-            for result in zip(property_ids, descriptions, datatypes):
-                property_item = properties_by_id.get(result[0], TagPropertyItem())
-                property_item.property_id = result[0]
-                property_item.description = result[1]
-                property_item.available = True
-                property_item.data_type = VtType(result[2]).name
-                properties_by_id[result[0]] = property_item
-
-            property_ids_cleaned = [p for p in property_ids if p > 0]
+        # default properties are specified in the Opc DA specification
 
         if property_ids_filter:
-            property_ids_cleaned = [p for p in property_ids if p in property_ids_filter]
+            available_properties_by_id = TagProperties().get_default_tag_properies_by_id()
+
+            property_ids_cleaned = [p for p in property_ids_filter if p > 0]
+
+        else:
+            response = self.get_available_properties(tag)
+            tag_specific_properties_by_id = self._create_tag_property_from_response(response)
+
+            # remove negative property ids (these are used for array types which is not yet supported)
+            property_ids_cleaned = [p for p in tag_specific_properties_by_id if p > 0]
+            available_properties_by_id = {p: tag_specific_properties_by_id.get(p) for p in property_ids_cleaned}
+
         try:
-            item_properties_values, errors = self.opc_client.GetItemProperties(tag, len(property_ids_cleaned),
-                                                                               property_ids_cleaned)
+            # To unknown reasons the count has to be reduced by one.
+            count = len(property_ids_cleaned)
+            p_ids = [1] + property_ids_cleaned
+            item_properties_values, errors = self.opc_client.GetItemProperties(tag, count, p_ids)
         except pythoncom.com_error as err:
-            error_msg = err#'properties: %s' % self._get_error_str(err)
+            error_msg = self._get_error_str(err)
             raise OPCError(error_msg)
 
         for (property_id, property_value) in zip(property_ids_cleaned, item_properties_values):
-            property_item = properties_by_id[property_id]
+            property_item = available_properties_by_id[property_id]
             property_item.value = self._property_value_conversion(property_item.description, property_value)
 
-        tag_properties = TagProperties().from_tag_property_items_by_id(tag, properties_by_id)
+        tag_properties = TagProperties().from_tag_property_items_by_id(tag, available_properties_by_id)
         return tag_properties, errors
 
     def get_error_string(self, error_id: int):

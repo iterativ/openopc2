@@ -817,7 +817,6 @@ class OpcDaClient:
     def iproperties(self, tags, property_ids: list = []):
         """Iterable version of properties()"""
 
-
         self._update_tx_time()
 
         tags, single_tag, valid = type_check(tags)
@@ -830,7 +829,7 @@ class OpcDaClient:
 
 
 
-    def properties(self, tags, id=None):
+    def properties(self, tags, id: list=[]):
         """Return list of property tuples (id, name, value) for the specified tag(s) """
 
         single = type(tags) not in (list, tuple) and type(id) not in (type(None), list, tuple)

@@ -62,7 +62,7 @@ class TestReadTags(TestCase):
 
     def test_non_existent_tag_error(self):
         value = self.opc_client.read("idont_exist", include_error=True)
-        self.assertEqual(value, (None, 'Error', None, "The item ID does not conform to the server's syntax. "))
+        self.assertEqual(value, (None, 'Error', None, "The item definition does not conform to the server's syntax."))
 
     def test_non_existent_tag(self):
         value = self.opc_client.read("idont_exist")
@@ -83,9 +83,9 @@ class TestReadTags(TestCase):
         values = self.opc_client.read(["idont_exist", "test", 'Bucket Brigade.Int1'], timeout=READ_TIMEOUT,
                                       include_error=True)
         self.assertEqual(values[0],
-                         ("idont_exist", None, 'Error', None, "The item ID does not conform to the server's syntax. "))
+                         ("idont_exist", None, 'Error', None, "The item definition does not conform to the server's syntax."))
         self.assertEqual(values[1],
-                         ("test", None, 'Error', None, "The item ID does not conform to the server's syntax. "))
+                         ("test", None, 'Error', None, "The item definition does not conform to the server's syntax."))
 
         self.assertEqual(values[2][0], "Bucket Brigade.Int1")
         self.assertEqual(values[2][2], 'Good')

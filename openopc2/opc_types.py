@@ -48,6 +48,9 @@ class TagPropertyItem():
     def get_default_tuple(self):
         return self.property_id, self.description, self.value
 
+    def __str__(self):
+        return f"{self.property_id} {self.description}: {self.value}"
+
 
 @dataclass()
 class TagProperties:
@@ -91,11 +94,6 @@ class TagProperties:
         result[6] = TagPropertyItem(property_id=6,  description='Server Scan Rate', data_type='VT_R4')
         return result
 
-
-
-
-
-
     def class_to_dict(self):
         default = asdict(self)
         default["__class__"] = "opc_types.TagProperties"
@@ -107,6 +105,8 @@ class TagProperties:
         p = TagProperties(**tag_properties_dictionary)
         return p
 
+    def __str__(self):
+        return f"{self.description}: {self.value}"
 
 tag_property_fields = [
     'DataType', 'Value', 'Quality', 'Timestamp', 'AccessRights', 'ServerScanRate', 'ItemEUType', 'ItemEUInfo',

@@ -18,7 +18,7 @@ def main():
         server = "Matrikon.OPC.Simulation"
         host = 'localhost'
         #program_name = "Matrikon.OPC.Simulation"
-        server = "ABB.AC800MC_OpcDaServer"
+        #server = "ABB.AC800MC_OpcDaServer"
 
         print(f"Trying to connect OPC server with {server}@{host} class {opc_class}")
         try:

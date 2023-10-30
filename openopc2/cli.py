@@ -258,11 +258,14 @@ def properties(
         return
 
     table = Table(title="Properties")
-    table.add_column("Id", style="green")
-    table.add_column("Property Name", style="cyan")
-    table.add_column("Value", style="dark_orange3")
-    for property in properties:
-        table.add_row(str(property[0]), property[1], str(property[2]))
+    table.add_column("Tag Name", style="green")
+    table.add_column("Description", style="green")
+    table.add_column("Datatype", style="cyan")
+    table.add_column("Server Scan Rate", style="dark_orange3")
+    table.add_column("Quality", style="dark_orange3")
+    table.add_column("Time Stamp", style="dark_orange3")
+    for prop in properties:
+        table.add_row(prop.tag_name, str(prop.description), prop.data_type, f"{prop.server_scan_rate} ms", prop.quality, str(prop.timestamp))
     Console().print(table)
 
 

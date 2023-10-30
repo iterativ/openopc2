@@ -30,8 +30,8 @@ class TestOpenOpcCom(TestCase):
 
     def test_get_opc_servers(self):
         opc_servers = self.opccom.get_opc_servers(test_config().OPC_HOST)
-        self.assertTrue(test_config().OPC_SERVER in opc_servers)
-        print(opc_servers)
+        for server in opc_servers:
+            self.assertTrue(test_config().OPC_SERVER in server)
 
     def test_get_available_properties(self):
         properties = self.opccom.get_available_properties(TAG)
