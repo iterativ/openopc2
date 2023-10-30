@@ -112,7 +112,7 @@ class TestReadTags(TestCase):
         system_values = self.opc_client.read(system_tags)
         print_values(system_values)
 
-    def test_sytem_tag_task_info(self):
+    def test_system_tag_task_info(self):
         task_name = "OpenOpcService"
         task_info_tags = [f"@TaskMem({task_name})", f"@TaskCpu({task_name})", f"@TaskExists({task_name})"]
 

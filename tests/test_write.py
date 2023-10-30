@@ -1,8 +1,11 @@
 import numbers
 from unittest import TestCase
 
+import structlog
 from test_config import test_config
 from openopc2.utils import get_opc_da_client
+
+logger = structlog.getLogger('__name__')
 
 
 class TestWriteTags(TestCase):
@@ -21,7 +24,7 @@ class TestWriteTags(TestCase):
             try:
                 float(old_value)
                 is_numeric = True
-            except Exception:
+            except Exception as e:
                 is_numeric = False
 
             if is_numeric:
@@ -30,8 +33,6 @@ class TestWriteTags(TestCase):
                 written_value = self.opc_client.read(tag)[0]
                 print_write_result(write, tag, old_value, written_value)
                 self.assertEqual(new_value, written_value)
-
-
 
     def test_write_all_tags_single_writes_include_error(self):
         """
@@ -58,9 +59,9 @@ def print_write_result(write_result, tag, old, new):
         write_result = write_result[0]
     success = write_result[0] == 'Success'
     if success:
-        print(f"{write_result[0]}: {tag:20} old: {old} new: {new}")
+        logger.info(f"{write_result[0]}: {tag:20} old: {old} new: {new}")
     else:
-        print(write_result)
+        logger.error(write_result)
 
 
 def create_new_value(old_value):
