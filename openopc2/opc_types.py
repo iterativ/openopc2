@@ -84,14 +84,15 @@ class TagProperties:
         self.eu_info = tag_property_items_by_id.get(8, default_property_item).value
         self.description = tag_property_items_by_id.get(9, default_property_item).value
         return self
+
     def get_default_tag_properies_by_id(self):
         result = {}
-        result[1] = TagPropertyItem(property_id=1,  description='Item Canonical Data Type', data_type='VT_I2')
-        result[2] = TagPropertyItem(property_id=2,  description='Item Value', data_type='VT_VARIANT')
-        result[3] = TagPropertyItem(property_id=3,  description='Item Quality', data_type='VT_I2')
-        result[4] = TagPropertyItem(property_id=4,  description='Item TimeStamp', data_type='VT_DATE')
-        result[5] = TagPropertyItem(property_id=5,  description='Item Access Rights', data_type='VT_I4')
-        result[6] = TagPropertyItem(property_id=6,  description='Server Scan Rate', data_type='VT_R4')
+        result[1] = TagPropertyItem(property_id=1, description='Item Canonical Data Type', data_type='VT_I2')
+        result[2] = TagPropertyItem(property_id=2, description='Item Value', data_type='VT_VARIANT')
+        result[3] = TagPropertyItem(property_id=3, description='Item Quality', data_type='VT_I2')
+        result[4] = TagPropertyItem(property_id=4, description='Item TimeStamp', data_type='VT_DATE')
+        result[5] = TagPropertyItem(property_id=5, description='Item Access Rights', data_type='VT_I4')
+        result[6] = TagPropertyItem(property_id=6, description='Server Scan Rate', data_type='VT_R4')
         return result
 
     def class_to_dict(self):
@@ -107,6 +108,7 @@ class TagProperties:
 
     def __str__(self):
         return f"{self.description}: {self.value}"
+
 
 tag_property_fields = [
     'DataType', 'Value', 'Quality', 'Timestamp', 'AccessRights', 'ServerScanRate', 'ItemEUType', 'ItemEUInfo',

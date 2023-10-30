@@ -9,10 +9,10 @@ from openopc2.da_client import OpcDaClient
 from openopc2.opc_types import TagProperties
 from openopc2.exceptions import OPCError
 
-from openopc2.logger import log
-
+import structlog
 # Do not import Rich print in this context, it will fail while running as a service, really hard to debug!
 
+logger = structlog.getLogger(__name__)
 
 
 @Pyro5.api.expose
@@ -35,7 +35,7 @@ class OpenOpcGatewayServer:
         register_class_to_dict(OPCError, OPCError.class_to_dict)
         register_dict_to_class(OPCError, OPCError.dict_to_class)
 
-        log.info(f'Initialized OpenOPC gateway Server uri: {self.uri}')
+        logger.info(f'Initialized OpenOPC gateway Server uri: {self.uri}')
 
     def print_clients(self):
         for client in self.get_clients():
@@ -55,8 +55,6 @@ class OpenOpcGatewayServer:
 
     def create_client(self, open_opc_config: OpenOpcConfig = OpenOpcConfig().OPC_CLASS):
         """Create a new OpenOPC instance in the Pyro server"""
-        print(f"-" * 80)
-
         opc_da_client = OpcDaClient(open_opc_config)
 
         client_id = opc_da_client.client_id
@@ -91,6 +89,7 @@ class OpenOpcGatewayServer:
         OPC_CLASS:      {self.opc_class}
         """
         print(welcome_message)
+        logger.info(welcome_message)
 
         OpenOpcConfig().print_config()
 
@@ -101,7 +100,7 @@ def main(host, port):
     pyro_daemon = Pyro5.server.Daemon(host=host, port=int(port))
     pyro_daemon.register(server, objectId="OpenOpcGatewayServer")
     pyro_daemon.register(OpcDaClient, objectId="OpcDaClient")
-    print(f"Open OPC server started {pyro_daemon}")
+    logger.info(f"Open OPC server started {pyro_daemon}")
     return pyro_daemon
 
 

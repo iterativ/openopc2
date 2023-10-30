@@ -8,7 +8,6 @@
 #
 ###########################################################################
 
-import logging
 import os
 import re
 import socket
@@ -20,12 +19,13 @@ from multiprocessing import Queue
 
 import Pyro5.core
 
-from openopc2 import system_health
 from openopc2.config import OpenOpcConfig
 from openopc2.exceptions import OPCError
 from openopc2.da_com import OpcCom
+import structlog
 
-from openopc2.logger import log
+
+logger = structlog.getLogger(__name__)
 
 SOURCE_CACHE = 1
 SOURCE_DEVICE = 2
@@ -55,7 +55,7 @@ if os.name == 'nt':
 
     # So we can work on Windows in "open" protocol mode without the need for the win32com modules
     except ImportError as e:
-        log.exception(e)
+        logger.exception(e)
         win32com_found = False
     else:
         win32com_found = True
@@ -151,7 +151,7 @@ class OpcDaClient:
     def connect(self, opc_server=None, opc_host='localhost'):
         """Connect to the specified OPC server"""
 
-        log.info(f"OPC DA OpcDaClient connecting to {opc_server} {opc_host}")
+        logger.debug(f"OPC DA OpcDaClient connecting to {opc_server} {opc_host}")
         self._opc.connect(opc_host, opc_server)
         self.connected = True
 
@@ -211,14 +211,14 @@ class OpcDaClient:
             try:
                 errors = opc_items.Validate(len(names) - 1, names)
             except:
-                log.exception(f"Validation error {errors}")
+                logger.exception(f"Validation error {errors}")
                 pass
 
             valid_tags = []
             valid_values = []
             client_handles = []
 
-            if not sub_group in self._group_handles_tag:
+            if sub_group not in self._group_handles_tag:
                 self._group_handles_tag[sub_group] = {}
                 n = 0
             elif len(self._group_handles_tag[sub_group]) > 0:
@@ -244,12 +244,13 @@ class OpcDaClient:
             errors = []
 
             if self.trace:
-                self.trace('AddItems(%s)' % tags2trace(valid_tags))
+                logger.debug('AddItems(%s)' % tags2trace(valid_tags))
 
             try:
                 server_handles, errors = opc_items.AddItems(len(client_handles) - 1, valid_tags, client_handles)
-            except Exception as e:
-                log.exception("Error adding items to Group", exc_info=True)
+            except pythoncom.com_error as e:
+                com_message = self._get_error_str(e)
+                logger.error("Error Add Items", com_error=com_message, tags=valid_tags)
                 pass
 
             valid_tags_tmp = []
@@ -653,8 +654,6 @@ class OpcDaClient:
 
             num_groups = len(tag_groups)
 
-            status = []
-
             for gid in range(num_groups):
                 if gid > 0 and pause > 0:
                     time.sleep(pause / 1000.0)
@@ -672,8 +671,8 @@ class OpcDaClient:
 
                 try:
                     errors = opc_items.Validate(len(names) - 1, names)
-                except:
-                    log.exception(errors)
+                except Exception as e:
+                    logger.errore(errors)
                     pass
 
                 n = 1
@@ -728,13 +727,16 @@ class OpcDaClient:
                 if len(valid_values) > 1:
                     try:
                         errors = opc_group.SyncWrite(len(server_handles) - 1, server_handles, valid_values)
-                    except:
+                    except Exception as e:
+                        error_message = self._get_error_str(e)
+                        logger.error("Sync write error.", opc_error=error_message, server_handles=server_handles, valid_values=valid_values)
                         pass
 
                 n = 0
-                for tag in tags:
+                for tag, value in zip(valid_tags, valid_values[1::]):
                     if tag in valid_tags:
                         if errors[n] == 0:
+                            logger.info("Write Success", tag=f"'{tag}'", value=value)
                             status = 'Success'
                         else:
                             status = 'Error'
@@ -762,6 +764,7 @@ class OpcDaClient:
 
         except pythoncom.com_error as err:
             error_msg = 'write: %s' % self._get_error_str(err)
+            logger.error("Error writing tags", tags=tag_value_pairs, opc_error=error_message)
             raise OPCError(error_msg)
 
     def write(self, tag_value_pairs, size=None, pause=0, include_error=False):

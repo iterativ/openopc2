@@ -10,7 +10,7 @@
 #
 ###########################################################################
 
-import logging
+import structlog
 import os
 import select
 import sys
@@ -24,7 +24,7 @@ import winerror
 from openopc2.config import OpenOpcConfig
 from openopc2.gateway_server import main as opc_gateway_server_main
 
-logger = logging.getLogger(__name__)
+logger = structlog.getLogger(__name__)
 
 
 class OpcService(win32serviceutil.ServiceFramework):

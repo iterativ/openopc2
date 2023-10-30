@@ -77,7 +77,6 @@ class OpcCom:
             self.opc_client.Connect(self.server, self.host)
         except Exception as error:
             log.error(f"Error Connecting OPC Client Com interface: Server: '{self.server}', Host: '{self.host}', Error: '{error}'")
-
             log.exception('Error connecting OPC Client', exc_info=True)
             pass
         self.groups = self.opc_client.OPCGroups
@@ -114,7 +113,7 @@ class OpcCom:
             self.available_properties_cache = (count, property_id, descriptions, datatypes)
             return count, property_id, descriptions, datatypes
         except pythoncom.com_error as err:
-            error_msg = err#'properties: %s' % self._get_error_str(err)
+            error_msg = self._get_error_str(err)
             raise OPCError(error_msg)
 
     @staticmethod
@@ -211,7 +210,7 @@ class OpcCom:
 
             try:
                 com_err_str = pythoncom.GetScodeString(scode).strip('\r\n')
-            except:
+            except Exception as e:
                 com_err_str = None
 
             # OPC error codes and COM error codes are overlapping concepts,
@@ -227,7 +226,6 @@ class OpcCom:
                 error_str = opc_err_str
             else:
                 error_str = '%s (%s)' % (opc_err_str, com_err_str)
-
         return error_str
 
     def __str__(self):

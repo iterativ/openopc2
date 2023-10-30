@@ -1,6 +1,8 @@
+import logging
+
 import Pyro5.api
 
-
+logger = logging.getLogger('__name__')
 @Pyro5.api.expose
 class TimeoutError(Exception):
     def __init__(self, txt):
@@ -12,6 +14,7 @@ class TimeoutError(Exception):
 @Pyro5.api.expose
 class OPCError(Exception):
     def __init__(self, message):
+        logger.error(message)
         super(OPCError, self).__init__(self, message)
         self.custom_message = message
 
