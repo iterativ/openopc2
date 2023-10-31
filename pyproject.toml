@@ -25,6 +25,8 @@ WMI = { version = "^1.5.1", markers = "sys_platform == 'win32'" }
 pywin32 = { version = "304", markers = "sys_platform == 'win32'" }
 typer = { extras = ["all"], version = "^0.6.1" }
 rich = "^12.6.0"
+structlog = "^23.2.0"
+click = "^8.1.7"
 
 [tool.poetry.group.dev.dependencies]
 coverage = "^6.5.0"
