@@ -13,3 +13,4 @@ poetry.lock
 
 # Other
 .DS_Store
+.direnv
