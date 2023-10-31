@@ -1,5 +1,6 @@
 from unittest import TestCase, skipIf
-from openopc2.exceptions import  OPCError
+
+from openopc2.exceptions import OPCError
 from test_config import test_config
 
 

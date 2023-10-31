@@ -1,15 +1,15 @@
-
 import time
 
 import Pyro5.server
+import structlog
 from Pyro5.api import register_class_to_dict, register_dict_to_class
 
 from openopc2.config import OpenOpcConfig
 from openopc2.da_client import OpcDaClient
-from openopc2.opc_types import TagProperties
 from openopc2.exceptions import OPCError
+from openopc2.logging_configuration import configure_logging
+from openopc2.opc_types import TagProperties
 
-import structlog
 # Do not import Rich print in this context, it will fail while running as a service, really hard to debug!
 
 logger = structlog.getLogger(__name__)
@@ -95,6 +95,7 @@ class OpenOpcGatewayServer:
 
 
 def main(host, port):
+    configure_logging("INFO", False, False)
     OpenOpcConfig().print_config()
     server = OpenOpcGatewayServer(host, port)
     pyro_daemon = Pyro5.server.Daemon(host=host, port=int(port))

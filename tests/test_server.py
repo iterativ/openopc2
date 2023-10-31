@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from test_config import test_config
 from openopc2.utils import get_opc_da_client
+from test_config import test_config
 
 
 class TestServerInfo(TestCase):
@@ -11,7 +11,7 @@ class TestServerInfo(TestCase):
     def test_get_server(self):
         available_servers = self.opc_client.servers()
         self.assertIsNotNone(available_servers)
-        self.assertIn( 'Matrikon.OPC.Simulation.1', available_servers)
+        self.assertIn('Matrikon.OPC.Simulation.1', available_servers)
 
     def test_get_info(self):
         info = self.opc_client.info()

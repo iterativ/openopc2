@@ -3,6 +3,8 @@ import logging
 import Pyro5.api
 
 logger = logging.getLogger('__name__')
+
+
 @Pyro5.api.expose
 class TimeoutError(Exception):
     def __init__(self, txt):
@@ -26,5 +28,5 @@ class OPCError(Exception):
     @classmethod
     def dict_to_class(cls, class_name, opc_error_dict):
         opc_error_dict.pop("__class__")
-        p = OPCError(opc_error_dict.get('custom_message','No message'))
+        p = OPCError(opc_error_dict.get('custom_message', 'No message'))
         return p

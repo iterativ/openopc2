@@ -10,8 +10,8 @@
 import Pyro5.client
 from Pyro5.api import register_class_to_dict, register_dict_to_class
 
-from openopc2.opc_types import TagProperties
 from openopc2.exceptions import OPCError
+from openopc2.opc_types import TagProperties
 
 
 class OpenOpcGatewayProxy:

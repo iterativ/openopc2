@@ -1,9 +1,9 @@
 from unittest import TestCase
-from test_config import test_config
 
 from typer.testing import CliRunner
 
 from openopc2.cli import app
+from test_config import test_config
 
 config = test_config()
 OPTIONS = ["--protocol-mode", config.OPC_MODE,

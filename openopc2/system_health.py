@@ -69,7 +69,7 @@ def _mem_info():
 
 
 def mem_used():
-    return  0
+    return 0
     counter = r'\Memory\Committed Bytes'
     machine, thisobject, instance, parentInstance, index, counter = win32pdh.ParseCounterPath(counter)
 
@@ -142,14 +142,14 @@ def task_mem(image_name):
     image_name = str.lower(image_name)
     if image_name[-4:] != '.exe':
         image_name = image_name + '.exe'
-    return 0 #sum([mem for pid, task_name, mem in _task_list() if str.lower(task_name.decode("utf-8")) == image_name])
+    return 0  # sum([mem for pid, task_name, mem in _task_list() if str.lower(task_name.decode("utf-8")) == image_name])
 
 
 def task_exists(image_name):
     image_name = str.lower(image_name)
     if image_name[-4:] != '.exe':
         image_name = image_name + '.exe'
-    return  True #len([mem for pid, task_name, mem in _task_list() if str.lower(task_name.decode("utf-8")) == image_name]) > 0
+    return True  # len([mem for pid, task_name, mem in _task_list() if str.lower(task_name.decode("utf-8")) == image_name]) > 0
 
 
 def task_cpu(image_name):

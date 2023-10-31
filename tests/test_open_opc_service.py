@@ -3,6 +3,7 @@ from unittest import TestCase, skipIf
 from openopc2.gateway_proxy import OpenOpcGatewayProxy
 from test_config import test_config
 
+
 @skipIf(test_config().OPC_MODE != 'gateway', "Skip test if OPC_Mode is not gateway")
 class TestOpenOPCService(TestCase):
     def test_get_clients(self):

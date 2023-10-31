@@ -10,12 +10,12 @@
 #
 ###########################################################################
 
-import structlog
 import os
-import select
 import sys
 
+import select
 import servicemanager
+import structlog
 import win32event
 import win32service
 import win32serviceutil

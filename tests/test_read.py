@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from test_config import test_config
 from openopc2.utils import get_opc_da_client
+from test_config import test_config
 
 READ_TIMEOUT = 500
 
@@ -83,7 +83,8 @@ class TestReadTags(TestCase):
         values = self.opc_client.read(["idont_exist", "test", 'Bucket Brigade.Int1'], timeout=READ_TIMEOUT,
                                       include_error=True)
         self.assertEqual(values[0],
-                         ("idont_exist", None, 'Error', None, "The item definition does not conform to the server's syntax."))
+                         ("idont_exist", None, 'Error', None,
+                          "The item definition does not conform to the server's syntax."))
         self.assertEqual(values[1],
                          ("test", None, 'Error', None, "The item definition does not conform to the server's syntax."))
 
@@ -112,7 +113,7 @@ class TestReadTags(TestCase):
         system_values = self.opc_client.read(system_tags)
         print_values(system_values)
 
-    def test_sytem_tag_task_info(self):
+    def test_system_tag_task_info(self):
         task_name = "OpenOpcService"
         task_info_tags = [f"@TaskMem({task_name})", f"@TaskCpu({task_name})", f"@TaskExists({task_name})"]
 

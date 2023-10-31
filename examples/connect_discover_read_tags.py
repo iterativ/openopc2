@@ -1,5 +1,5 @@
+from openopc2.utils import get_opc_da_client
 from tests.test_config import test_config
-from utils import get_opc_da_client
 import time
 
 
@@ -10,10 +10,6 @@ def main():
     """
     open_opc_config = test_config()
     paths = "*"
-    open_opc_config.OPC_SERVER = "Matrikon.OPC.Simulation"
-    open_opc_config.OPC_GATEWAY_HOST = "192.168.0.115"
-    open_opc_config.OPC_CLASS = "Graybox.OPC.DAWrapper"
-    open_opc_config.OPC_MODE = 'com'
 
     limit = 10
     n_reads = 1
@@ -25,6 +21,9 @@ def main():
     tags = [tag for tag in tags if "@" not in tag]
     if limit:
         tags = tags[:limit]
+    print("CONFIG")
+    open_opc_config.print_config()
+
     print("TAGS:")
     for n, tag in enumerate(tags):
         print(f"{n:3} {tag}")

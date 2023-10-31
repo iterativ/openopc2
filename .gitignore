@@ -13,3 +13,5 @@ poetry.lock
 
 # Other
 .DS_Store
+
+openopc2/openopc2_logs

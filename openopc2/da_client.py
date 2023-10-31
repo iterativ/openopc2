@@ -18,12 +18,14 @@ import uuid
 from multiprocessing import Queue
 
 import Pyro5.core
-
-from openopc2.config import OpenOpcConfig
-from openopc2.exceptions import OPCError
-from openopc2.da_com import OpcCom
 import structlog
 
+from openopc2.config import OpenOpcConfig
+from openopc2.da_com import OpcCom
+from openopc2.exceptions import OPCError
+from openopc2.logging_configuration import configure_logging
+
+configure_logging("INFO", False, False)
 
 logger = structlog.getLogger(__name__)
 
@@ -84,7 +86,6 @@ def tags2trace(tags):
         if i > 0: arg_str += ','
         arg_str += '%s' % t
     return arg_str
-
 
 
 def exceptional(func, alt_return=None, alt_exceptions=(Exception,), final=None, catch=None):
@@ -557,45 +558,45 @@ class OpcDaClient:
         results = []
         #
         for t in tags:
-        #     if t == '@MemFree':
-        #         value = system_health.mem_free()
-        #     elif t == '@MemUsed':
-        #         value = system_health.mem_used()
-        #     elif t == '@MemTotal':
-        #         value = system_health.mem_total()
-        #     elif t == '@MemPercent':
-        #         value = system_health.mem_percent()
-        #     elif t == '@DiskFree':
-        #         value = system_health.disk_free()
-        #     elif t == '@SineWave':
-        #         value = system_health.sine_wave()
-        #     elif t == '@SawWave':
-        #         value = system_health.saw_wave()
-        #
-        #     elif t == '@CpuUsage':
-        #         if self.cpu is None:
-        #             self.cpu = system_health.CPU()
-        #             time.sleep(0.1)
-        #         value = self.cpu.get_usage()
-        #
-        #     else:
-        #         value = None
-        #
-        #         m = re.match('@TaskMem\((.*?)\)', t)
-        #         if m:
-        #             image_name = m.group(1)
-        #             value = system_health.task_mem(image_name)
-        #
-        #         m = re.match('@TaskCpu\((.*?)\)', t)
-        #         if m:
-        #             image_name = m.group(1)
-        #             value = system_health.task_cpu(image_name)
-        #
-        #         m = re.match('@TaskExists\((.*?)\)', t)
-        #         if m:
-        #             image_name = m.group(1)
-        #             value = system_health.task_exists(image_name)
-            value= 10000
+            #     if t == '@MemFree':
+            #         value = system_health.mem_free()
+            #     elif t == '@MemUsed':
+            #         value = system_health.mem_used()
+            #     elif t == '@MemTotal':
+            #         value = system_health.mem_total()
+            #     elif t == '@MemPercent':
+            #         value = system_health.mem_percent()
+            #     elif t == '@DiskFree':
+            #         value = system_health.disk_free()
+            #     elif t == '@SineWave':
+            #         value = system_health.sine_wave()
+            #     elif t == '@SawWave':
+            #         value = system_health.saw_wave()
+            #
+            #     elif t == '@CpuUsage':
+            #         if self.cpu is None:
+            #             self.cpu = system_health.CPU()
+            #             time.sleep(0.1)
+            #         value = self.cpu.get_usage()
+            #
+            #     else:
+            #         value = None
+            #
+            #         m = re.match('@TaskMem\((.*?)\)', t)
+            #         if m:
+            #             image_name = m.group(1)
+            #             value = system_health.task_mem(image_name)
+            #
+            #         m = re.match('@TaskCpu\((.*?)\)', t)
+            #         if m:
+            #             image_name = m.group(1)
+            #             value = system_health.task_cpu(image_name)
+            #
+            #         m = re.match('@TaskExists\((.*?)\)', t)
+            #         if m:
+            #             image_name = m.group(1)
+            #             value = system_health.task_exists(image_name)
+            value = 10000
             if value is None:
                 quality = 'Error'
             else:
@@ -729,7 +730,8 @@ class OpcDaClient:
                         errors = opc_group.SyncWrite(len(server_handles) - 1, server_handles, valid_values)
                     except Exception as e:
                         error_message = self._get_error_str(e)
-                        logger.error("Sync write error.", opc_error=error_message, server_handles=server_handles, valid_values=valid_values)
+                        logger.error("Sync write error.", opc_error=error_message, server_handles=server_handles,
+                                     valid_values=valid_values)
                         pass
 
                 n = 0
@@ -830,9 +832,7 @@ class OpcDaClient:
             tag_properties, errors = self._opc.get_tag_properties(tag, property_ids)
             yield tag_properties
 
-
-
-    def properties(self, tags, id: list=[]):
+    def properties(self, tags, id: list = []):
         """Return list of property tuples (id, name, value) for the specified tag(s) """
 
         single = type(tags) not in (list, tuple) and type(id) not in (type(None), list, tuple)
@@ -973,7 +973,7 @@ class OpcDaClient:
             self._update_tx_time()
 
             info_list = []
-            info_list += [('Protocol',  'gateway' if self._open_serv else 'com')]
+            info_list += [('Protocol', 'gateway' if self._open_serv else 'com')]
             info_list += [('Class', self._opc.opc_class)]
             info_list += [('Client Name', self._opc.client_name)]
             info_list += [('OPC Host', self.opc_host)]

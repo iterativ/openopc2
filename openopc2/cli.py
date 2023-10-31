@@ -3,20 +3,17 @@ Command line interface for OpenOPC Service
 """
 from typing import Optional, List, Dict, Any, Tuple, cast
 
-from Pyro5.errors import CommunicationError
-
 import typer
-
+from Pyro5.errors import CommunicationError
 # pylint: disable=redefined-builtin
 from rich import print
 from rich.console import Console
 from rich.table import Table
 
 from openopc2.config import OpenOpcConfig
-from openopc2.gateway_proxy import OpenOpcGatewayProxy
 from openopc2.da_client import OpcDaClient
+from openopc2.gateway_proxy import OpenOpcGatewayProxy
 from openopc2.logger import log
-
 from openopc2.opc_types import ProtocolMode, DataSource, LogLevel
 
 open_opc_config = OpenOpcConfig()
@@ -28,11 +25,12 @@ TagValuePairsArgument = typer.Argument(...,
 OpcServerOption = typer.Option(open_opc_config.OPC_SERVER, help='OPC Server to connect to')
 OpcHostOption = typer.Option(open_opc_config.OPC_HOST, help='OPC Host to connect to')
 GatewayHostOption = typer.Option(open_opc_config.OPC_GATEWAY_HOST, help='OPC Gateway Host to connect to')
-GatewayPortOption = typer.Option(open_opc_config.OPC_GATEWAY_PORT,help='OPC Gateway Port to connect to')
-ProtocolModeOption = typer.Option(ProtocolMode.GATEWAY,help='Protocol mode', case_sensitive=False)
+GatewayPortOption = typer.Option(open_opc_config.OPC_GATEWAY_PORT, help='OPC Gateway Port to connect to')
+ProtocolModeOption = typer.Option(ProtocolMode.GATEWAY, help='Protocol mode', case_sensitive=False)
 GroupSizeOption = typer.Option(None, help='Group tags into group_size tags per transaction')
-DataSourceOption = typer.Option(DataSource.HYBRID,help='Data SOURCE for reads (cache, device, hybrid)', case_sensitive=False)
-IncludeErrorMessagesOption = typer.Option(False,help='Include descriptive error message strings')
+DataSourceOption = typer.Option(DataSource.HYBRID, help='Data SOURCE for reads (cache, device, hybrid)',
+                                case_sensitive=False)
+IncludeErrorMessagesOption = typer.Option(False, help='Include descriptive error message strings')
 PauseOption = typer.Option(0, help='Sleep time between transactionsin milliseconds')
 UpdateRateOption = typer.Option(0, help='Update rate for group in milliseconds')
 TimeoutOption = typer.Option(10000, help='Read timeout in milliseconds')
@@ -265,7 +263,8 @@ def properties(
     table.add_column("Quality", style="dark_orange3")
     table.add_column("Time Stamp", style="dark_orange3")
     for prop in properties:
-        table.add_row(prop.tag_name, str(prop.description), prop.data_type, f"{prop.server_scan_rate} ms", prop.quality, str(prop.timestamp))
+        table.add_row(prop.tag_name, str(prop.description), prop.data_type, f"{prop.server_scan_rate} ms", prop.quality,
+                      str(prop.timestamp))
     Console().print(table)
 
 
@@ -325,6 +324,7 @@ def server_info(
     for value in response:
         table.add_row(value[0], value[1])
     Console().print(table)
+
 
 @app.command()
 def list_config(

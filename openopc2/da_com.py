@@ -4,9 +4,9 @@ import string
 import Pyro5.core
 
 from openopc2.exceptions import OPCError
+from openopc2.logger import log
 from openopc2.opc_types import ACCESS_RIGHTS, OPC_QUALITY, TagPropertyItem, TagProperties
 from openopc2.pythoncom_datatypes import VtType
-from openopc2.logger import log
 
 # Win32 only modules not needed for 'open' protocol mode
 if os.name == 'nt':
@@ -76,7 +76,8 @@ class OpcCom:
             log.info(f"Connecting OPC Client Com interface: '{self.server}', '{self.host}'")
             self.opc_client.Connect(self.server, self.host)
         except Exception as error:
-            log.error(f"Error Connecting OPC Client Com interface: Server: '{self.server}', Host: '{self.host}', Error: '{error}'")
+            log.error(
+                f"Error Connecting OPC Client Com interface: Server: '{self.server}', Host: '{self.host}', Error: '{error}'")
             log.exception('Error connecting OPC Client', exc_info=True)
             pass
         self.groups = self.opc_client.OPCGroups
@@ -132,9 +133,10 @@ class OpcCom:
             value = OPC_QUALITY[value]
         else:
             pass
-            #print(f'Error: Could not find description "{description}"  and value {input_value}')
+            # print(f'Error: Could not find description "{description}"  and value {input_value}')
 
         return value
+
     @staticmethod
     def _create_tag_property_from_response(response):
         tag_properties_by_id = {}
@@ -149,7 +151,6 @@ class OpcCom:
 
             tag_properties_by_id[property_id] = property_item
         return tag_properties_by_id
-
 
     def get_tag_properties(self, tag, property_ids=[]) -> TagProperties:
         """

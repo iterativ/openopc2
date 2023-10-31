@@ -1,6 +1,5 @@
 from collections import namedtuple
 from dataclasses import dataclass, asdict
-from typing import Dict, List
 from enum import Enum
 
 

@@ -1,9 +1,10 @@
 import logging
 import logging.config
 import os
-from pythonjsonlogger.jsonlogger import JsonFormatter
-import structlog
 import sys
+
+import structlog
+from pythonjsonlogger.jsonlogger import JsonFormatter
 
 
 # This code is based on the following example: https://www.structlog.org/en/stable/standard-library.html#rendering-using-structlog-based-formatters-within-logging
@@ -11,11 +12,11 @@ import sys
 def configure_logging(log_level: str, disable_colors: bool, no_console: bool) -> None:
     if no_console:
         sys.stdout = open(os.devnull, 'w')
+    current_path = os.path.dirname(os.path.realpath(__file__))
+    logs_path = os.path.join(current_path, "openopc2_logs")
 
-    paths = ['logs/']
-    for path in paths:
-        if not os.path.exists(path):
-            os.makedirs(path)
+    if not os.path.exists(logs_path):
+        os.makedirs(logs_path)
 
     log_level = log_level.upper()
 
@@ -75,7 +76,7 @@ def configure_logging(log_level: str, disable_colors: bool, no_console: bool) ->
             'json-file': {
                 "level": "DEBUG",
                 'class': 'logging.handlers.RotatingFileHandler',
-                'filename': 'logs/openopc2_log.json',
+                'filename': os.path.join(logs_path, 'openopc2_log.json'),
                 'maxBytes': 10_000_000,
                 'backupCount': 10,
                 'formatter': 'json',
@@ -84,7 +85,7 @@ def configure_logging(log_level: str, disable_colors: bool, no_console: bool) ->
         },
         "loggers": {
             "": {
-                "handlers": ["json-file"] if no_console else ["default", "json-file"],
+                "handlers": ["default", "json-file"],
                 "level": "DEBUG",
                 "propagate": True,
             },
@@ -103,6 +104,3 @@ def configure_logging(log_level: str, disable_colors: bool, no_console: bool) ->
         wrapper_class=structlog.stdlib.BoundLogger,
         cache_logger_on_first_use=True,
     )
-
-
-configure_logging("INFO", False, False)

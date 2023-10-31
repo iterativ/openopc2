@@ -1,7 +1,7 @@
 from unittest import TestCase
 
-from test_config import test_config
 from openopc2.utils import get_opc_da_client
+from test_config import test_config
 
 
 class TestListTags(TestCase):

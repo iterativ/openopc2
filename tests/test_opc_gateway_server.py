@@ -1,4 +1,5 @@
 from unittest import TestCase, skip
+
 from openopc2.gateway_server import OpenOpcGatewayServer
 from test_config import test_config
 

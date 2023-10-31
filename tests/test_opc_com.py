@@ -3,6 +3,7 @@ from unittest import TestCase, skipIf
 
 from openopc2.da_com import OpcCom
 from test_config import test_config
+
 TAG = 'Bucket Brigade.Int1'
 
 
