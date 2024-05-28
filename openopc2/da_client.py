@@ -86,7 +86,6 @@ def tags2trace(tags):
     return arg_str
 
 
-
 def exceptional(func, alt_return=None, alt_exceptions=(Exception,), final=None, catch=None):
     """Turns exceptions into an alternative return value"""
 
@@ -556,45 +555,45 @@ class OpcDaClient:
         results = []
         #
         for t in tags:
-        #     if t == '@MemFree':
-        #         value = system_health.mem_free()
-        #     elif t == '@MemUsed':
-        #         value = system_health.mem_used()
-        #     elif t == '@MemTotal':
-        #         value = system_health.mem_total()
-        #     elif t == '@MemPercent':
-        #         value = system_health.mem_percent()
-        #     elif t == '@DiskFree':
-        #         value = system_health.disk_free()
-        #     elif t == '@SineWave':
-        #         value = system_health.sine_wave()
-        #     elif t == '@SawWave':
-        #         value = system_health.saw_wave()
-        #
-        #     elif t == '@CpuUsage':
-        #         if self.cpu is None:
-        #             self.cpu = system_health.CPU()
-        #             time.sleep(0.1)
-        #         value = self.cpu.get_usage()
-        #
-        #     else:
-        #         value = None
-        #
-        #         m = re.match('@TaskMem\((.*?)\)', t)
-        #         if m:
-        #             image_name = m.group(1)
-        #             value = system_health.task_mem(image_name)
-        #
-        #         m = re.match('@TaskCpu\((.*?)\)', t)
-        #         if m:
-        #             image_name = m.group(1)
-        #             value = system_health.task_cpu(image_name)
-        #
-        #         m = re.match('@TaskExists\((.*?)\)', t)
-        #         if m:
-        #             image_name = m.group(1)
-        #             value = system_health.task_exists(image_name)
-            value= 10000
+            #     if t == '@MemFree':
+            #         value = system_health.mem_free()
+            #     elif t == '@MemUsed':
+            #         value = system_health.mem_used()
+            #     elif t == '@MemTotal':
+            #         value = system_health.mem_total()
+            #     elif t == '@MemPercent':
+            #         value = system_health.mem_percent()
+            #     elif t == '@DiskFree':
+            #         value = system_health.disk_free()
+            #     elif t == '@SineWave':
+            #         value = system_health.sine_wave()
+            #     elif t == '@SawWave':
+            #         value = system_health.saw_wave()
+            #
+            #     elif t == '@CpuUsage':
+            #         if self.cpu is None:
+            #             self.cpu = system_health.CPU()
+            #             time.sleep(0.1)
+            #         value = self.cpu.get_usage()
+            #
+            #     else:
+            #         value = None
+            #
+            #         m = re.match('@TaskMem\((.*?)\)', t)
+            #         if m:
+            #             image_name = m.group(1)
+            #             value = system_health.task_mem(image_name)
+            #
+            #         m = re.match('@TaskCpu\((.*?)\)', t)
+            #         if m:
+            #             image_name = m.group(1)
+            #             value = system_health.task_cpu(image_name)
+            #
+            #         m = re.match('@TaskExists\((.*?)\)', t)
+            #         if m:
+            #             image_name = m.group(1)
+            #             value = system_health.task_exists(image_name)
+            value = 10000
             if value is None:
                 quality = 'Error'
             else:
@@ -817,7 +816,6 @@ class OpcDaClient:
     def iproperties(self, tags, property_ids: list = []):
         """Iterable version of properties()"""
 
-
         self._update_tx_time()
 
         tags, single_tag, valid = type_check(tags)
@@ -828,8 +826,6 @@ class OpcDaClient:
             tag_properties, errors = self._opc.get_tag_properties(tag, property_ids)
             yield tag_properties
 
-
-
     def properties(self, tags, id=None):
         """Return list of property tuples (id, name, value) for the specified tag(s) """
 
@@ -837,19 +833,24 @@ class OpcDaClient:
         props = list(self.iproperties(tags, id))
         return props[0] if single else props
 
-    def ilist(self, paths='*', recursive=False, flat=False, include_type=False):
-        """Iterable version of list()"""
+    def ilist(self, paths='*', recursive: bool = False, flat: bool = False, include_type: bool = False,
+              access_rights: int = None):
+        """Iterable version of list()
+
+        """
 
         try:
             self._update_tx_time()
 
             try:
                 browser = self._opc.create_browser()
-
             # For OPC servers that don't support browsing
             except:
                 log.exception("This Server does not support Browsing")
                 return
+
+            if access_rights:
+                browser.AccessRights = access_rights
 
             paths, single, valid = type_check(paths)
             if not valid:
@@ -945,10 +946,10 @@ class OpcDaClient:
             error_msg = 'list: %s' % self._get_error_str(err)
             raise OPCError(error_msg)
 
-    def list(self, paths='*', recursive=False, flat=False, include_type=False):
+    def list(self, paths='*', recursive=False, flat=False, include_type=False, access_rights: int=None):
         """Return list of item nodes at specified path(s) (tree browser)"""
 
-        nodes = self.ilist(paths, recursive, flat, include_type)
+        nodes = self.ilist(paths, recursive, flat, include_type, access_rights)
         return list(nodes)
 
     def servers(self, opc_host='localhost'):
@@ -971,7 +972,7 @@ class OpcDaClient:
             self._update_tx_time()
 
             info_list = []
-            info_list += [('Protocol',  'gateway' if self._open_serv else 'com')]
+            info_list += [('Protocol', 'gateway' if self._open_serv else 'com')]
             info_list += [('Class', self._opc.opc_class)]
             info_list += [('Client Name', self._opc.client_name)]
             info_list += [('OPC Host', self.opc_host)]
