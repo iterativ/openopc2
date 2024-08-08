@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "openopc2"
-version = "0.1.11"
+version = "0.1.15"
 description = "OPC library with a Windows gateway enabling non-Windows clients to access OPC-DA calls."
 license = "GPL-2.0-or-later"
 readme = "README.md"
@@ -19,7 +19,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "<3.12,>=3.8"
+python = "<3.13,>=3.8"
 pyro5 = "^5.14"
 WMI = { version = "^1.5.1", markers = "sys_platform == 'win32'" }
 pywin32 = { version = "304", markers = "sys_platform == 'win32'" }
