@@ -258,11 +258,13 @@ def properties(
         return
 
     table = Table(title="Properties")
-    table.add_column("Id", style="green")
-    table.add_column("Property Name", style="cyan")
+    table.add_column("index", style="green")
+    table.add_column("Tag Name", style="cyan")
+    table.add_column("Data Type", style="dark_orange3")
+    table.add_column("Access Rights", style="dark_orange3")
     table.add_column("Value", style="dark_orange3")
-    for property in properties:
-        table.add_row(str(property[0]), property[1], str(property[2]))
+    for index, property in enumerate(properties):
+        table.add_row(str(index), str(property.tag_name), str(property.data_type), str(property.access_rights), str(property.value),)
     Console().print(table)
 
 

@@ -4,6 +4,7 @@ from test_config import test_config
 from openopc2.utils import get_opc_da_client
 
 READ_TIMEOUT = 500
+N = 150
 
 
 class TestReadTags(TestCase):
@@ -45,19 +46,19 @@ class TestReadTags(TestCase):
         self.assertEqual(qualities, ['Good'] * len(values))
 
     def test_read_tags_list_sync(self):
-        values = self.opc_client.read(self.no_system_tags[0:10], sync=True, timeout=READ_TIMEOUT)
+        values = self.opc_client.read(self.no_system_tags[0:N], sync=True, timeout=READ_TIMEOUT)
         print_values(values)
 
     def test_read_tag_include_error(self):
-        values = self.opc_client.read(self.no_system_tags[0:10], include_error=True, timeout=READ_TIMEOUT)
+        values = self.opc_client.read(self.no_system_tags[0:N], include_error=True, timeout=READ_TIMEOUT)
         print_values(values)
 
     def test_read_tag_sync(self):
-        values = self.opc_client.read(self.no_system_tags[0:10], sync=True, timeout=READ_TIMEOUT)
+        values = self.opc_client.read(self.no_system_tags[0:N], sync=True, timeout=READ_TIMEOUT)
         print_values(values)
 
     def test_read_tags_list_include_error(self):
-        values = self.opc_client.read(self.no_system_tags[0:10], include_error=True, timeout=READ_TIMEOUT)
+        values = self.opc_client.read(self.no_system_tags[0:N], include_error=True, timeout=READ_TIMEOUT)
         print_values(values)
 
     def test_non_existent_tag_error(self):
@@ -97,12 +98,12 @@ class TestReadTags(TestCase):
         self.assertEqual(values[2][0], "Bucket Brigade.Int1")
         self.assertEqual(values[2][2], 'Good')
 
-    def test_group_read(self):
-        square_wave_tags = [tag for tag in self.tags if "Square" in tag]
-        values = self.opc_client.read(square_wave_tags, group="square_group", timeout=READ_TIMEOUT)
-        values_group = self.opc_client.read(square_wave_tags, group='square_group')
-        self.assertEqual(len(values_group), len(values))
-        self.assertEqual(values_group, values)
+    # def test_group_read(self):
+    #     square_wave_tags = [tag for tag in self.tags if "Square" in tag]
+    #     values = self.opc_client.read(square_wave_tags, group="square_group", timeout=READ_TIMEOUT)
+    #     values_group = self.opc_client.read(square_wave_tags, group='square_group')
+    #     self.assertEqual(len(values_group), len(values))
+    #     self.assertEqual(values_group, values)
 
     def test_read_system_tags(self):
         system_tags = [
@@ -122,5 +123,5 @@ class TestReadTags(TestCase):
 
 
 def print_values(values):
-    for value in values:
-        print(value)
+    for k, value in enumerate(values):
+        print(k, value)

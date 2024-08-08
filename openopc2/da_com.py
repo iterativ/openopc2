@@ -163,10 +163,13 @@ class OpcCom:
         if property_ids_filter:
             property_ids_cleaned = [p for p in property_ids if p in property_ids_filter]
         try:
-            item_properties_values, errors = self.opc_client.GetItemProperties(tag, len(property_ids_cleaned),
-                                                                               property_ids_cleaned)
+            browser = self.create_browser()
+            item_id = browser.GetItemID(tag)
+            # print(f"self.opc_client.GetItemProperties('{item_id}', {len(property_ids_cleaned)},{property_ids_cleaned})")
+            # GetItemProperties needs property id "0" to work properly.
+            item_properties_values, errors = self.opc_client.GetItemProperties(item_id, len(property_ids_cleaned), [0] + property_ids_cleaned)
         except pythoncom.com_error as err:
-            error_msg = err#'properties: %s' % self._get_error_str(err)
+            error_msg = f"Error reading properties of '{tag}' {self._get_error_str(err)}"
             raise OPCError(error_msg)
 
         for (property_id, property_value) in zip(property_ids_cleaned, item_properties_values):

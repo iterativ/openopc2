@@ -7,8 +7,8 @@ from test_config import test_config
 class TestProperties(TestCase):
     def setUp(self) -> None:
         self.opc_client = get_opc_da_client(test_config())
-        self.tags = self.opc_client.list(recursive=False, include_type=False, flat=True)
-        self.no_system_tags = [tag for tag in self.tags if "@" not in tag]
+        self.tags = self.opc_client.list(recursive=False, include_type=False, flat=True, access_rights=1)
+        self.no_system_tags = [tag for tag in self.tags if "@" not in tag][0:100]
 
     def test_read_property(self):
         properties = self.opc_client.properties('Bucket Brigade.Int1')

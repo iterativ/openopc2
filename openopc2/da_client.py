@@ -427,7 +427,7 @@ class OpcDaClient:
                                                                                        len(server_handles) - 1,
                                                                                        server_handles)
                         except pythoncom.com_error as err:
-                            error_msg = 'SyncRead: %s' % self._get_error_str(err)
+                            error_msg = f"SyncRead:  {self._get_error_str(err)}"
                             raise OPCError(error_msg)
 
                         for i, tag in enumerate(valid_tags):
