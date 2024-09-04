@@ -8,17 +8,24 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
+      - name: Set up Python (32-bit)
         uses: actions/setup-python@v5
         with:
           python-version: 3.8
+          architecture: x86
       - name: Install poetry
         uses: abatilo/actions-poetry@v3
+      - name: Register gbda_aut.dll
+        run: |
+          Copy-Item .\lib\gbda_aut.dll C:\Windows\System32\
+          regsvr32 /s C:\Windows\System32\gbda_aut.dll
+        shell: pwsh
       - name: Install dependencies
         run: poetry install
       - name: Build executables
         run: scripts/build_executables.ps1
-      - uses: ncipollo/release-action@v1
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
         with:
           artifacts: |
             dist/OpenOpcCli.exe
