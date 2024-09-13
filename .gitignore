@@ -13,3 +13,6 @@ poetry.lock
 
 # Other
 .DS_Store
+.direnv
+.tool-versions
+.envrc
