@@ -147,11 +147,11 @@ class OpcDaClient:
         if self._open_serv is None:
             self.trace = trace
 
-    def connect(self, opc_server=None, opc_host='localhost'):
+    def connect(self, opc_server: str | None = None, opc_host: str = 'localhost'):
         """Connect to the specified OPC server"""
 
         log.info(f"OPC DA OpcDaClient connecting to {opc_server} {opc_host}")
-        self._opc.connect(opc_host, opc_server)
+        self._opc.connect(opc_server, opc_host)
         self.connected = True
 
         # With some OPC servers, the next OPC call immediately after Connect()

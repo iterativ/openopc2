@@ -42,8 +42,8 @@ class OpcCom:
 
     def __init__(self, opc_class: str):
         # TODO: Get browser type (hierarchical etc)
-        self.server: string = None
-        self.host: string = 'localhost'
+        self.server: str | None = None
+        self.host: str = 'localhost'
         self.groups = None
         self.opc_class = opc_class
         self.client_name = None
@@ -69,9 +69,9 @@ class OpcCom:
             pythoncom.CoUninitialize()
             raise OPCError(f'Dispatch: {err} opc_class:"{opc_class}"')
 
-    def connect(self, host: str, server: str):
+    def connect(self, server: str | None, host: str):
         self.server = server
-        self.host = "localhost"
+        self.host = host
         try:
             log.info(f"Connecting OPC Client Com interface: '{self.server}', '{self.host}'")
             self.opc_client.Connect(self.server, self.host)
