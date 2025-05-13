@@ -44,6 +44,11 @@ experience and create a base for other developers that is easier to maintain, te
 
 # 🚀 Getting started
 
+For an indpepth Tutorian in Spanish click here... Ándale
+[Spanish Tutorial ](https://joseamaita.com/blog/openopc-con-python-3/)
+
+
+
 ## Windows local installation
 
 The quickest way to start is the cli application. Start your OPC server and use the openopc2.exe cli application for test (no python
