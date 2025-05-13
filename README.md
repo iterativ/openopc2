@@ -44,7 +44,7 @@ experience and create a base for other developers that is easier to maintain, te
 
 # 🚀 Getting started
 
-For an indpepth Tutorian in Spanish click here... Ándale
+For an indepth Tutorial in Spanish click here... Ándale
 [Spanish Tutorial ](https://joseamaita.com/blog/openopc-con-python-3/)
 
 
