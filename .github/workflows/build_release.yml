@@ -1,8 +1,10 @@
-name: Build EXE
+name: Build Release
 on:
-  pull_request:
+  create:
+    tags:
+      - "*.*.*"
 jobs:
-  build-exe:
+  build-release:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,8 +24,10 @@ jobs:
         run: poetry install
       - name: Build executables
         run: scripts/build_executables.ps1
-      - name: Save artifacts
-        uses: actions/upload-artifact@v4
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
         with:
-          name: OpenOpc
-          path: dist/
+          artifacts: |
+            dist/OpenOpcCli.exe
+            dist/OpenOpcServer.exe
+            dist/OpenOpcService.exe

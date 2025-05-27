@@ -1,3 +1,4 @@
+import json
 import os
 from typing import Literal
 
@@ -24,6 +25,7 @@ class OpenOpcConfig:
         self.OPC_TIMEOUT = opc_timeout
 
     def print_config(self):
-        print("Open Opc Config:")
-        for key, value in self.__dict__.items():
-            print(f"{key:20}  : {value}")
+        print(self)
+
+    def __str__(self) -> str:
+        return json.dumps(self.__dict__, indent=4)
