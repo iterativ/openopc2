@@ -4,6 +4,9 @@ on:
 jobs:
   build-exe:
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python (32-bit)
