@@ -11,8 +11,8 @@ jobs:
         with:
           python-version: 3.8
           architecture: x86
-      - name: Install poetry
-        uses: abatilo/actions-poetry@v3
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
       - name: Register gbda_aut.dll
         run: |
           Copy-Item .\lib\gbda_aut.dll C:\Windows\System32\
