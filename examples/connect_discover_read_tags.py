@@ -51,6 +51,8 @@ def main():
         start = time.time()
         properties = opc_client.properties(tags)
         print(f'{n} {time.time()-start:.3f}s {properties}')
+    opc_client.close() # Remote call OpcDaClient. close()
+    opc_client._pyroRelease() # release the pyro connection
 
 
 if __name__ == '__main__':

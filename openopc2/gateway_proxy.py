@@ -26,9 +26,9 @@ class OpenOpcGatewayProxy:
         register_dict_to_class("exceptions.OPCError", OPCError.dict_to_class)
 
     def get_server_proxy(self):
-        with Pyro5.client.Proxy(f"PYRO:OpenOpcGatewayServer@{self.host}:{self.port}") as open_opc_gateway_server:
-            return open_opc_gateway_server
+        open_opc_gateway_server = Pyro5.client.Proxy(f"PYRO:OpenOpcGatewayServer@{self.host}:{self.port}")
+        return open_opc_gateway_server
 
     def get_opc_da_client_proxy(self):
-        with Pyro5.client.Proxy(f"PYRO:OpcDaClient@{self.host}:{self.port}") as opc_da_client_proxy:
-            return opc_da_client_proxy
+        opc_da_client_proxy =  Pyro5.client.Proxy(f"PYRO:OpcDaClient@{self.host}:{self.port}")
+        return opc_da_client_proxy
