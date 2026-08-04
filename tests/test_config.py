@@ -16,15 +16,19 @@ def test_config():
 class TestOpenOpcConfig(TestCase):
     def test_instantiation(self) -> None:
         # Confirm env vars won't mess up assertions
-        for env_var in ["OPC_SERVER", "OPC_GATE_PORT", "OPC_TIMEOUT"]:
+        for env_var in ["OPC_SERVER", "OPC_AE_SERVER", "OPC_GATE_PORT", "OPC_TIMEOUT", "OPC_AE_TIMEOUT"]:
             self.assertNotIn(env_var, os.environ)
 
         default_config = OpenOpcConfig()
-        self.assertEquals(default_config.OPC_SERVER, "Matrikon.OPC.Simulation")
+        self.assertEqual(default_config.OPC_SERVER, "Matrikon.OPC.Simulation")
+        self.assertEqual(default_config.OPC_AE_SERVER, "Matrikon.OPC.AlarmEvent")
         self.assertIsInstance(default_config.OPC_GATEWAY_PORT, int)
-        self.assertEquals(default_config.OPC_GATEWAY_PORT, 7766)
+        self.assertEqual(default_config.OPC_GATEWAY_PORT, 7766)
         self.assertIsInstance(default_config.OPC_TIMEOUT, int)
-        self.assertEquals(default_config.OPC_TIMEOUT, 1000)
+        self.assertEqual(default_config.OPC_TIMEOUT, 1000)
+        self.assertIsInstance(default_config.OPC_AE_TIMEOUT, int)
+        self.assertEqual(default_config.OPC_AE_TIMEOUT, 1000)
 
-        nondefault_config = OpenOpcConfig(opc_server="Another.Server")
-        self.assertEquals(nondefault_config.OPC_SERVER, "Another.Server")
+        nondefault_config = OpenOpcConfig(opc_server="Another.Server", opc_ae_server="Another.AeServer")
+        self.assertEqual(nondefault_config.OPC_SERVER, "Another.Server")
+        self.assertEqual(nondefault_config.OPC_AE_SERVER, "Another.AeServer")

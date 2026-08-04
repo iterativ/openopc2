@@ -6,6 +6,8 @@ from Pyro5.api import register_class_to_dict, register_dict_to_class
 
 from openopc2.config import OpenOpcConfig
 from openopc2.da_client import OpcDaClient
+from openopc2.ae_client import OpcAeClient
+from openopc2.ae_types import register_ae_serializers
 from openopc2.opc_types import TagProperties
 from openopc2.exceptions import OPCError
 
@@ -34,6 +36,7 @@ class OpenOpcGatewayServer:
         register_dict_to_class(TagProperties, TagProperties.dict_to_class)
         register_class_to_dict(OPCError, OPCError.class_to_dict)
         register_dict_to_class(OPCError, OPCError.dict_to_class)
+        register_ae_serializers(register_class_to_dict, register_dict_to_class)
 
         log.info(f'Initialized OpenOPC gateway Server uri: {self.uri}')
 
@@ -72,6 +75,17 @@ class OpenOpcGatewayServer:
         self.clients_by_uuid[client_id] = opc_da_client
         return opc_da_client
 
+    def create_ae_client(self, open_opc_config: OpenOpcConfig = OpenOpcConfig()):
+        """Create a new OpenOPC AE instance in the Pyro server"""
+        opc_ae_client = OpcAeClient(open_opc_config)
+
+        client_id = opc_ae_client.client_id
+        self.remote_hosts[client_id] = str(client_id)
+        self.init_times[client_id] = time.time()
+        self.tx_times[client_id] = time.time()
+        self.clients_by_uuid[client_id] = opc_ae_client
+        return opc_ae_client
+
     def release_client(self, obj):
         """Release an OpenOPC instance in the Pyro server"""
 
@@ -101,6 +115,7 @@ def main(host, port):
     pyro_daemon = Pyro5.server.Daemon(host=host, port=int(port))
     pyro_daemon.register(server, objectId="OpenOpcGatewayServer")
     pyro_daemon.register(OpcDaClient, objectId="OpcDaClient")
+    pyro_daemon.register(OpcAeClient, objectId="OpcAeClient")
     print(f"Open OPC server started {pyro_daemon}")
     return pyro_daemon
 

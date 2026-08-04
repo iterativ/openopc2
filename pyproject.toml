@@ -19,10 +19,11 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "<3.13,>=3.8"
+python = "<3.13,>=3.9"
 pyro5 = "^5.14"
 WMI = { version = "^1.5.1", markers = "sys_platform == 'win32'" }
 pywin32 = { version = "311", markers = "sys_platform == 'win32'" }
+comtypes = { version = "^1.4.11", markers = "sys_platform == 'win32'" }
 typer = { extras = ["all"], version = "^0.6.1" }
 rich = "^12.6.0"
 

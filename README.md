@@ -156,6 +156,9 @@ and the OpenOPC DA client without the need of writing Python code.
 
 The documentation of the CLI can be found [here](CLI.md)
 
+OPC Alarms and Events support is being added through a separate `OpcAeClient`. See [the OPC AE guide](docs/opc-ae.md)
+for the intended API, current implementation status, gateway model, and minimal AE CLI commands.
+
 <p>
 <img src="https://github.com/iterativ/openopc2/raw/develop/doc/assets/cli_server-info.png" alt="WindowsSetup" width="400"/>
 </p>
@@ -217,8 +220,8 @@ Github. Without the great work of all the contributors, this would not be possib
 The authors of the package are (among others):
 
 | Years     |     | Name              | User                          |
-| --------- | --- | ----------------- | ----------------------------- |
-| 2008-2012 | 🇺🇸  | Barry Barnreiter  | barry_b@users.sourceforge.net |
+| --------- | --- | ----------------- |-------------------------------|
+| 2008-2012 | 🇺🇸  | Barry Barnreiter  |                               |
 | 2014      | 🇷🇺  | Anton D. Kachalov | https://github.com/ya-mouse   |
 | 2017      | 🇻🇪  | José A. Maita     | https://github.com/joseamaita |
 | 2022      | 🇨🇭  | Lorenz Padberg    | https://github.com/renzop     |

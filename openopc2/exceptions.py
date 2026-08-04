@@ -1,4 +1,15 @@
-import Pyro5.api
+try:
+    import Pyro5.api
+except ImportError:
+    class _PyroApi:
+        @staticmethod
+        def expose(cls):
+            return cls
+
+    class _Pyro5:
+        api = _PyroApi()
+
+    Pyro5 = _Pyro5()
 
 
 @Pyro5.api.expose

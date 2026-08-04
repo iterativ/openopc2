@@ -159,3 +159,15 @@ $ openopc2 CLI write [OPTIONS] TAG_VALUE_PAIRS...
 - `--include-error-messages / --no-include-error-messages`: Include descriptive error message strings  \[default: False\]
 - `--log-level [CRITICAL|ERROR|WARNING|INFO|DEBUG]`: Log level  \[default: WARNING\]
 - `--help`: Show this message and exit.
+
+# OPC AE
+
+Minimal OPC Alarms and Events commands are available for discovery and smoke testing while the raw AE COM backend is completed.
+
+See [docs/opc-ae.md](docs/opc-ae.md) for API status and examples.
+
+```shell
+python -m openopc2 ae-categories --event-type condition
+python -m openopc2 ae-refresh --event-type condition --severity-min 600
+python -m openopc2 ae-subscribe --event-type condition --severity-min 600
+```

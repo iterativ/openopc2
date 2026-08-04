@@ -14,6 +14,8 @@ from rich.table import Table
 
 from openopc2.config import OpenOpcConfig
 from openopc2.gateway_proxy import OpenOpcGatewayProxy
+from openopc2.ae_client import OpcAeClient
+from openopc2.ae_types import AeEventType, AeFilter
 from openopc2.da_client import OpcDaClient
 from openopc2.logger import log
 
@@ -26,6 +28,7 @@ TagValuePairsArgument = typer.Argument(...,
                                        help='Tag value pairs to write (use ITEM=VALUE)'
                                        )
 OpcServerOption = typer.Option(open_opc_config.OPC_SERVER, help='OPC Server to connect to')
+OpcAeServerOption = typer.Option(open_opc_config.OPC_AE_SERVER, help='OPC AE Server to connect to')
 OpcHostOption = typer.Option(open_opc_config.OPC_HOST, help='OPC Host to connect to')
 GatewayHostOption = typer.Option(open_opc_config.OPC_GATEWAY_HOST, help='OPC Gateway Host to connect to')
 GatewayPortOption = typer.Option(open_opc_config.OPC_GATEWAY_PORT,help='OPC Gateway Port to connect to')
@@ -39,6 +42,12 @@ TimeoutOption = typer.Option(10000, help='Read timeout in milliseconds')
 LogLevelOption = typer.Option(LogLevel.WARNING, help='Log level')
 OutputCsvOption = typer.Option(False, help='Output in CSV format')
 RecursiveOption = typer.Option(False, help="Recursively read sub-tags")
+AeEventTypeOption = typer.Option("condition", help="AE event type: simple, tracking, condition, all")
+AeSeverityMinOption = typer.Option(1, help="Minimum AE severity")
+AeSeverityMaxOption = typer.Option(1000, help="Maximum AE severity")
+AeCategoryOption = typer.Option(None, help="AE event category ID")
+AeAreaOption = typer.Option(None, help="AE area filter")
+AeSourceOption = typer.Option(None, help="AE source filter")
 
 app = typer.Typer()
 
@@ -61,6 +70,57 @@ def get_connected_da_client(
         client = cast(OpcDaClient, OpenOpcGatewayProxy(gateway_host, gateway_port).get_opc_da_client_proxy())
     if client is not None:
         client.connect(opc_server, opc_host)
+        return client
+    raise NotImplementedError(f"Protocol mode {protocol_mode} is unrecognized")
+
+
+def _parse_ae_event_type(event_type: str) -> AeEventType:
+    event_types = AeEventType(0)
+    for item in event_type.split(","):
+        clean = item.strip().lower()
+        if clean == "simple":
+            event_types |= AeEventType.SIMPLE
+        elif clean == "tracking":
+            event_types |= AeEventType.TRACKING
+        elif clean == "condition":
+            event_types |= AeEventType.CONDITION
+        elif clean == "all":
+            event_types |= AeEventType.ALL
+        else:
+            raise typer.BadParameter(f"Unknown AE event type: {item}")
+    return event_types
+
+
+def _build_ae_filter(event_type: str, severity_min: int, severity_max: int, category: Optional[int],
+                     area: Optional[str], source: Optional[str]) -> AeFilter:
+    return AeFilter(
+        event_types=_parse_ae_event_type(event_type),
+        categories=tuple([category] if category is not None else []),
+        low_severity=severity_min,
+        high_severity=severity_max,
+        areas=tuple([area] if area else []),
+        sources=tuple([source] if source else []),
+    )
+
+
+def get_connected_ae_client(
+        protocol_mode: ProtocolMode,
+        opc_ae_server: str,
+        opc_host: str,
+        gateway_host: str,
+        gateway_port: int
+) -> OpcAeClient:
+    """
+    Returns an OPC AE Client based on the given protocol mode
+    """
+    client: Optional[OpcAeClient] = None
+    if ProtocolMode.COM == protocol_mode:
+        client = OpcAeClient(open_opc_config)
+
+    if ProtocolMode.GATEWAY == protocol_mode:
+        client = cast(OpcAeClient, OpenOpcGatewayProxy(gateway_host, gateway_port).get_opc_ae_client_proxy())
+    if client is not None:
+        client.connect(opc_ae_server, opc_host)
         return client
     raise NotImplementedError(f"Protocol mode {protocol_mode} is unrecognized")
 
@@ -323,6 +383,136 @@ def server_info(
 
     for value in response:
         table.add_row(value[0], value[1])
+    Console().print(table)
+
+
+@app.command()
+def ae_categories(
+        event_type: str = AeEventTypeOption,
+        protocol_mode: ProtocolMode = ProtocolModeOption,
+        opc_ae_server: str = OpcAeServerOption,
+        opc_host: str = OpcHostOption,
+        gateway_host: str = GatewayHostOption,
+        gateway_port: int = GatewayPortOption,
+        output_csv: bool = OutputCsvOption,
+        log_level: LogLevel = LogLevelOption,
+) -> None:
+    """
+    List OPC AE event categories
+    """
+    log.setLevel(log_level.upper())
+    categories = get_connected_ae_client(
+        protocol_mode,
+        opc_ae_server,
+        opc_host,
+        gateway_host,
+        gateway_port
+    ).categories(_parse_ae_event_type(event_type))
+    if output_csv:
+        for category in categories:
+            print(f"{category.category_id},{category.description},{category.event_type}")
+        return
+    table = Table(title="Available OPC AE categories")
+    table.add_column("#", style="green")
+    table.add_column("Category ID", style="cyan")
+    table.add_column("Description", style="green")
+    table.add_column("Event Type", style="dark_orange3")
+    for index, category in enumerate(categories):
+        table.add_row(str(index), str(category.category_id), category.description, str(category.event_type))
+    Console().print(table)
+
+
+@app.command()
+def ae_refresh(
+        event_type: str = AeEventTypeOption,
+        protocol_mode: ProtocolMode = ProtocolModeOption,
+        opc_ae_server: str = OpcAeServerOption,
+        opc_host: str = OpcHostOption,
+        gateway_host: str = GatewayHostOption,
+        gateway_port: int = GatewayPortOption,
+        severity_min: int = AeSeverityMinOption,
+        severity_max: int = AeSeverityMaxOption,
+        category: Optional[int] = AeCategoryOption,
+        area: Optional[str] = AeAreaOption,
+        source: Optional[str] = AeSourceOption,
+        timeout: int = TimeoutOption,
+        output_csv: bool = OutputCsvOption,
+        log_level: LogLevel = LogLevelOption,
+) -> None:
+    """
+    Refresh current OPC AE condition events
+    """
+    log.setLevel(log_level.upper())
+    events = get_connected_ae_client(
+        protocol_mode,
+        opc_ae_server,
+        opc_host,
+        gateway_host,
+        gateway_port
+    ).refresh(
+        filter=_build_ae_filter(event_type, severity_min, severity_max, category, area, source),
+        timeout=timeout / 1000,
+    )
+    if output_csv:
+        for event in events:
+            print(f"{event.source},{event.time},{event.severity},{event.message}")
+        return
+    table = Table(title="OPC AE refresh")
+    table.add_column("Source", style="cyan")
+    table.add_column("Time", style="green")
+    table.add_column("Severity", style="dark_orange3")
+    table.add_column("Message", style="green")
+    for event in events:
+        table.add_row(event.source, str(event.time), str(event.severity), event.message)
+    Console().print(table)
+
+
+@app.command()
+def ae_subscribe(
+        event_type: str = AeEventTypeOption,
+        protocol_mode: ProtocolMode = ProtocolModeOption,
+        opc_ae_server: str = OpcAeServerOption,
+        opc_host: str = OpcHostOption,
+        gateway_host: str = GatewayHostOption,
+        gateway_port: int = GatewayPortOption,
+        severity_min: int = AeSeverityMinOption,
+        severity_max: int = AeSeverityMaxOption,
+        category: Optional[int] = AeCategoryOption,
+        area: Optional[str] = AeAreaOption,
+        source: Optional[str] = AeSourceOption,
+        timeout: int = TimeoutOption,
+        output_csv: bool = OutputCsvOption,
+        log_level: LogLevel = LogLevelOption,
+) -> None:
+    """
+    Subscribe to OPC AE event batches until the timeout expires
+    """
+    log.setLevel(log_level.upper())
+    client = get_connected_ae_client(
+        protocol_mode,
+        opc_ae_server,
+        opc_host,
+        gateway_host,
+        gateway_port
+    )
+    subscription = client.subscribe(
+        filter=_build_ae_filter(event_type, severity_min, severity_max, category, area, source),
+    )
+    batch = subscription.next_batch(timeout=timeout / 1000)
+    if batch is None:
+        print("No AE events received")
+        return
+    if output_csv:
+        for event in batch.events:
+            print(f"{event.source},{event.time},{event.severity},{event.message}")
+        return
+    table = Table(title="OPC AE events")
+    table.add_column("Source", style="cyan")
+    table.add_column("Time", style="green")
+    table.add_column("Severity", style="dark_orange3")
+    table.add_column("Message", style="green")
+    for event in batch.events:
+        table.add_row(event.source, str(event.time), str(event.severity), event.message)
     Console().print(table)
 
 @app.command()
