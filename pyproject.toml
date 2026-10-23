@@ -1,9 +1,10 @@
 [tool.poetry]
 name = "openopc2"
-version = "0.1.19"
+version = "0.2.0"
 description = "OPC library with a Windows gateway enabling non-Windows clients to access OPC-DA calls."
-license = "GPL-2.0-or-later"
+license = "MIT"
 readme = "README.md"
+include = [{ path = "THIRD_PARTY_NOTICES.md", format = ["sdist", "wheel"] }]
 authors = [
     "Lorenz Padberg <lorenz.padberg@iterativ.ch>",
     "Elia Bieri <elia.bieri@iterativ.ch>",

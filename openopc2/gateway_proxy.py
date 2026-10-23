@@ -3,7 +3,7 @@
 # Iterativ GmbH
 # http://www.iterativ.ch/
 #
-# Copyright (c) 2015 Iterativ GmbH. All rights reserved.
+# Copyright (c) 2015 Iterativ GmbH.
 #
 # Created on 2022-10-24
 # @author: lorenz.padberg@iterativ.ch

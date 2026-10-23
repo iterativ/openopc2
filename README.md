@@ -217,8 +217,8 @@ Github. Without the great work of all the contributors, this would not be possib
 The authors of the package are (among others):
 
 | Years     |     | Name              | User                          |
-| --------- | --- | ----------------- | ----------------------------- |
-| 2008-2012 | 🇺🇸  | Barry Barnreiter  | barry_b@users.sourceforge.net |
+| --------- | --- | ----------------- |-------------------------------|
+| 2008-2012 | 🇺🇸  | Barry Barnreiter  | https://github.com/barrybb    |
 | 2014      | 🇷🇺  | Anton D. Kachalov | https://github.com/ya-mouse   |
 | 2017      | 🇻🇪  | José A. Maita     | https://github.com/joseamaita |
 | 2022      | 🇨🇭  | Lorenz Padberg    | https://github.com/renzop     |
@@ -226,6 +226,11 @@ The authors of the package are (among others):
 
 ## 📜 License
 
-This software is licensed under the terms of the GNU GPL v2 license plus
-a special linking exception for portions of the package. This license is
-available in the `LICENSE.txt` file.
+Starting with version 0.2.0, project-authored code and documentation are
+licensed under the MIT License. See [LICENSE.txt](LICENSE.txt).
+
+Bundled third-party material retains its own terms and is outside this MIT
+grant. See
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the assets included in
+this repository. Earlier releases retain the terms under which they were
+published.
