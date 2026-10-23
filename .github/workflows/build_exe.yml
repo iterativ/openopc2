@@ -12,15 +12,36 @@ permissions:
 jobs:
   build:
     runs-on: windows-latest
+    env:
+      PIPX_HOME: ${{ runner.temp }}/pipx
+      PIPX_BIN_DIR: ${{ runner.temp }}/pipx-bin
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python (32-bit)
+      - name: Set up Python for Poetry
         uses: actions/setup-python@v5
         with:
-          python-version: 3.8
-          architecture: x86
+          python-version: '3.11'
+          architecture: x64
       - name: Install poetry
         uses: abatilo/actions-poetry@v3
+        with:
+          poetry-version: '1.8.4'
+      - name: Add Poetry to PATH
+        shell: pwsh
+        run: Add-Content -Path $env:GITHUB_PATH -Value $env:PIPX_BIN_DIR
+      - name: Set up Python for executables (32-bit)
+        id: build_python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.8'
+          architecture: x86
+      - name: Select 32-bit Python for the project
+        shell: pwsh
+        env:
+          BUILD_PYTHON: ${{ steps.build_python.outputs.python-path }}
+        run: |
+          poetry env use "$env:BUILD_PYTHON"
+          poetry run python -c "import struct, sys; assert sys.version_info[:2] == (3, 8) and struct.calcsize('P') == 4"
       - name: Register gbda_aut.dll
         run: |
           Copy-Item .\lib\gbda_aut.dll C:\Windows\System32\
