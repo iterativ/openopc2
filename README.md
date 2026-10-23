@@ -78,6 +78,12 @@ local Windows setup.
 
 ([Download the executables here](https://github.com/iterativ/openopc2/releases/latest))
 
+For development builds, open the [Build EXE workflow](https://github.com/iterativ/openopc2/actions/workflows/build_exe.yml),
+select a branch's run, and download its `windows-executables` artifact. Each
+branch push builds `OpenOpcCli.exe`, `OpenOpcServer.exe`, and
+`OpenOpcService.exe`. Version tags on commits in `main` create a release only
+after the executable build succeeds.
+
 
 <img src="https://github.com/iterativ/openopc2/raw/develop/doc/assets/LinuxSetup.png" alt="LinuxSetup" width="700"/>
 

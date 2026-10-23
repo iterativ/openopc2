@@ -16,3 +16,4 @@ poetry.lock
 .direnv
 .tool-versions
 .envrc
+doc/OPC AE 1.10 Specification.pdf
