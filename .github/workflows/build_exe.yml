@@ -12,11 +12,13 @@ permissions:
 jobs:
   build:
     runs-on: windows-latest
-    env:
-      PIPX_HOME: ${{ runner.temp }}/pipx
-      PIPX_BIN_DIR: ${{ runner.temp }}/pipx-bin
     steps:
       - uses: actions/checkout@v4
+      - name: Configure pipx paths
+        shell: pwsh
+        run: |
+          "PIPX_HOME=$env:RUNNER_TEMP\pipx" >> $env:GITHUB_ENV
+          "PIPX_BIN_DIR=$env:RUNNER_TEMP\pipx-bin" >> $env:GITHUB_ENV
       - name: Set up Python for Poetry
         uses: actions/setup-python@v5
         with:
