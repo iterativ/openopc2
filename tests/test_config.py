@@ -1,4 +1,6 @@
+import io
 import os
+import contextlib
 from unittest import TestCase
 
 from openopc2.config import OpenOpcConfig
@@ -28,3 +30,13 @@ class TestOpenOpcConfig(TestCase):
 
         nondefault_config = OpenOpcConfig(opc_server="Another.Server")
         self.assertEquals(nondefault_config.OPC_SERVER, "Another.Server")
+
+    def test_print_config_uses_gateway_env_var_names(self) -> None:
+        buffer = io.StringIO()
+        with contextlib.redirect_stdout(buffer):
+            OpenOpcConfig().print_config()
+        output = buffer.getvalue()
+        self.assertIn("OPC_GATE_HOST", output)
+        self.assertIn("OPC_GATE_PORT", output)
+        self.assertNotIn("OPC_GATEWAY_HOST", output)
+        self.assertNotIn("OPC_GATEWAY_PORT", output)

@@ -1,6 +1,11 @@
 import os
 from typing import Literal
 
+_CONFIG_DISPLAY_NAMES = {
+    "OPC_GATEWAY_HOST": "OPC_GATE_HOST",
+    "OPC_GATEWAY_PORT": "OPC_GATE_PORT",
+}
+
 
 class OpenOpcConfig:
     def __init__(
@@ -8,8 +13,12 @@ class OpenOpcConfig:
         opc_host: str = "localhost",
         opc_server: str = os.environ.get("OPC_SERVER", "Matrikon.OPC.Simulation"),
         opc_client: str = "OpenOPC",
-        opc_gateway_host: str = os.environ.get("OPC_GATE_HOST", "192.168.0.115"),
-        opc_gateway_port: int = int(os.environ.get("OPC_GATE_PORT", 7766)),
+        opc_gateway_host: str = os.environ.get("OPC_GATE_HOST")
+        or os.environ.get("OPC_GATEWAY_HOST", "192.168.0.115"),
+        opc_gateway_port: int = int(
+            os.environ.get("OPC_GATE_PORT")
+            or os.environ.get("OPC_GATEWAY_PORT", 7766)
+        ),
         opc_class: str = os.environ.get("OPC_CLASS", "Graybox.OPC.DAWrapper"),
         opc_mode: Literal["GATEWAY", "COM"] = os.environ.get("OPC_MODE", "gateway"),
         opc_timeout: int = int(os.environ.get("OPC_TIMEOUT", 1000)),
@@ -26,4 +35,5 @@ class OpenOpcConfig:
     def print_config(self):
         print("Open Opc Config:")
         for key, value in self.__dict__.items():
-            print(f"{key:20}  : {value}")
+            display_key = _CONFIG_DISPLAY_NAMES.get(key, key)
+            print(f"{display_key:20}  : {value}")
